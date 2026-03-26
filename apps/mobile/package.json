@@ -9,7 +9,7 @@
     "build": "expo export",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "storybook:ondevice": "STORYBOOK_ENABLED=true expo start"
   },
   "dependencies": {
