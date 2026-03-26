@@ -1,0 +1,46 @@
+name: Claude Dependency Check
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "**/package.json"
+      - "**/package-lock.json"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          claude_args: --allowedTools mcp__github,Bash
+          use_sticky_comment: true
+          prompt: |
+            This PR modifies dependency files. Review the changes:
+
+            1. What packages were added/removed/updated?
+            2. For newly added packages: Are they well-maintained? Any known security issues?
+            3. Are there major version bumps that could introduce breaking changes?
+            4. Are there duplicate/conflicting packages?
+
+            Format:
+            ## 📦 Dependency Analysis
+
+            **Changes**:
+            - Added: package@version [✅ popular/maintained | ⚠️ check needed | ❌ security risk]
+            - Updated: package A.B.C → X.Y.Z [semver type: patch/minor/major]
+            - Removed: package@version
+
+            **Concerns** (if any):
+            - [concern 1]
+
+            If no concerns: "✅ Dependency changes look safe."

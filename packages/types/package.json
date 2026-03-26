@@ -1,0 +1,15 @@
+{
+  "name": "@stock-tracker/types",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@stock-tracker/typescript-config": "*",
+    "typescript": "5.9.2"
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "name": "stock-tracker",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "dev:mobile": "turbo run dev --filter=@stock-tracker/mobile",
+    "dev:storybook": "turbo run storybook --filter=@stock-tracker/storybook",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "check-types": "turbo run check-types",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.7.4",
+    "turbo": "^2.8.20",
+    "typescript": "5.9.2"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "packageManager": "npm@11.8.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

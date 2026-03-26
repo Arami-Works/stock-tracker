@@ -1,0 +1,8 @@
+{
+  "extends": "@stock-tracker/typescript-config/base.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "outDir": "dist"
+  },
+  "include": ["src", "../mobile/src/**/*.stories.tsx"]
+}

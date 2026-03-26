@@ -1,0 +1,29 @@
+name: Notify on Merge
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get commit info
+        id: info
+        run: |
+          echo "message=$(git log -1 --pretty=format:'%s')" >> $GITHUB_OUTPUT
+          echo "author=$(git log -1 --pretty=format:'%an')" >> $GITHUB_OUTPUT
+          echo "sha=$(git log -1 --pretty=format:'%h')" >> $GITHUB_OUTPUT
+
+      - name: Post to Slack #openclaw-hq
+        run: |
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"C0AJGRU7SD6\",
+              \"text\": \"📦 *stock-tracker 업데이트됨*\n• 커밋: \`${{ steps.info.outputs.sha }}\` — ${{ steps.info.outputs.message }}\n• 작성자: ${{ steps.info.outputs.author }}\n• <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|GitHub에서 보기>\"
+            }"
