@@ -1,0 +1,32 @@
+name: Deploy Storybook
+
+on:
+  push:
+    branches: [develop]
+    paths:
+      - 'apps/mobile/src/**/*.stories.tsx'
+      - 'apps/storybook/**'
+      - 'packages/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build Storybook
+        run: npx turbo run build --filter=@stock-tracker/storybook
+
+      - name: Install Vercel CLI
+        run: npm install -g vercel
+
+      - name: Deploy
+        run: vercel deploy --yes --token=${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }}
+        working-directory: apps/storybook/storybook-static

@@ -2,6 +2,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
+  owner: 'cheunjm',
   name: 'Stock Tracker',
   slug: 'stock-tracker',
   version: '0.0.1',
@@ -22,12 +23,17 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundler: 'metro',
     output: 'single',
   },
-  plugins: ['expo-router'],
+  plugins: ['expo-router', 'expo-updates'],
   experiments: {
     typedRoutes: true,
   },
+  extra: {
+    eas: {
+      projectId: '215a3343-0d48-4262-9f33-2ece58459fc7',
+    },
+  },
   updates: {
-    url: 'https://u.expo.dev/stock-tracker',
+    url: 'https://u.expo.dev/215a3343-0d48-4262-9f33-2ece58459fc7',
   },
   runtimeVersion: {
     policy: 'appVersion',
