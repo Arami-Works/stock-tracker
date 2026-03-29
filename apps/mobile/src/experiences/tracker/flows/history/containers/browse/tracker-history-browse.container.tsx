@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { TrackerHistoryBrowseModels } from './models';
-import { TrackerHistoryBrowseControllers } from './controllers';
-import { TrackerHistoryBrowseViews } from './views';
+import { memo } from "react";
+import { TrackerHistoryBrowseModels } from "./models";
+import { TrackerHistoryBrowseControllers } from "./controllers";
+import { TrackerHistoryBrowseViews } from "./views";
 
 export const TrackerHistoryBrowseContainer = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const TrackerHistoryBrowseContainer = memo(() => {
   );
 });
 
-TrackerHistoryBrowseContainer.displayName = 'TrackerHistoryBrowseContainer';
+TrackerHistoryBrowseContainer.displayName = "TrackerHistoryBrowseContainer";

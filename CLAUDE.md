@@ -4,15 +4,15 @@ Cartier purchase tracker. Turborepo monorepo with Expo mobile app.
 
 ## Stack
 
-| Layer | Choice |
-|-------|--------|
-| Mobile | Expo SDK 52, Expo Router v4 |
-| Design system | @cheunjm/ui (Tamagui + MD3) |
-| State | Zustand (per EFCV level) |
-| Forms | React Hook Form + Zod |
-| Testing | Jest (unit), Maestro (E2E) |
-| Storybook | React Native (on-device) + Web (Vercel) |
-| Package manager | npm |
+| Layer           | Choice                                  |
+| --------------- | --------------------------------------- |
+| Mobile          | Expo SDK 52, Expo Router v4             |
+| Design system   | @cheunjm/ui (Tamagui + MD3)             |
+| State           | Zustand (per EFCV level)                |
+| Forms           | React Hook Form + Zod                   |
+| Testing         | Jest (unit), Maestro (E2E)              |
+| Storybook       | React Native (on-device) + Web (Vercel) |
+| Package manager | npm                                     |
 
 ## Directory Map
 
@@ -75,18 +75,18 @@ npm run check-types            # Type check all packages
 
 ## Experiences
 
-| Experience | Flows | Containers |
-|-----------|-------|------------|
-| auth | signIn | gmailOauth |
-| tracker | dashboard | home |
-| tracker | accounts | list, detail |
-| tracker | history | browse |
+| Experience | Flows     | Containers   |
+| ---------- | --------- | ------------ |
+| auth       | signIn    | gmailOauth   |
+| tracker    | dashboard | home         |
+| tracker    | accounts  | list, detail |
+| tracker    | history   | browse       |
 
 ## Deployment
 
-| Environment | Branch | Mobile | Storybook |
-|-------------|--------|--------|-----------|
-| development | local | `expo start` | `storybook dev` |
-| develop | `develop` | EAS Preview | Vercel Preview |
-| stage | `stage` | EAS Preview | Vercel Preview |
-| production | `main` | EAS Production | Vercel Production |
+| Environment | Branch    | Mobile         | Storybook         |
+| ----------- | --------- | -------------- | ----------------- |
+| development | local     | `expo start`   | `storybook dev`   |
+| develop     | `develop` | EAS Preview    | Vercel Preview    |
+| stage       | `stage`   | EAS Preview    | Vercel Preview    |
+| production  | `main`    | EAS Production | Vercel Production |

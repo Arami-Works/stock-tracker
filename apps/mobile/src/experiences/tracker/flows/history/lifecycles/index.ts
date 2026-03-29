@@ -1,1 +1,1 @@
-export * from './tracker-history.lifecycles';
+export * from "./tracker-history.lifecycles";

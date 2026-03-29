@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { AuthModels } from './models';
-import { AuthControllers } from './controllers';
-import { AuthViews } from './views';
+import { memo } from "react";
+import { AuthModels } from "./models";
+import { AuthControllers } from "./controllers";
+import { AuthViews } from "./views";
 
 export const AuthExperience = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const AuthExperience = memo(() => {
   );
 });
 
-AuthExperience.displayName = 'AuthExperience';
+AuthExperience.displayName = "AuthExperience";

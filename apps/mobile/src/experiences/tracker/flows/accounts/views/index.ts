@@ -1,1 +1,1 @@
-export * from './tracker-accounts.views';
+export * from "./tracker-accounts.views";

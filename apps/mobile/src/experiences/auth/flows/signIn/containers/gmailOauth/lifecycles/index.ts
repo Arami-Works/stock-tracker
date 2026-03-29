@@ -1,1 +1,1 @@
-export * from './auth-signIn-gmailOauth.lifecycles';
+export * from "./auth-signIn-gmailOauth.lifecycles";

@@ -1,12 +1,10 @@
-import type { StorybookConfig } from '@storybook/react-vite';
-import path from 'path';
+import type { StorybookConfig } from "@storybook/react-vite";
+import path from "path";
 
 const config: StorybookConfig = {
-  stories: [
-    '../../mobile/src/**/*.stories.@(ts|tsx)',
-  ],
+  stories: ["../../mobile/src/**/*.stories.@(ts|tsx)"],
   framework: {
-    name: '@storybook/react-vite',
+    name: "@storybook/react-vite",
     options: {},
   },
   addons: [],
@@ -14,8 +12,8 @@ const config: StorybookConfig = {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...config.resolve.alias,
-      'react-native': 'react-native-web',
-      '@/': path.resolve(__dirname, '../../mobile/src/'),
+      "react-native": "react-native-web",
+      "@/": path.resolve(__dirname, "../../mobile/src/"),
     };
     return config;
   },

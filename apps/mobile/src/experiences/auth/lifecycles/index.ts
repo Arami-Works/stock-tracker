@@ -1,1 +1,1 @@
-export * from './auth.lifecycles';
+export * from "./auth.lifecycles";

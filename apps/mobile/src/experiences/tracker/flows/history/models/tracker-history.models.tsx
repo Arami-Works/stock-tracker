@@ -1,11 +1,13 @@
-import { memo, type ReactNode } from 'react';
+import { memo, type ReactNode } from "react";
 
 interface TrackerHistoryModelsProps {
   children: ReactNode;
 }
 
-export const TrackerHistoryModels = memo<TrackerHistoryModelsProps>(({ children }) => {
-  return <>{children}</>;
-});
+export const TrackerHistoryModels = memo<TrackerHistoryModelsProps>(
+  ({ children }) => {
+    return <>{children}</>;
+  },
+);
 
-TrackerHistoryModels.displayName = 'TrackerHistoryModels';
+TrackerHistoryModels.displayName = "TrackerHistoryModels";

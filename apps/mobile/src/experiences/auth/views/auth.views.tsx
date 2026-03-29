@@ -1,5 +1,5 @@
-import { memo } from 'react';
-import { View, Text } from 'react-native';
+import { memo } from "react";
+import { View, Text } from "react-native";
 
 export const AuthViews = memo(() => {
   return (
@@ -9,4 +9,4 @@ export const AuthViews = memo(() => {
   );
 });
 
-AuthViews.displayName = 'AuthViews';
+AuthViews.displayName = "AuthViews";

@@ -1,1 +1,1 @@
-export * from './tracker-dashboard.lifecycles';
+export * from "./tracker-dashboard.lifecycles";

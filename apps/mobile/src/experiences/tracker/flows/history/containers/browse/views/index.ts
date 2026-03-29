@@ -1,1 +1,1 @@
-export * from './tracker-history-browse.views';
+export * from "./tracker-history-browse.views";

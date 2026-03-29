@@ -1,1 +1,1 @@
-export * from './tracker-history-browse.container';
+export * from "./tracker-history-browse.container";

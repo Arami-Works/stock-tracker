@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { AuthSignInGmailOauthModels } from './models';
-import { AuthSignInGmailOauthControllers } from './controllers';
-import { AuthSignInGmailOauthViews } from './views';
+import { memo } from "react";
+import { AuthSignInGmailOauthModels } from "./models";
+import { AuthSignInGmailOauthControllers } from "./controllers";
+import { AuthSignInGmailOauthViews } from "./views";
 
 export const AuthSignInGmailOauthContainer = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const AuthSignInGmailOauthContainer = memo(() => {
   );
 });
 
-AuthSignInGmailOauthContainer.displayName = 'AuthSignInGmailOauthContainer';
+AuthSignInGmailOauthContainer.displayName = "AuthSignInGmailOauthContainer";

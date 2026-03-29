@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router';
-import { useTrackerHistoryLifecycle } from '@/experiences/tracker/flows/history/lifecycles';
+import { Stack } from "expo-router";
+import { useTrackerHistoryLifecycle } from "@/experiences/tracker/flows/history/lifecycles";
 
 export default function TrackerHistoryLayout() {
   useTrackerHistoryLifecycle();

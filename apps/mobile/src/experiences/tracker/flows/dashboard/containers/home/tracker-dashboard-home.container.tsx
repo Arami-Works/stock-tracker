@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { TrackerDashboardHomeModels } from './models';
-import { TrackerDashboardHomeControllers } from './controllers';
-import { TrackerDashboardHomeViews } from './views';
+import { memo } from "react";
+import { TrackerDashboardHomeModels } from "./models";
+import { TrackerDashboardHomeControllers } from "./controllers";
+import { TrackerDashboardHomeViews } from "./views";
 
 export const TrackerDashboardHomeContainer = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const TrackerDashboardHomeContainer = memo(() => {
   );
 });
 
-TrackerDashboardHomeContainer.displayName = 'TrackerDashboardHomeContainer';
+TrackerDashboardHomeContainer.displayName = "TrackerDashboardHomeContainer";

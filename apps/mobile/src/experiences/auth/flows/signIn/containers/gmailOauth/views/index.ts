@@ -1,1 +1,1 @@
-export * from './auth-signIn-gmailOauth.views';
+export * from "./auth-signIn-gmailOauth.views";

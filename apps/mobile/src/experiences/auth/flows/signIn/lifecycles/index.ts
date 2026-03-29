@@ -1,1 +1,1 @@
-export * from './auth-signIn.lifecycles';
+export * from "./auth-signIn.lifecycles";

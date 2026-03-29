@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { TrackerHistoryModels } from './models';
-import { TrackerHistoryControllers } from './controllers';
-import { TrackerHistoryViews } from './views';
+import { memo } from "react";
+import { TrackerHistoryModels } from "./models";
+import { TrackerHistoryControllers } from "./controllers";
+import { TrackerHistoryViews } from "./views";
 
 export const TrackerHistoryFlow = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const TrackerHistoryFlow = memo(() => {
   );
 });
 
-TrackerHistoryFlow.displayName = 'TrackerHistoryFlow';
+TrackerHistoryFlow.displayName = "TrackerHistoryFlow";
