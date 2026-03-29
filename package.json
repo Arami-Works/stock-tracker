@@ -15,7 +15,10 @@
   "devDependencies": {
     "ajv": "^8.18.0",
     "lost-pixel": "^3.22.0",
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0",
     "prettier": "^3.7.4",
+    "sharp": "^0.34.5",
     "turbo": "^2.8.20",
     "typescript": "5.9.2"
   },

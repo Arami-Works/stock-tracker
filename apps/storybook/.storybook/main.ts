@@ -13,7 +13,7 @@ const config: StorybookConfig = {
     config.resolve.alias = {
       ...config.resolve.alias,
       "react-native": "react-native-web",
-      "@/": path.resolve(__dirname, "../../mobile/src/"),
+      "@": path.resolve(__dirname, "../../mobile/src"),
     };
     return config;
   },
