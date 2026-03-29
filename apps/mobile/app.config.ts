@@ -8,7 +8,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   version: "0.0.1",
   orientation: "portrait",
   scheme: "stock-tracker",
-  newArchEnabled: true,
   ios: {
     supportsTablet: false,
     bundleIdentifier: "com.cheunjm.stocktracker",

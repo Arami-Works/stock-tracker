@@ -28,6 +28,8 @@
     "packages/*"
   ],
   "overrides": {
+    "react": "$react",
+    "react-dom": "$react-dom",
     "ajv-keywords": {
       "ajv": "^8.17.1"
     },
