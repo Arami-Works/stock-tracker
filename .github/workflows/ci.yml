@@ -86,7 +86,7 @@ jobs:
       - name: Build Storybook
         run: npx turbo run build --filter=@stock-tracker/storybook
       - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
+        run: npx -y playwright@1.47.2 install --with-deps chromium
       - name: Run Lost Pixel
         run: npx lost-pixel
       - name: Upload visual diffs
