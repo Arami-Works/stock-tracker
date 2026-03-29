@@ -1,0 +1,52 @@
+name: E2E
+
+on:
+  pull_request:
+    types: [ready_for_review]
+    paths:
+      - 'apps/mobile/**'
+      - 'packages/**'
+
+jobs:
+  maestro:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for Maestro flows
+        id: check-flows
+        run: |
+          if find apps/mobile/maestro -name '*.yaml' -o -name '*.yml' | grep -q .; then
+            echo "has_flows=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_flows=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.check-flows.outputs.has_flows == 'true'
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.check-flows.outputs.has_flows == 'true'
+        run: npm ci
+
+      - name: Install Maestro CLI
+        if: steps.check-flows.outputs.has_flows == 'true'
+        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+
+      - name: Build iOS app
+        if: steps.check-flows.outputs.has_flows == 'true'
+        run: npx expo run:ios --no-install
+        working-directory: apps/mobile
+
+      - name: Run Maestro E2E tests
+        if: steps.check-flows.outputs.has_flows == 'true'
+        run: |
+          export PATH="$PATH:$HOME/.maestro/bin"
+          maestro test apps/mobile/maestro/
+
+      - name: Skip — no Maestro flows found
+        if: steps.check-flows.outputs.has_flows == 'false'
+        run: echo "No Maestro flow files found in apps/mobile/maestro/ — skipping E2E tests"
