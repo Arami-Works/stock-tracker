@@ -1,1 +1,1 @@
-export * from './tracker-history-browse.controllers';
+export * from "./tracker-history-browse.controllers";

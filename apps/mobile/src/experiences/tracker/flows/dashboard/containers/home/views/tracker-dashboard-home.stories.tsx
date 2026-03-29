@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { TrackerDashboardHomeViews } from './tracker-dashboard-home.views';
+import type { Meta, StoryObj } from "@storybook/react";
+import { TrackerDashboardHomeViews } from "./tracker-dashboard-home.views";
 
 const meta: Meta<typeof TrackerDashboardHomeViews> = {
-  title: 'Tracker/Dashboard/Home',
+  title: "Tracker/Dashboard/Home",
   component: TrackerDashboardHomeViews,
 };
 

@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { TrackerDashboardModels } from './models';
-import { TrackerDashboardControllers } from './controllers';
-import { TrackerDashboardViews } from './views';
+import { memo } from "react";
+import { TrackerDashboardModels } from "./models";
+import { TrackerDashboardControllers } from "./controllers";
+import { TrackerDashboardViews } from "./views";
 
 export const TrackerDashboardFlow = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const TrackerDashboardFlow = memo(() => {
   );
 });
 
-TrackerDashboardFlow.displayName = 'TrackerDashboardFlow';
+TrackerDashboardFlow.displayName = "TrackerDashboardFlow";

@@ -1,1 +1,1 @@
-export * from './auth-signIn-gmailOauth.controllers';
+export * from "./auth-signIn-gmailOauth.controllers";

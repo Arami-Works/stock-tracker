@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { TrackerAccountsDetailModels } from './models';
-import { TrackerAccountsDetailControllers } from './controllers';
-import { TrackerAccountsDetailViews } from './views';
+import { memo } from "react";
+import { TrackerAccountsDetailModels } from "./models";
+import { TrackerAccountsDetailControllers } from "./controllers";
+import { TrackerAccountsDetailViews } from "./views";
 
 export const TrackerAccountsDetailContainer = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const TrackerAccountsDetailContainer = memo(() => {
   );
 });
 
-TrackerAccountsDetailContainer.displayName = 'TrackerAccountsDetailContainer';
+TrackerAccountsDetailContainer.displayName = "TrackerAccountsDetailContainer";

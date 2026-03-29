@@ -1,11 +1,13 @@
-import { memo, type ReactNode } from 'react';
+import { memo, type ReactNode } from "react";
 
 interface AuthSignInGmailOauthModelsProps {
   children: ReactNode;
 }
 
-export const AuthSignInGmailOauthModels = memo<AuthSignInGmailOauthModelsProps>(({ children }) => {
-  return <>{children}</>;
-});
+export const AuthSignInGmailOauthModels = memo<AuthSignInGmailOauthModelsProps>(
+  ({ children }) => {
+    return <>{children}</>;
+  },
+);
 
-AuthSignInGmailOauthModels.displayName = 'AuthSignInGmailOauthModels';
+AuthSignInGmailOauthModels.displayName = "AuthSignInGmailOauthModels";

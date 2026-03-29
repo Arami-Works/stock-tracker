@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router';
-import { useAuthSignInLifecycle } from '@/experiences/auth/flows/signIn/lifecycles';
+import { Stack } from "expo-router";
+import { useAuthSignInLifecycle } from "@/experiences/auth/flows/signIn/lifecycles";
 
 export default function AuthSignInLayout() {
   useAuthSignInLifecycle();

@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { AuthSignInModels } from './models';
-import { AuthSignInControllers } from './controllers';
-import { AuthSignInViews } from './views';
+import { memo } from "react";
+import { AuthSignInModels } from "./models";
+import { AuthSignInControllers } from "./controllers";
+import { AuthSignInViews } from "./views";
 
 export const AuthSignInFlow = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const AuthSignInFlow = memo(() => {
   );
 });
 
-AuthSignInFlow.displayName = 'AuthSignInFlow';
+AuthSignInFlow.displayName = "AuthSignInFlow";

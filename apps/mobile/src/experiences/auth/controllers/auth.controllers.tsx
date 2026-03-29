@@ -1,4 +1,4 @@
-import { memo, createContext, useContext, type ReactNode } from 'react';
+import { memo, createContext, useContext, type ReactNode } from "react";
 
 interface AuthControllersOutput {
   // TODO: Define controller outputs
@@ -22,12 +22,12 @@ export const AuthControllers = memo<AuthControllersProps>(({ children }) => {
   );
 });
 
-AuthControllers.displayName = 'AuthControllers';
+AuthControllers.displayName = "AuthControllers";
 
 export const useAuthControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
-    throw new Error('useAuthControllers must be used within AuthControllers');
+    throw new Error("useAuthControllers must be used within AuthControllers");
   }
   return context;
 };

@@ -1,4 +1,4 @@
-import { Slot, Redirect } from 'expo-router';
+import { Slot, Redirect } from "expo-router";
 
 export default function RootLayout() {
   // TODO: Replace with actual auth check

@@ -1,1 +1,1 @@
-export * from './tracker-accounts.controllers';
+export * from "./tracker-accounts.controllers";

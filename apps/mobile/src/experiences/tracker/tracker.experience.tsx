@@ -1,7 +1,7 @@
-import { memo } from 'react';
-import { TrackerModels } from './models';
-import { TrackerControllers } from './controllers';
-import { TrackerViews } from './views';
+import { memo } from "react";
+import { TrackerModels } from "./models";
+import { TrackerControllers } from "./controllers";
+import { TrackerViews } from "./views";
 
 export const TrackerExperience = memo(() => {
   return (
@@ -13,4 +13,4 @@ export const TrackerExperience = memo(() => {
   );
 });
 
-TrackerExperience.displayName = 'TrackerExperience';
+TrackerExperience.displayName = "TrackerExperience";

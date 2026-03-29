@@ -1,3 +1,3 @@
-export * from './tracker.models';
-export * from './tracker.store';
-export * from './tracker.type';
+export * from "./tracker.models";
+export * from "./tracker.store";
+export * from "./tracker.type";
