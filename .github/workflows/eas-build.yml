@@ -45,19 +45,44 @@ jobs:
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "profile=production" >> "$GITHUB_OUTPUT"
+            echo "env=production" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.ref }}" == "refs/heads/stage" ]]; then
             echo "profile=preview" >> "$GITHUB_OUTPUT"
+            echo "env=stage" >> "$GITHUB_OUTPUT"
           else
             echo "profile=development" >> "$GITHUB_OUTPUT"
+            echo "env=develop" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Build
+        id: eas-build
         run: |
           eas build \
             --profile ${{ steps.profile.outputs.profile }} \
             --platform ${{ matrix.platform }} \
-            --non-interactive
+            --non-interactive \
+            --json | tee /tmp/eas-build-result.json
+          BUILD_URL=$(cat /tmp/eas-build-result.json | jq -r '.[0].buildDetailsPageUrl // empty')
+          echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
         working-directory: apps/mobile
         env:
           EXPO_APPLE_KEY_ID: ${{ secrets.EXPO_APPLE_KEY_ID }}
           EXPO_APPLE_ISSUER_ID: ${{ secrets.EXPO_APPLE_ISSUER_ID }}
+
+      - name: Notify Slack
+        if: always()
+        run: |
+          STATUS="${{ job.status == 'success' && '✅' || '❌' }}"
+          PLATFORM="${{ matrix.platform }}"
+          ENV="${{ steps.profile.outputs.env }}"
+          BUILD_URL="${{ steps.eas-build.outputs.build_url }}"
+          FALLBACK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          LINK="${BUILD_URL:-$FALLBACK}"
+
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"C0AJGRU7SD6\",
+              \"text\": \"${STATUS} *EAS Build* — ${PLATFORM} (${ENV})\n• <${LINK}|빌드 보기>\"
+            }"
