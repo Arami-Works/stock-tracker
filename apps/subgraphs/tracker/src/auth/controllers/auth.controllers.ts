@@ -1,10 +1,6 @@
 export const authResolvers = {
   Query: {
-    me: async (
-      _: unknown,
-      __: unknown,
-      _context: { userId?: string },
-    ) => {
+    me: async (_: unknown, __: unknown, _context: { userId?: string }) => {
       // TODO: delegate to trpc.auth.me.query()
       return null;
     },

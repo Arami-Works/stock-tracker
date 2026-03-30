@@ -4,18 +4,18 @@ Cartier purchase tracker. Turborepo monorepo with Expo mobile app and tRPC/Graph
 
 ## Stack
 
-| Layer           | Choice                                  |
-| --------------- | --------------------------------------- |
-| Mobile          | Expo SDK 55, Expo Router v4             |
-| Design system   | @cheunjm/ui (Tamagui + MD3)             |
-| State           | Zustand (per EFCV level)                |
-| Forms           | React Hook Form + Zod                   |
-| Backend         | tRPC v11, Node.js TypeScript            |
-| API gateway     | Apollo Federation v2 (subgraph + router)|
-| Database        | Supabase Postgres + Prisma ORM          |
-| Testing         | Jest (unit), Maestro (E2E)              |
-| Storybook       | React Native (on-device) + Web (Vercel) |
-| Package manager | npm                                     |
+| Layer           | Choice                                   |
+| --------------- | ---------------------------------------- |
+| Mobile          | Expo SDK 55, Expo Router v4              |
+| Design system   | @cheunjm/ui (Tamagui + MD3)              |
+| State           | Zustand (per EFCV level)                 |
+| Forms           | React Hook Form + Zod                    |
+| Backend         | tRPC v11, Node.js TypeScript             |
+| API gateway     | Apollo Federation v2 (subgraph + router) |
+| Database        | Supabase Postgres + Prisma ORM           |
+| Testing         | Jest (unit), Maestro (E2E)               |
+| Storybook       | React Native (on-device) + Web (Vercel)  |
+| Package manager | npm                                      |
 
 ## Directory Map
 
@@ -61,6 +61,7 @@ packages/
 **MCVL** (Models / Controllers / Views / Lifecycles) — file organization at every EFCV level. See `~/conventions/architecture/mcvl.md`.
 
 **Backend MCVL mapping:**
+
 - Models → Prisma queries, types, constants
 - Controllers → Business logic orchestration
 - Views → tRPC input/output DTOs (Zod schemas)
