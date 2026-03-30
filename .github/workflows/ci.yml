@@ -130,6 +130,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx prisma validate --schema packages/prisma/prisma/schema
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
       - run: npx prisma format --check --schema packages/prisma/prisma/schema
 
   migration:
@@ -167,7 +169,7 @@ jobs:
 
   schema-check:
     needs: [changes]
-    if: needs.changes.outputs.subgraphs == 'true'
+    if: needs.changes.outputs.subgraphs == 'true' && vars.APOLLO_GRAPH_REF != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
