@@ -7,8 +7,8 @@ model tracker_accounts {
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt
 
-  auth_user          auth_users          @relation(fields: [auth_user_id], references: [id])
-  tracker_purchases  tracker_purchases[]
+  auth_user         auth_users          @relation(fields: [auth_user_id], references: [id])
+  tracker_purchases tracker_purchases[]
 }
 
 model tracker_purchases {
