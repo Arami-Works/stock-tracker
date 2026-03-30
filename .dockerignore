@@ -1,0 +1,11 @@
+node_modules
+.turbo
+.git
+.github
+.claude
+*.md
+.env*
+.lostpixel
+ios
+android
+web-build

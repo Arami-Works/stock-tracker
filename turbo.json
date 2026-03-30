@@ -24,6 +24,14 @@
     "storybook": {
       "cache": false,
       "persistent": true
+    },
+    "db:generate": {
+      "cache": false
+    },
+    "codegen": {
+      "dependsOn": ["^build"],
+      "inputs": ["src/**/views/*.ts", "codegen.ts"],
+      "outputs": ["src/generated/**"]
     }
   }
 }

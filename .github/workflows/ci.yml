@@ -28,12 +28,10 @@ jobs:
             migrations:
               - 'packages/prisma/migrations/**'
             subgraphs:
-              - 'apps/subgraph-*/**'
+              - 'apps/subgraphs/**'
             dockerfiles:
-              - 'apps/subgraph-*/Dockerfile'
+              - 'apps/subgraphs/*/Dockerfile'
               - 'apps/service-*/Dockerfile'
-              - 'apps/subgraph-*/**'
-              - 'apps/service-*/**'
 
   lint:
     runs-on: ubuntu-latest
@@ -134,8 +132,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
-      - run: npx prisma validate
-      - run: npx prisma format --check
+      - run: npx prisma validate --schema packages/prisma/prisma/schema
+        env:
+          DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
+      - run: npx prisma format --check --schema packages/prisma/prisma/schema
 
   migration:
     needs: [changes]
@@ -162,17 +162,17 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Apply migrations
-        run: npx prisma migrate deploy
+        run: npx prisma migrate deploy --schema packages/prisma/prisma/schema
         env:
           DATABASE_URL: postgresql://postgres:test@localhost:5432/test
       - name: Check schema-migration sync
-        run: npx prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema --exit-code
+        run: npx prisma migrate diff --from-migrations ./packages/prisma/prisma/migrations --to-schema-datamodel ./packages/prisma/prisma/schema --exit-code
         env:
           DATABASE_URL: postgresql://postgres:test@localhost:5432/test
 
   schema-check:
     needs: [changes]
-    if: needs.changes.outputs.subgraphs == 'true'
+    if: needs.changes.outputs.subgraphs == 'true' && vars.APOLLO_GRAPH_REF != ''
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -182,7 +182,7 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Build subgraphs
-        run: npx turbo run build --filter='./apps/subgraph-*'
+        run: npx turbo run build --filter='./apps/subgraphs/*'
       - name: Cache Rover CLI
         id: rover-cache
         uses: actions/cache@v4
@@ -193,7 +193,7 @@ jobs:
         if: steps.rover-cache.outputs.cache-hit != 'true'
         run: curl -sSL https://rover.apollo.dev/nix/latest | sh
       - name: Check schema
-        run: ~/.rover/bin/rover subgraph check $APOLLO_GRAPH_REF --schema ./apps/subgraph-*/schema.graphql --name stock-tracker
+        run: ~/.rover/bin/rover subgraph check $APOLLO_GRAPH_REF --schema ./apps/subgraphs/*/schema.graphql --name stock-tracker
         env:
           APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
           APOLLO_GRAPH_REF: ${{ vars.APOLLO_GRAPH_REF }}
@@ -207,7 +207,7 @@ jobs:
       - uses: docker/setup-buildx-action@v3
       - name: Find Dockerfiles
         id: dockerfiles
-        run: echo "files=$(find apps/subgraph-* apps/service-* -name Dockerfile 2>/dev/null | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+        run: echo "files=$(find apps/subgraphs apps/service-* -name Dockerfile 2>/dev/null | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
       - name: Build Docker images
         if: steps.dockerfiles.outputs.files != ''
         run: |
