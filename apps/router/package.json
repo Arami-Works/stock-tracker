@@ -1,0 +1,12 @@
+{
+  "name": "@stock-tracker/router",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "rover dev --supergraph-config supergraph.yaml --router-config router.yaml",
+    "check-types": "echo 'no-op (config only)'"
+  },
+  "devDependencies": {
+    "@apollo/rover": "^0.26.0"
+  }
+}

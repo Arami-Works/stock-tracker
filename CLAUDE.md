@@ -1,15 +1,18 @@
 # CLAUDE.md — stock-tracker
 
-Cartier purchase tracker. Turborepo monorepo with Expo mobile app.
+Cartier purchase tracker. Turborepo monorepo with Expo mobile app and tRPC/GraphQL backend.
 
 ## Stack
 
 | Layer           | Choice                                  |
 | --------------- | --------------------------------------- |
-| Mobile          | Expo SDK 52, Expo Router v4             |
+| Mobile          | Expo SDK 55, Expo Router v4             |
 | Design system   | @cheunjm/ui (Tamagui + MD3)             |
 | State           | Zustand (per EFCV level)                |
 | Forms           | React Hook Form + Zod                   |
+| Backend         | tRPC v11, Node.js TypeScript            |
+| API gateway     | Apollo Federation v2 (subgraph + router)|
+| Database        | Supabase Postgres + Prisma ORM          |
 | Testing         | Jest (unit), Maestro (E2E)              |
 | Storybook       | React Native (on-device) + Web (Vercel) |
 | Package manager | npm                                     |
@@ -27,23 +30,43 @@ apps/
 │   │   └── tracker/     # Tracker experience (dashboard, accounts, history)
 │   ├── .ondevice/       # Storybook RN config
 │   └── maestro/         # E2E test flows
+├── api/                 # tRPC service (port 4000)
+│   └── src/
+│       ├── trpc/        # tRPC routers (mirrors EFCV)
+│       ├── auth/        # Auth experience (MCVL)
+│       ├── tracker/     # Tracker experience (MCVL + flows)
+│       └── common/      # Env validation, shared utils
+├── subgraphs/
+│   └── tracker/         # Apollo subgraph (port 4001)
+│       └── src/
+│           ├── auth/    # GraphQL auth resolvers → tRPC
+│           ├── tracker/ # GraphQL tracker resolvers → tRPC
+│           └── clients/ # tRPC client to apps/api
+├── router/              # Apollo Router config (JWT, CORS, composition)
 └── storybook/           # Storybook web build (Vercel)
 
 packages/
+├── prisma/              # Shared Prisma client + multi-file schema
 ├── types/               # Shared TypeScript types
 ├── validation/          # Shared Zod schemas
 ├── config/              # Shared configuration
-├── eslint-config/       # ESLint configs
-└── typescript-config/   # TypeScript configs
+├── eslint-config/       # ESLint configs (base, node, react-internal)
+└── typescript-config/   # TypeScript configs (base, node, react-library)
 ```
 
 ## Architecture
 
-**EFCV** (Experience > Flow > Container > View) — 4-layer hierarchy. See `~/conventions/architecture/efcv.md`.
+**EFCV** (Experience > Flow > Container > View) — 4-layer hierarchy used in both frontend and backend. See `~/conventions/architecture/efcv.md`.
 
-**MCVL** (Models / Controllers / Views / Lifecycles) — screen-level file organization at every EFCV level. See `~/conventions/architecture/mcvl.md`.
+**MCVL** (Models / Controllers / Views / Lifecycles) — file organization at every EFCV level. See `~/conventions/architecture/mcvl.md`.
 
-**Expo Router** maps directly to EFCV. `app/` is routing only — zero business logic. All logic lives in `src/experiences/`. See `~/conventions/architecture/expo-router.md`.
+**Backend MCVL mapping:**
+- Models → Prisma queries, types, constants
+- Controllers → Business logic orchestration
+- Views → tRPC input/output DTOs (Zod schemas)
+- Lifecycles → Trigger.dev jobs, events, webhooks
+
+**Data flow:** Mobile → Apollo Router (JWT) → Subgraph (GraphQL) → tRPC service → Prisma → Supabase
 
 ## Naming
 
@@ -58,7 +81,15 @@ packages/
 ```bash
 npm install                    # Install all dependencies
 npm run dev:mobile             # Start Expo dev server
+npm run dev:api                # Start tRPC service (port 4000)
+npm run dev:subgraph           # Start Apollo subgraph (port 4001)
+npm run dev:router             # Start Apollo Router (rover dev)
+npm run dev:backend            # Start all backend services
 npm run dev:storybook          # Start Storybook web
+npm run db:generate            # Generate Prisma client
+npm run db:push                # Push schema to Supabase
+npm run db:migrate:dev         # Create migration
+npm run db:studio              # Open Prisma Studio
 npm run test                   # Run all tests
 npm run lint                   # Lint all packages
 npm run check-types            # Type check all packages
@@ -84,9 +115,9 @@ npm run check-types            # Type check all packages
 
 ## Deployment
 
-| Environment | Branch    | Mobile         | Storybook         |
-| ----------- | --------- | -------------- | ----------------- |
-| development | local     | `expo start`   | `storybook dev`   |
-| develop     | `develop` | EAS Preview    | Vercel Preview    |
-| stage       | `stage`   | EAS Preview    | Vercel Preview    |
-| production  | `main`    | EAS Production | Vercel Production |
+| Environment | Branch    | Mobile         | API (Docker → Railway) | Storybook         |
+| ----------- | --------- | -------------- | ---------------------- | ----------------- |
+| development | local     | `expo start`   | `npm run dev:backend`  | `storybook dev`   |
+| develop     | `develop` | EAS Preview    | GHCR → Railway dev     | Vercel Preview    |
+| stage       | `stage`   | EAS Preview    | GHCR → Railway staging | Vercel Preview    |
+| production  | `main`    | EAS Production | GHCR → Railway prod    | Vercel Production |

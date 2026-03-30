@@ -5,7 +5,15 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "dev:mobile": "turbo run dev --filter=@stock-tracker/mobile",
+    "dev:api": "turbo run dev --filter=@stock-tracker/api",
+    "dev:subgraph": "turbo run dev --filter=@stock-tracker/subgraph-tracker",
+    "dev:router": "turbo run dev --filter=@stock-tracker/router",
+    "dev:backend": "turbo run dev --filter=@stock-tracker/router --filter=@stock-tracker/subgraph-tracker --filter=@stock-tracker/api",
     "dev:storybook": "turbo run storybook --filter=@stock-tracker/storybook",
+    "db:generate": "turbo run db:generate --filter=@stock-tracker/prisma",
+    "db:push": "npm run db:push --workspace=@stock-tracker/prisma",
+    "db:migrate:dev": "npm run db:migrate:dev --workspace=@stock-tracker/prisma",
+    "db:studio": "npm run db:studio --workspace=@stock-tracker/prisma",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "check-types": "turbo run check-types",
@@ -28,6 +36,7 @@
   "packageManager": "npm@11.8.0",
   "workspaces": [
     "apps/*",
+    "apps/subgraphs/*",
     "packages/*"
   ],
   "overrides": {

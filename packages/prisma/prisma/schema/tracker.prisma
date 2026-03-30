@@ -1,0 +1,28 @@
+model tracker_accounts {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  auth_user_id String   @db.Uuid
+  store_name   String
+  sa_name      String?
+  notes        String?
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  auth_user          auth_users          @relation(fields: [auth_user_id], references: [id])
+  tracker_purchases  tracker_purchases[]
+}
+
+model tracker_purchases {
+  id                 String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tracker_account_id String   @db.Uuid
+  item_name          String
+  item_category      String?
+  amount             Decimal  @db.Decimal(12, 2)
+  currency           String   @default("KRW")
+  purchase_date      DateTime
+  store_location     String?
+  notes              String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+
+  tracker_account tracker_accounts @relation(fields: [tracker_account_id], references: [id])
+}

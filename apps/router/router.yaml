@@ -1,0 +1,31 @@
+# Apollo Router configuration
+# JWT validation via Supabase JWKS
+authentication:
+  router:
+    jwt:
+      jwks:
+        - url: ${env.SUPABASE_JWKS_URL}
+
+# Forward extracted claims as headers to subgraphs
+headers:
+  all:
+    request:
+      - propagate:
+          named: x-user-id
+      - propagate:
+          named: x-user-role
+
+cors:
+  origins:
+    - ${env.ALLOWED_ORIGINS}
+  allow_headers:
+    - authorization
+    - content-type
+    - x-user-id
+    - x-user-role
+
+supergraph:
+  introspection: true
+
+sandbox:
+  enabled: true
