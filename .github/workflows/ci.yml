@@ -7,6 +7,29 @@ on:
     branches: [main, develop]
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      prisma: ${{ steps.filter.outputs.prisma }}
+      migrations: ${{ steps.filter.outputs.migrations }}
+      subgraphs: ${{ steps.filter.outputs.subgraphs }}
+      backend-apps: ${{ steps.filter.outputs.backend-apps }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            prisma:
+              - 'packages/prisma/**'
+            migrations:
+              - 'packages/prisma/migrations/**'
+            subgraphs:
+              - 'apps/subgraph-*/**'
+            backend-apps:
+              - 'apps/subgraph-*/**'
+              - 'apps/service-*/**'
+
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -94,3 +117,91 @@ jobs:
         with:
           name: lost-pixel-diffs
           path: .lostpixel/
+
+  prisma:
+    needs: [changes]
+    if: needs.changes.outputs.prisma == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx prisma validate
+      - run: npx prisma format --check
+
+  migration:
+    needs: [changes]
+    if: needs.changes.outputs.migrations == 'true'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Apply migrations
+        run: npx prisma migrate deploy
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+      - name: Check schema-migration sync
+        run: npx prisma migrate diff --from-migrations ./prisma/migrations --to-schema-datamodel ./prisma/schema --exit-code
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+
+  schema-check:
+    needs: [changes]
+    if: needs.changes.outputs.subgraphs == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build subgraphs
+        run: npx turbo run build --filter='./apps/subgraph-*'
+      - name: Install Rover
+        run: curl -sSL https://rover.apollo.dev/nix/latest | sh
+      - name: Check schema
+        run: rover subgraph check $APOLLO_GRAPH_REF --schema ./apps/subgraph-*/schema.graphql --name stock-tracker
+        env:
+          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+          APOLLO_GRAPH_REF: ${{ vars.APOLLO_GRAPH_REF }}
+
+  docker:
+    needs: [changes]
+    if: needs.changes.outputs.backend-apps == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Find Dockerfiles
+        id: dockerfiles
+        run: echo "files=$(find apps/subgraph-* apps/service-* -name Dockerfile 2>/dev/null | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+      - name: Build Docker images
+        if: steps.dockerfiles.outputs.files != ''
+        run: |
+          for df in ${{ steps.dockerfiles.outputs.files }}; do
+            app_dir=$(dirname "$df")
+            app_name=$(basename "$app_dir")
+            echo "Building $app_name..."
+            docker buildx build --file "$df" --load -t "$app_name:ci" .
+          done
