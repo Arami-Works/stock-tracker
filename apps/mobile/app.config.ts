@@ -2,7 +2,7 @@ import { ExpoConfig, ConfigContext } from "expo/config";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  owner: "cheunjm",
+  owner: "arami-works",
   name: "Stock Tracker",
   slug: "stock-tracker",
   version: "0.0.1",
@@ -28,11 +28,11 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   extra: {
     eas: {
-      projectId: "215a3343-0d48-4262-9f33-2ece58459fc7",
+      projectId: "73ca08db-3807-4b8a-9aff-4058cd066b22",
     },
   },
   updates: {
-    url: "https://u.expo.dev/215a3343-0d48-4262-9f33-2ece58459fc7",
+    url: "https://u.expo.dev/73ca08db-3807-4b8a-9aff-4058cd066b22",
   },
   runtimeVersion: {
     policy: "appVersion",
