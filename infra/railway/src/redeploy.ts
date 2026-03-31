@@ -39,10 +39,7 @@ async function getLatestDeploymentId(
     deployments: { edges: { node: { id: string } }[] };
   }>(
     gql`
-      query deployments(
-        $input: DeploymentListInput!
-        $first: Int
-      ) {
+      query deployments($input: DeploymentListInput!, $first: Int) {
         deployments(input: $input, first: $first) {
           edges {
             node {
@@ -88,7 +85,8 @@ async function main(): Promise<void> {
   // Resolve environment
   const envs = await listEnvironments(client, project.id);
   const env = envs.find((e) => e.name === envConfig.railwayEnvName);
-  if (!env) throw new Error(`Environment "${envConfig.railwayEnvName}" not found`);
+  if (!env)
+    throw new Error(`Environment "${envConfig.railwayEnvName}" not found`);
 
   // Resolve services and redeploy
   const services = await listServices(client, project.id);

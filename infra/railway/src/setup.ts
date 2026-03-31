@@ -60,14 +60,7 @@ async function setupService(
   };
 
   for (const [name, value] of Object.entries(vars)) {
-    await upsertVariable(
-      client,
-      projectId,
-      environmentId,
-      svc.id,
-      name,
-      value,
-    );
+    await upsertVariable(client, projectId, environmentId, svc.id, name, value);
   }
   console.log(`  Set variables: ${Object.keys(vars).join(", ")}`);
 
