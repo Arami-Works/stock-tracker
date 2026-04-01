@@ -16,6 +16,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     strategy:
       matrix:
         platform: [android, ios]
@@ -31,14 +32,14 @@ jobs:
 
       - uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: 16.4.1
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Write Apple API key
         if: matrix.platform == 'ios'
         run: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          echo "${{ secrets.EXPO_APPLE_P8_KEY }}" > ~/.appstoreconnect/private_keys/AuthKey_${{ secrets.EXPO_APPLE_KEY_ID }}.p8
+          mkdir -p ${RUNNER_TEMP}/appstoreconnect/private_keys
+          echo "${{ secrets.EXPO_APPLE_P8_KEY }}" > ${RUNNER_TEMP}/appstoreconnect/private_keys/AuthKey_${{ secrets.EXPO_APPLE_KEY_ID }}.p8
 
       - name: Resolve build profile
         id: profile
@@ -86,3 +87,7 @@ jobs:
               \"channel\": \"C0AJGRU7SD6\",
               \"text\": \"${STATUS} *EAS Build* — ${PLATFORM} (${ENV})\n• <${LINK}|빌드 보기>\"
             }"
+
+      - name: Cleanup Apple API key
+        if: always() && matrix.platform == 'ios'
+        run: rm -rf "${RUNNER_TEMP}/appstoreconnect"
