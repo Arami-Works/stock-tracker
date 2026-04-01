@@ -1,13 +1,23 @@
 import { memo } from "react";
 import { TrackerDashboardHomeModels } from "./models";
-import { TrackerDashboardHomeControllers } from "./controllers";
+import {
+  TrackerDashboardHomeControllers,
+  useTrackerDashboardHomeControllers,
+} from "./controllers";
 import { TrackerDashboardHomeViews } from "./views";
+
+const ConnectedViews = memo(() => {
+  const controllers = useTrackerDashboardHomeControllers();
+  return <TrackerDashboardHomeViews {...controllers} />;
+});
+
+ConnectedViews.displayName = "TrackerDashboardHomeConnectedViews";
 
 export const TrackerDashboardHomeContainer = memo(() => {
   return (
     <TrackerDashboardHomeModels>
       <TrackerDashboardHomeControllers>
-        <TrackerDashboardHomeViews />
+        <ConnectedViews />
       </TrackerDashboardHomeControllers>
     </TrackerDashboardHomeModels>
   );
