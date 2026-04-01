@@ -10,6 +10,7 @@ on:
 jobs:
   maestro:
     runs-on: macos-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -34,7 +35,12 @@ jobs:
 
       - name: Install Maestro CLI
         if: steps.check-flows.outputs.has_flows == 'true'
-        run: curl -Ls "https://get.maestro.mobile.dev" | bash
+        env:
+          MAESTRO_VERSION: 1.39.15
+        run: |
+          curl -fsSL -o /tmp/maestro-install.sh "https://get.maestro.mobile.dev"
+          bash /tmp/maestro-install.sh
+          rm /tmp/maestro-install.sh
 
       - name: Build iOS app
         if: steps.check-flows.outputs.has_flows == 'true'
@@ -46,6 +52,14 @@ jobs:
         run: |
           export PATH="$PATH:$HOME/.maestro/bin"
           maestro test apps/mobile/maestro/
+
+      - name: Upload Maestro test results
+        if: always() && steps.check-flows.outputs.has_flows == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-test-results
+          path: ~/.maestro/tests/
+          retention-days: 7
 
       - name: Skip — no Maestro flows found
         if: steps.check-flows.outputs.has_flows == 'false'
