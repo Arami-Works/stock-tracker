@@ -10,10 +10,23 @@ import { DASHBOARD_QUERY } from "@/lib/graphql/queries";
 import type {
   TrackerDashboardHomeControllersOutput,
   TrackerDashboardHomeScreenState,
-  SaAccountData,
 } from "../models/tracker-dashboard-home.type";
 
 const GOAL_AMOUNT = 30000000;
+
+type DashboardQueryData = {
+  dashboard: {
+    totalAccounts: number;
+    totalPurchases: number;
+    totalSpent: number;
+  };
+  accounts: Array<{
+    id: string;
+    storeName: string;
+    saName: string | null;
+    purchases: Array<{ id: string; amount: number }>;
+  }>;
+};
 
 const ControllersContext =
   createContext<TrackerDashboardHomeControllersOutput | null>(null);
@@ -24,7 +37,8 @@ interface TrackerDashboardHomeControllersProps {
 
 export const TrackerDashboardHomeControllers =
   memo<TrackerDashboardHomeControllersProps>(({ children }) => {
-    const { data, loading, error, refetch } = useQuery(DASHBOARD_QUERY);
+    const { data, loading, error, refetch } =
+      useQuery<DashboardQueryData>(DASHBOARD_QUERY);
 
     const screenState: TrackerDashboardHomeScreenState = loading
       ? "loading"
@@ -36,34 +50,24 @@ export const TrackerDashboardHomeControllers =
 
     const totalSpend = data?.dashboard?.totalSpent ?? 0;
 
-    const saAccounts: SaAccountData[] = useMemo(() => {
+    const saAccounts = useMemo(() => {
       if (!data?.accounts) return [];
-      return data.accounts.map(
-        (acc: {
-          id: string;
-          storeName: string;
-          saName: string | null;
-          purchases: { id: string; amount: number }[];
-        }) => {
-          const spend = acc.purchases.reduce(
-            (sum: number, p: { amount: number }) => sum + p.amount,
-            0,
-          );
-          return {
-            id: acc.id,
-            name: acc.saName ?? acc.storeName,
-            initial: (acc.saName ?? acc.storeName).charAt(0),
-            boutique: acc.storeName,
-            totalSpend: spend,
-            state:
-              spend === 0
-                ? ("noPurchases" as const)
-                : spend >= GOAL_AMOUNT
-                  ? ("eligible" as const)
-                  : ("notEligible" as const),
-          };
-        },
-      );
+      return data.accounts.map((acc) => {
+        const spend = acc.purchases.reduce((sum, p) => sum + p.amount, 0);
+        return {
+          id: acc.id,
+          name: acc.saName ?? acc.storeName,
+          initial: (acc.saName ?? acc.storeName).charAt(0),
+          boutique: acc.storeName,
+          totalSpend: spend,
+          state:
+            spend === 0
+              ? ("noPurchases" as const)
+              : spend >= GOAL_AMOUNT
+                ? ("eligible" as const)
+                : ("notEligible" as const),
+        };
+      });
     }, [data?.accounts]);
 
     const eligibilityStatus =
