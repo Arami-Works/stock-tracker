@@ -13,6 +13,12 @@
       "distribution": "internal",
       "channel": "development"
     },
+    "development:simulator": {
+      "extends": "development",
+      "ios": {
+        "simulator": true
+      }
+    },
     "preview": {
       "extends": "base",
       "distribution": "internal",
@@ -28,7 +34,7 @@
       "ios": {
         "appleId": "jaemin@cheunjm.com",
         "ascAppId": "TODO",
-        "appleTeamId": "TODO"
+        "appleTeamId": "2ZM4PS6CMF"
       }
     }
   }
