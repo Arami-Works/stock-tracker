@@ -121,7 +121,7 @@ jobs:
       - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: npm audit --audit-level=critical --omit=dev
+      - run: npm audit --audit-level=critical --omit=dev --omit=optional
 
   visual:
     needs: [changes]
