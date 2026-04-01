@@ -6,7 +6,7 @@ import { trackerMocks } from "./mocks";
 
 const USE_MOCKS = !process.env.EXPO_PUBLIC_GRAPHQL_URL;
 
-const realClient = createApolloClient();
+export const apolloClient = createApolloClient();
 
 type AppApolloProviderProps = {
   children: ReactNode;
@@ -18,7 +18,7 @@ export const AppApolloProvider = memo(
       return <MockedProvider mocks={trackerMocks}>{children}</MockedProvider>;
     }
 
-    return <ApolloProvider client={realClient}>{children}</ApolloProvider>;
+    return <ApolloProvider client={apolloClient}>{children}</ApolloProvider>;
   },
 );
 

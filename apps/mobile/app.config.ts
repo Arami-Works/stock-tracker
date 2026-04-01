@@ -38,7 +38,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundler: "metro",
     output: "single",
   },
-  plugins: ["expo-router", "expo-updates"],
+  plugins: ["expo-router", "expo-updates", "expo-secure-store", "expo-web-browser"],
   experiments: {
     typedRoutes: true,
   },
