@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "ajv": "^8.18.0",
+    "jest-junit": "^16.0.0",
     "lost-pixel": "^3.22.0",
     "pixelmatch": "^7.1.0",
     "pngjs": "^7.0.0",

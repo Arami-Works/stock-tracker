@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
     "test": "jest --passWithNoTests",
-    "storybook:ondevice": "STORYBOOK_ENABLED=true expo start"
+    "storybook:ondevice": "STORYBOOK_ENABLED=true expo start",
+    "codegen": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@apollo/client": "^4.1.6",
@@ -32,6 +33,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.0",
+    "@graphql-codegen/cli": "^5.0.7",
+    "@graphql-codegen/client-preset": "^4.8.3",
     "@stock-tracker/eslint-config": "*",
     "@stock-tracker/typescript-config": "*",
     "@testing-library/react-native": "^13.0.0",

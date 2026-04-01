@@ -13,7 +13,10 @@ import { TrackerDashboardHomeErrorStateView } from "./tracker-dashboard-home-err
 import { TrackerSkeletonCardView } from "@/experiences/tracker/views";
 
 type TrackerDashboardHomeViewsProps =
-  Partial<TrackerDashboardHomeControllersOutput>;
+  Partial<TrackerDashboardHomeControllersOutput> & {
+    onRefresh?: () => void;
+    onRetry?: () => void;
+  };
 
 export const TrackerDashboardHomeViews = memo(
   ({

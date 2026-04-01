@@ -1,6 +1,6 @@
-import { gql } from "@apollo/client";
+import { graphql } from "./generated/gql";
 
-export const DASHBOARD_QUERY = gql`
+export const DASHBOARD_QUERY = graphql(`
   query Dashboard {
     dashboard {
       totalAccounts
@@ -17,9 +17,9 @@ export const DASHBOARD_QUERY = gql`
       }
     }
   }
-`;
+`);
 
-export const ACCOUNTS_QUERY = gql`
+export const ACCOUNTS_QUERY = graphql(`
   query Accounts {
     accounts {
       id
@@ -35,9 +35,9 @@ export const ACCOUNTS_QUERY = gql`
       }
     }
   }
-`;
+`);
 
-export const ACCOUNT_QUERY = gql`
+export const ACCOUNT_QUERY = graphql(`
   query Account($id: ID!) {
     account(id: $id) {
       id
@@ -58,9 +58,9 @@ export const ACCOUNT_QUERY = gql`
       }
     }
   }
-`;
+`);
 
-export const PURCHASES_QUERY = gql`
+export const PURCHASES_QUERY = graphql(`
   query Purchases($accountId: ID) {
     purchases(accountId: $accountId) {
       id
@@ -74,4 +74,4 @@ export const PURCHASES_QUERY = gql`
       createdAt
     }
   }
-`;
+`);
