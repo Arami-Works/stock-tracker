@@ -1,6 +1,9 @@
 import { memo, type ReactNode } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
-import type { TrackerDashboardHomeScreenState } from "../models/tracker-dashboard-home.type";
+import type {
+  TrackerDashboardHomeScreenState,
+  TrackerDashboardHomeControllersOutput,
+} from "../models/tracker-dashboard-home.type";
 import { TrackerDashboardHomeEligibilityBadgeView } from "./tracker-dashboard-home-eligibilityBadge.view";
 import { TrackerDashboardHomeSpendSummaryCardView } from "./tracker-dashboard-home-spendSummaryCard.view";
 import { TrackerDashboardHomeSaCardView } from "./tracker-dashboard-home-saCard.view";
@@ -9,40 +12,43 @@ import { TrackerDashboardHomeEmptyStateView } from "./tracker-dashboard-home-emp
 import { TrackerDashboardHomeErrorStateView } from "./tracker-dashboard-home-errorState.view";
 import { TrackerSkeletonCardView } from "@/experiences/tracker/views";
 
-type TrackerDashboardHomeViewsProps = {
-  screenState?: TrackerDashboardHomeScreenState;
-  onRefresh?: () => void;
-  onRetry?: () => void;
-};
+type TrackerDashboardHomeViewsProps =
+  Partial<TrackerDashboardHomeControllersOutput>;
 
 export const TrackerDashboardHomeViews = memo(
-  ({ screenState = "default", onRefresh }: TrackerDashboardHomeViewsProps) => {
+  ({
+    screenState = "default",
+    eligibilityStatus = "eligible",
+    totalSpend = 12450000,
+    goalAmount = 30000000,
+    saAccounts = [],
+    onRefresh,
+  }: TrackerDashboardHomeViewsProps) => {
+    const spendState =
+      totalSpend > 0 ? "populated" : ("zero" as "populated" | "zero");
+
     const content: Record<TrackerDashboardHomeScreenState, ReactNode> = {
       default: (
         <>
-          <TrackerDashboardHomeEligibilityBadgeView state="eligible" />
+          <TrackerDashboardHomeEligibilityBadgeView state={eligibilityStatus} />
           <View style={styles.spacer16} />
           <TrackerDashboardHomeSpendSummaryCardView
-            state="populated"
-            totalSpend={12450000}
-            goalAmount={30000000}
+            state={spendState}
+            totalSpend={totalSpend}
+            goalAmount={goalAmount}
           />
-          <View style={styles.spacer16} />
-          <TrackerDashboardHomeSaCardView
-            state="eligible"
-            name="김서연 SA"
-            initial="김"
-            boutique="청담 부티크"
-            totalSpend={8200000}
-          />
-          <View style={styles.spacer12} />
-          <TrackerDashboardHomeSaCardView
-            state="noPurchases"
-            name="박지민 SA"
-            initial="박"
-            boutique="신세계 부티크"
-            totalSpend={4250000}
-          />
+          {saAccounts.map((sa, i) => (
+            <View key={sa.id}>
+              <View style={i === 0 ? styles.spacer16 : styles.spacer12} />
+              <TrackerDashboardHomeSaCardView
+                state={sa.state}
+                name={sa.name}
+                initial={sa.initial}
+                boutique={sa.boutique}
+                totalSpend={sa.totalSpend}
+              />
+            </View>
+          ))}
         </>
       ),
       empty: (
@@ -77,7 +83,7 @@ export const TrackerDashboardHomeViews = memo(
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {content[screenState]}
+          {content[screenState ?? "default"]}
         </ScrollView>
         {screenState === "default" && (
           <View style={styles.fabContainer}>
