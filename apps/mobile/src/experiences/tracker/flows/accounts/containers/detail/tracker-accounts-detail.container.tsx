@@ -1,16 +1,53 @@
-import { memo } from "react";
+import { memo, Suspense } from "react";
 import { TrackerAccountsDetailModels } from "./models";
-import { TrackerAccountsDetailControllers } from "./controllers";
+import {
+  TrackerAccountsDetailControllers,
+  useTrackerAccountsDetailControllers,
+} from "./controllers";
 import { TrackerAccountsDetailViews } from "./views";
+import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
 
-export const TrackerAccountsDetailContainer = memo(() => {
+const ConnectedViews = memo(() => {
+  const controllers = useTrackerAccountsDetailControllers();
   return (
-    <TrackerAccountsDetailModels>
-      <TrackerAccountsDetailControllers>
-        <TrackerAccountsDetailViews />
-      </TrackerAccountsDetailControllers>
-    </TrackerAccountsDetailModels>
+    <TrackerAccountsDetailViews
+      screenState={controllers.screenState}
+      name={controllers.name}
+      initial={controllers.initial}
+      boutique={controllers.boutique}
+      totalSpend={controllers.totalSpend}
+      tankState={controllers.tankState}
+      purchases={controllers.purchases}
+    />
   );
 });
+
+ConnectedViews.displayName = "TrackerAccountsDetailConnectedViews";
+
+interface TrackerAccountsDetailContainerProps {
+  accountId: string;
+}
+
+export const TrackerAccountsDetailContainer = memo(
+  ({ accountId }: TrackerAccountsDetailContainerProps) => {
+    return (
+      <QueryErrorBoundary
+        fallback={({ retry }) => (
+          <TrackerAccountsDetailViews screenState="error" onRetry={retry} />
+        )}
+      >
+        <Suspense
+          fallback={<TrackerAccountsDetailViews screenState="loading" />}
+        >
+          <TrackerAccountsDetailModels>
+            <TrackerAccountsDetailControllers accountId={accountId}>
+              <ConnectedViews />
+            </TrackerAccountsDetailControllers>
+          </TrackerAccountsDetailModels>
+        </Suspense>
+      </QueryErrorBoundary>
+    );
+  },
+);
 
 TrackerAccountsDetailContainer.displayName = "TrackerAccountsDetailContainer";

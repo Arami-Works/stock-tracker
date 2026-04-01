@@ -1,55 +1,75 @@
 import { memo, type ReactNode } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
-import type { TrackerHistoryBrowseScreenState } from "../models/tracker-history-browse.type";
+import type {
+  TrackerHistoryBrowseScreenState,
+  DateFilter,
+  PurchaseHistoryItem,
+} from "../models/tracker-history-browse.type";
 import { TrackerHistoryBrowseDateFilterChipsView } from "./tracker-history-browse-dateFilterChips.view";
 import { TrackerHistoryBrowsePurchaseRowView } from "./tracker-history-browse-purchaseRow.view";
 import { TrackerHistoryBrowseEmptyStateView } from "./tracker-history-browse-emptyState.view";
 import { TrackerHistoryBrowseErrorStateView } from "./tracker-history-browse-errorState.view";
 import { TrackerHistoryBrowseSkeletonCardView } from "./tracker-history-browse-skeletonCard.view";
 
+const STORYBOOK_PURCHASES: PurchaseHistoryItem[] = [
+  {
+    id: "1",
+    type: "regular",
+    productName: "트리니티 링",
+    date: "2024.03.15 · 김서연 SA",
+    amount: 3200000,
+  },
+  {
+    id: "2",
+    type: "tank",
+    productName: "러브 브레이슬릿",
+    date: "2024.01.10 · 김서연 SA",
+    amount: 5000000,
+  },
+  {
+    id: "3",
+    type: "regular",
+    productName: "저스트 앵 끌루 링",
+    date: "2023.12.20 · 김서연 SA",
+    amount: 4200000,
+  },
+  {
+    id: "4",
+    type: "tank",
+    productName: "팬터 드 까르띠에 목걸이",
+    date: "2023.11.05 · 김서연 SA",
+    amount: 8500000,
+  },
+];
+
 type TrackerHistoryBrowseViewsProps = {
   screenState?: TrackerHistoryBrowseScreenState;
-  onFilterSelect?: (
-    filter: "thisMonth" | "threeMonths" | "thisYear" | "all",
-  ) => void;
+  purchases?: PurchaseHistoryItem[];
+  selectedFilter?: DateFilter;
+  onFilterSelect?: (filter: DateFilter) => void;
   onRetry?: () => void;
 };
 
 export const TrackerHistoryBrowseViews = memo(
   ({
     screenState = "default",
+    purchases = STORYBOOK_PURCHASES,
     onFilterSelect,
   }: TrackerHistoryBrowseViewsProps) => {
     const scrollContent: Record<TrackerHistoryBrowseScreenState, ReactNode> = {
       default: (
         <>
-          <TrackerHistoryBrowsePurchaseRowView
-            type="regular"
-            productName="트리니티 링"
-            date="2024.03.15 · 김서연 SA"
-            amount={3200000}
-          />
-          <View style={styles.spacer16} />
-          <TrackerHistoryBrowsePurchaseRowView
-            type="tank"
-            productName="러브 브레이슬릿"
-            date="2024.01.10 · 김서연 SA"
-            amount={5000000}
-          />
-          <View style={styles.spacer16} />
-          <TrackerHistoryBrowsePurchaseRowView
-            type="regular"
-            productName="저스트 앵 끌루 링"
-            date="2023.12.20 · 김서연 SA"
-            amount={4200000}
-          />
-          <View style={styles.spacer16} />
-          <TrackerHistoryBrowsePurchaseRowView
-            type="tank"
-            productName="팬터 드 까르띠에 목걸이"
-            date="2023.11.05 · 김서연 SA"
-            amount={8500000}
-          />
+          {purchases.map((p, i) => (
+            <View key={p.id}>
+              {i > 0 && <View style={styles.spacer16} />}
+              <TrackerHistoryBrowsePurchaseRowView
+                type={p.type}
+                productName={p.productName}
+                date={p.date}
+                amount={p.amount}
+              />
+            </View>
+          ))}
         </>
       ),
       empty: <TrackerHistoryBrowseEmptyStateView />,

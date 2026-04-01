@@ -1,15 +1,41 @@
-import { memo } from "react";
+import { memo, Suspense } from "react";
 import { TrackerHistoryBrowseModels } from "./models";
-import { TrackerHistoryBrowseControllers } from "./controllers";
+import {
+  TrackerHistoryBrowseControllers,
+  useTrackerHistoryBrowseControllers,
+} from "./controllers";
 import { TrackerHistoryBrowseViews } from "./views";
+import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
+
+const ConnectedViews = memo(() => {
+  const controllers = useTrackerHistoryBrowseControllers();
+  return (
+    <TrackerHistoryBrowseViews
+      screenState={controllers.screenState}
+      purchases={controllers.purchases}
+      selectedFilter={controllers.selectedFilter}
+      onFilterSelect={controllers.onFilterSelect}
+    />
+  );
+});
+
+ConnectedViews.displayName = "TrackerHistoryBrowseConnectedViews";
 
 export const TrackerHistoryBrowseContainer = memo(() => {
   return (
-    <TrackerHistoryBrowseModels>
-      <TrackerHistoryBrowseControllers>
-        <TrackerHistoryBrowseViews />
-      </TrackerHistoryBrowseControllers>
-    </TrackerHistoryBrowseModels>
+    <QueryErrorBoundary
+      fallback={({ retry }) => (
+        <TrackerHistoryBrowseViews screenState="error" onRetry={retry} />
+      )}
+    >
+      <Suspense fallback={<TrackerHistoryBrowseViews screenState="loading" />}>
+        <TrackerHistoryBrowseModels>
+          <TrackerHistoryBrowseControllers>
+            <ConnectedViews />
+          </TrackerHistoryBrowseControllers>
+        </TrackerHistoryBrowseModels>
+      </Suspense>
+    </QueryErrorBoundary>
   );
 });
 

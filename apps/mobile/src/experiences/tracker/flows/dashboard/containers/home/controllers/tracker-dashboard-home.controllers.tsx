@@ -5,7 +5,7 @@ import {
   useMemo,
   type ReactNode,
 } from "react";
-import { useQuery } from "@apollo/client/react";
+import { useSuspenseQuery } from "@apollo/client/react";
 import { DASHBOARD_QUERY } from "@/lib/graphql/queries";
 import type {
   TrackerDashboardHomeControllersOutput,
@@ -13,20 +13,6 @@ import type {
 } from "../models/tracker-dashboard-home.type";
 
 const GOAL_AMOUNT = 30000000;
-
-type DashboardQueryData = {
-  dashboard: {
-    totalAccounts: number;
-    totalPurchases: number;
-    totalSpent: number;
-  };
-  accounts: Array<{
-    id: string;
-    storeName: string;
-    saName: string | null;
-    purchases: Array<{ id: string; amount: number }>;
-  }>;
-};
 
 const ControllersContext =
   createContext<TrackerDashboardHomeControllersOutput | null>(null);
@@ -37,16 +23,11 @@ interface TrackerDashboardHomeControllersProps {
 
 export const TrackerDashboardHomeControllers =
   memo<TrackerDashboardHomeControllersProps>(({ children }) => {
-    const { data, loading, error, refetch } =
-      useQuery<DashboardQueryData>(DASHBOARD_QUERY);
+    const { data } = useSuspenseQuery(DASHBOARD_QUERY);
 
-    const screenState: TrackerDashboardHomeScreenState = loading
-      ? "loading"
-      : error
-        ? "error"
-        : !data?.accounts?.length
-          ? "empty"
-          : "default";
+    const screenState: TrackerDashboardHomeScreenState = !data?.accounts?.length
+      ? "empty"
+      : "default";
 
     const totalSpend = data?.dashboard?.totalSpent ?? 0;
 
@@ -79,8 +60,6 @@ export const TrackerDashboardHomeControllers =
       totalSpend,
       goalAmount: GOAL_AMOUNT,
       saAccounts,
-      onRefresh: () => refetch(),
-      onRetry: () => refetch(),
     };
 
     return (

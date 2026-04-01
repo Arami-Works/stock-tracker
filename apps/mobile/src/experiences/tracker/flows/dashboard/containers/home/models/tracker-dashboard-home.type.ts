@@ -23,6 +23,4 @@ export type TrackerDashboardHomeControllersOutput = {
   totalSpend: number;
   goalAmount: number;
   saAccounts: SaAccountData[];
-  onRefresh: () => void;
-  onRetry: () => void;
 };

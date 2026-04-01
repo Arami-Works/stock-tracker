@@ -4,6 +4,16 @@ export type TrackerAccountsListScreenState =
   | "loading"
   | "error";
 
-export interface TrackerAccountsListState {
-  // TODO: Define state
-}
+export type SaAccountListItem = {
+  id: string;
+  name: string;
+  initial: string;
+  boutique: string;
+  totalSpend: number;
+  state: "eligible" | "notEligible" | "noPurchases";
+};
+
+export type TrackerAccountsListControllersOutput = {
+  screenState: TrackerAccountsListScreenState;
+  accounts: SaAccountListItem[];
+};

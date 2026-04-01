@@ -1,10 +1,11 @@
-import { memo } from "react";
+import { memo, Suspense } from "react";
 import { TrackerDashboardHomeModels } from "./models";
 import {
   TrackerDashboardHomeControllers,
   useTrackerDashboardHomeControllers,
 } from "./controllers";
 import { TrackerDashboardHomeViews } from "./views";
+import { QueryErrorBoundary } from "@/shared/components/query-error-boundary";
 
 const ConnectedViews = memo(() => {
   const controllers = useTrackerDashboardHomeControllers();
@@ -15,11 +16,19 @@ ConnectedViews.displayName = "TrackerDashboardHomeConnectedViews";
 
 export const TrackerDashboardHomeContainer = memo(() => {
   return (
-    <TrackerDashboardHomeModels>
-      <TrackerDashboardHomeControllers>
-        <ConnectedViews />
-      </TrackerDashboardHomeControllers>
-    </TrackerDashboardHomeModels>
+    <QueryErrorBoundary
+      fallback={({ retry }) => (
+        <TrackerDashboardHomeViews screenState="error" onRetry={retry} />
+      )}
+    >
+      <Suspense fallback={<TrackerDashboardHomeViews screenState="loading" />}>
+        <TrackerDashboardHomeModels>
+          <TrackerDashboardHomeControllers>
+            <ConnectedViews />
+          </TrackerDashboardHomeControllers>
+        </TrackerDashboardHomeModels>
+      </Suspense>
+    </QueryErrorBoundary>
   );
 });
 
