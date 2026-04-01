@@ -18,6 +18,7 @@
     "@stock-tracker/types": "*",
     "@stock-tracker/validation": "*",
     "expo": "^55.0.9",
+    "expo-dev-client": "~55.0.19",
     "expo-linking": "~55.0.9",
     "expo-router": "~55.0.8",
     "expo-status-bar": "~55.0.4",
