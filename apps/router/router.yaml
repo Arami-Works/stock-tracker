@@ -6,14 +6,16 @@ authentication:
       jwks:
         - url: ${env.SUPABASE_JWKS_URL}
 
-# Forward extracted claims as headers to subgraphs
+# Map JWT claims to headers for subgraphs
 headers:
   all:
     request:
-      - propagate:
-          named: x-user-id
-      - propagate:
-          named: x-user-role
+      - insert:
+          name: x-user-id
+          from_context: claims.sub
+      - insert:
+          name: x-user-role
+          from_context: claims.role
 
 cors:
   origins:
