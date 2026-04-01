@@ -1,0 +1,44 @@
+name: Backend E2E
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "apps/api/**"
+      - "packages/prisma/**"
+      - "packages/validation/**"
+
+env:
+  NODE_VERSION: 20
+  DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - name: Generate Prisma client
+        run: npx turbo run build --filter=@stock-tracker/prisma
+      - name: Push schema to test DB
+        run: npx prisma db push --schema packages/prisma/prisma/schema --skip-generate
+      - name: Run E2E tests
+        working-directory: apps/api
+        run: npx vitest run --config vitest.e2e.config.ts
