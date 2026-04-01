@@ -6,7 +6,9 @@
   "build": {
     "base": {
       "node": "20.18.0",
-      "installCommand": "npm ci --omit=dev"
+      "env": {
+        "NPM_CONFIG_OMIT": "dev"
+      }
     },
     "development": {
       "extends": "base",
