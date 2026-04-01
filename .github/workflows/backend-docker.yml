@@ -20,9 +20,11 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       matrix:
         include:
+          # TODO: Add router and subgraph services when Dockerfiles exist
           - service: api
             package: "@stock-tracker/api"
             dir: apps/api
@@ -42,7 +44,7 @@ jobs:
         run: |
           SHA="${{ github.sha }}"
           BRANCH="${GITHUB_REF#refs/heads/}"
-          IMAGE="ghcr.io/cheunjm/stock-tracker-${{ matrix.service }}"
+          IMAGE="ghcr.io/${{ github.repository_owner }}/stock-tracker-${{ matrix.service }}"
           echo "tags=${IMAGE}:${SHA},${IMAGE}:${BRANCH}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/build-push-action@v6

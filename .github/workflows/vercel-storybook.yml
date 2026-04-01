@@ -15,6 +15,7 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -28,9 +29,6 @@ jobs:
       - name: Build Storybook
         run: npx turbo run build --filter=@stock-tracker/storybook
 
-      - name: Install Vercel CLI
-        run: npm install -g vercel
-
       - name: Resolve Vercel flags
         id: flags
         run: |
@@ -41,8 +39,15 @@ jobs:
           fi
 
       - name: Deploy
+        id: deploy
         run: |
-          vercel deploy --yes ${{ steps.flags.outputs.prod }} \
+          DEPLOY_URL=$(npx vercel deploy --yes ${{ steps.flags.outputs.prod }} \
             --token=${{ secrets.VERCEL_TOKEN }} \
-            --scope ${{ secrets.VERCEL_ORG_ID }}
+            --scope ${{ secrets.VERCEL_ORG_ID }})
+          echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
         working-directory: apps/storybook/storybook-static
+
+      - name: Deployment summary
+        run: |
+          echo "### Storybook deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
