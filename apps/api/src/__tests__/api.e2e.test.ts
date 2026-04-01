@@ -74,7 +74,7 @@ describe("tRPC API E2E", () => {
     const deleted = await caller.tracker.accounts.detail.delete({
       id: accountId,
     });
-    expect(deleted.id).toBe(accountId);
+    expect(deleted.success).toBe(true);
 
     const accounts = await caller.tracker.accounts.list.all();
     expect(accounts.some((a) => a.id === accountId)).toBe(false);
