@@ -1,4 +1,4 @@
-import { PrismaClient } from "@stock-tracker/prisma";
+import { PrismaClient } from "@prisma/client";
 import { appRouter } from "../trpc/router.js";
 
 const prisma = new PrismaClient();
