@@ -8,15 +8,19 @@ on:
 
 env:
   NODE_VERSION: 20
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
   changes:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     outputs:
       prisma: ${{ steps.filter.outputs.prisma }}
       migrations: ${{ steps.filter.outputs.migrations }}
       subgraphs: ${{ steps.filter.outputs.subgraphs }}
       dockerfiles: ${{ steps.filter.outputs.dockerfiles }}
+      stories: ${{ steps.filter.outputs.stories }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -32,82 +36,81 @@ jobs:
             dockerfiles:
               - 'apps/subgraphs/*/Dockerfile'
               - 'apps/service-*/Dockerfile'
+            stories:
+              - 'apps/mobile/src/**/*.stories.tsx'
+              - 'apps/storybook/**'
+              - 'packages/ui/**'
 
   lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - run: npm run lint
 
   check-types:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - run: npm run check-types
 
   test:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - run: npm run test
 
   format:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - run: npm run format:check
 
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - run: npm run build
 
   audit:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - run: npm audit --audit-level=critical --omit=dev
 
   visual:
+    needs: [changes]
+    if: needs.changes.outputs.stories == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - name: Build Storybook
         run: npx turbo run build --filter=@stock-tracker/storybook
       - name: Install Playwright browsers
@@ -125,13 +128,12 @@ jobs:
     needs: [changes]
     if: needs.changes.outputs.prisma == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - run: npx prisma validate --schema packages/prisma/prisma/schema
         env:
           DATABASE_URL: postgresql://dummy:dummy@localhost:5432/dummy
@@ -141,6 +143,7 @@ jobs:
     needs: [changes]
     if: needs.changes.outputs.migrations == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     services:
       postgres:
         image: postgres:16
@@ -156,11 +159,9 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - name: Apply migrations
         run: npx prisma migrate deploy --schema packages/prisma/prisma/schema
         env:
@@ -174,13 +175,12 @@ jobs:
     needs: [changes]
     if: needs.changes.outputs.subgraphs == 'true' && vars.APOLLO_GRAPH_REF != ''
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
       - name: Build subgraphs
         run: npx turbo run build --filter='./apps/subgraphs/*'
       - name: Cache Rover CLI
@@ -202,6 +202,7 @@ jobs:
     needs: [changes]
     if: needs.changes.outputs.dockerfiles == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: docker/setup-buildx-action@v3
