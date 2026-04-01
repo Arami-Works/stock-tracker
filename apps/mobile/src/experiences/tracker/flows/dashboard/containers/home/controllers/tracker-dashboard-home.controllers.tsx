@@ -1,8 +1,19 @@
-import { memo, createContext, useContext, type ReactNode } from "react";
+import {
+  memo,
+  createContext,
+  useContext,
+  useMemo,
+  type ReactNode,
+} from "react";
+import { useQuery } from "@apollo/client/react";
+import { DASHBOARD_QUERY } from "@/lib/graphql/queries";
+import type {
+  TrackerDashboardHomeControllersOutput,
+  TrackerDashboardHomeScreenState,
+  SaAccountData,
+} from "../models/tracker-dashboard-home.type";
 
-interface TrackerDashboardHomeControllersOutput {
-  // TODO: Define controller outputs
-}
+const GOAL_AMOUNT = 30000000;
 
 const ControllersContext =
   createContext<TrackerDashboardHomeControllersOutput | null>(null);
@@ -13,8 +24,59 @@ interface TrackerDashboardHomeControllersProps {
 
 export const TrackerDashboardHomeControllers =
   memo<TrackerDashboardHomeControllersProps>(({ children }) => {
+    const { data, loading, error, refetch } = useQuery(DASHBOARD_QUERY);
+
+    const screenState: TrackerDashboardHomeScreenState = loading
+      ? "loading"
+      : error
+        ? "error"
+        : !data?.accounts?.length
+          ? "empty"
+          : "default";
+
+    const totalSpend = data?.dashboard?.totalSpent ?? 0;
+
+    const saAccounts: SaAccountData[] = useMemo(() => {
+      if (!data?.accounts) return [];
+      return data.accounts.map(
+        (acc: {
+          id: string;
+          storeName: string;
+          saName: string | null;
+          purchases: { id: string; amount: number }[];
+        }) => {
+          const spend = acc.purchases.reduce(
+            (sum: number, p: { amount: number }) => sum + p.amount,
+            0,
+          );
+          return {
+            id: acc.id,
+            name: acc.saName ?? acc.storeName,
+            initial: (acc.saName ?? acc.storeName).charAt(0),
+            boutique: acc.storeName,
+            totalSpend: spend,
+            state:
+              spend === 0
+                ? ("noPurchases" as const)
+                : spend >= GOAL_AMOUNT
+                  ? ("eligible" as const)
+                  : ("notEligible" as const),
+          };
+        },
+      );
+    }, [data?.accounts]);
+
+    const eligibilityStatus =
+      totalSpend >= GOAL_AMOUNT ? "eligible" : "notEligible";
+
     const value: TrackerDashboardHomeControllersOutput = {
-      // TODO: Initialize controllers
+      screenState,
+      eligibilityStatus,
+      totalSpend,
+      goalAmount: GOAL_AMOUNT,
+      saAccounts,
+      onRefresh: () => refetch(),
+      onRetry: () => refetch(),
     };
 
     return (
