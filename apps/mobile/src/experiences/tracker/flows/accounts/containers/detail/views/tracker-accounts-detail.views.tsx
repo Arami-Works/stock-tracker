@@ -105,7 +105,11 @@ export const TrackerAccountsDetailViews = memo(
       <View style={styles.screen} testID="accounts-detail-screen">
         <View style={styles.statusBar} />
         <View style={styles.appBar}>
-          <Pressable onPress={onBack} style={styles.backButton} testID="accounts-detail-back">
+          <Pressable
+            onPress={onBack}
+            style={styles.backButton}
+            testID="accounts-detail-back"
+          >
             <Text style={styles.backArrow}>←</Text>
           </Pressable>
           <Text style={styles.appBarTitle}>SA 상세</Text>

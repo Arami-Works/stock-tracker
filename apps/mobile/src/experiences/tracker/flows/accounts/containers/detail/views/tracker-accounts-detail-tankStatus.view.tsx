@@ -7,7 +7,10 @@ type TrackerAccountsDetailTankStatusViewProps = {
 };
 
 export const TrackerAccountsDetailTankStatusView = memo(
-  ({ state = "eligible", testID }: TrackerAccountsDetailTankStatusViewProps) => {
+  ({
+    state = "eligible",
+    testID,
+  }: TrackerAccountsDetailTankStatusViewProps) => {
     return <TrackerEligibilityBadgeView status={state} testID={testID} />;
   },
 );

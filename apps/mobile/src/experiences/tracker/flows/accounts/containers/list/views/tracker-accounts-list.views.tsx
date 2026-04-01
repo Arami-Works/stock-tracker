@@ -101,7 +101,9 @@ export const TrackerAccountsListViews = memo(
       <View style={styles.screen} testID="accounts-list-screen">
         <View style={styles.statusBar} />
         <View style={styles.appBar}>
-          <Text style={styles.appBarTitle} testID="accounts-list-title">SA 계좌</Text>
+          <Text style={styles.appBarTitle} testID="accounts-list-title">
+            SA 계좌
+          </Text>
         </View>
         <ScrollView
           style={styles.scrollView}

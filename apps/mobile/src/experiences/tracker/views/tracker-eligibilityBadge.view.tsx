@@ -9,7 +9,10 @@ type TrackerEligibilityBadgeViewProps = {
 };
 
 export const TrackerEligibilityBadgeView = memo(
-  ({ status = "eligible", testID = "eligibility-badge" }: TrackerEligibilityBadgeViewProps) => {
+  ({
+    status = "eligible",
+    testID = "eligibility-badge",
+  }: TrackerEligibilityBadgeViewProps) => {
     const isEligible = status === "eligible";
 
     return (

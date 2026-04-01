@@ -11,7 +11,12 @@ type TrackerAccountsDetailPurchaseRowViewProps = {
 
 export const TrackerAccountsDetailPurchaseRowView = memo(
   ({ id, ...props }: TrackerAccountsDetailPurchaseRowViewProps) => {
-    return <TrackerPurchaseRowView {...props} testID={id ? `purchase-row-${id}` : undefined} />;
+    return (
+      <TrackerPurchaseRowView
+        {...props}
+        testID={id ? `purchase-row-${id}` : undefined}
+      />
+    );
   },
 );
 

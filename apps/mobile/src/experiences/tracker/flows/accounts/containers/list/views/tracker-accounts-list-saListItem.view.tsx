@@ -38,7 +38,11 @@ export const TrackerAccountsListSaListItemView = memo(
           : "#999";
 
     return (
-      <Pressable style={styles.card} onPress={onPress} testID={id ? `sa-list-item-${id}` : undefined}>
+      <Pressable
+        style={styles.card}
+        onPress={onPress}
+        testID={id ? `sa-list-item-${id}` : undefined}
+      >
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{initial}</Text>
         </View>

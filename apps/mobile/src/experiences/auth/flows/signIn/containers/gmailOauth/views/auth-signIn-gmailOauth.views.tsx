@@ -4,8 +4,12 @@ import { View, Text, StyleSheet } from "react-native";
 export const AuthSignInGmailOauthViews = memo(() => {
   return (
     <View style={styles.container} testID="auth-signIn-gmailOauth-screen">
-      <Text style={styles.title} testID="auth-signIn-title">Stock Tracker</Text>
-      <Text style={styles.subtitle} testID="auth-signIn-subtitle">Sign In</Text>
+      <Text style={styles.title} testID="auth-signIn-title">
+        Stock Tracker
+      </Text>
+      <Text style={styles.subtitle} testID="auth-signIn-subtitle">
+        Sign In
+      </Text>
     </View>
   );
 });
