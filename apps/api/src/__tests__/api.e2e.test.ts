@@ -1,4 +1,3 @@
-import { describe, it, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { PrismaClient } from "@prisma/client";
 import { appRouter } from "../trpc/router.js";
@@ -8,7 +7,7 @@ const caller = appRouter.createCaller({ prisma });
 
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
-before(async () => {
+async function setup() {
   await prisma.auth_users.upsert({
     where: { id: TEST_USER_ID },
     update: {},
@@ -18,67 +17,75 @@ before(async () => {
       email: "e2e@test.local",
     },
   });
-});
+}
 
-after(async () => {
+async function teardown() {
   await prisma.tracker_purchases.deleteMany({});
   await prisma.tracker_accounts.deleteMany({});
   await prisma.auth_users.deleteMany({ where: { id: TEST_USER_ID } });
   await prisma.$disconnect();
-});
+}
 
-describe("tRPC API E2E", () => {
-  let accountId: string;
+async function run() {
+  await setup();
 
-  it("creates an account", async () => {
-    const result = await caller.tracker.accounts.list.create({
+  try {
+    // Create account
+    const created = await caller.tracker.accounts.list.create({
       storeName: "E2E Test Store",
       saName: "Test SA",
     });
+    assert.ok(created.id, "account should have an id");
+    assert.equal(created.storeName, "E2E Test Store");
+    assert.equal(created.saName, "Test SA");
+    console.log("✓ creates an account");
 
-    assert.ok(result.id);
-    assert.equal(result.storeName, "E2E Test Store");
-    assert.equal(result.saName, "Test SA");
-    accountId = result.id;
-  });
-
-  it("lists accounts", async () => {
+    // List accounts
     const accounts = await caller.tracker.accounts.list.all();
     assert.ok(accounts.length >= 1);
-    assert.ok(accounts.some((a) => a.id === accountId));
-  });
+    assert.ok(accounts.some((a) => a.id === created.id));
+    console.log("✓ lists accounts");
 
-  it("gets dashboard summary", async () => {
+    // Dashboard summary
     const summary = await caller.tracker.dashboard.home.summary();
     assert.ok(summary.totalAccounts >= 1);
     assert.ok(summary.totalSpent !== undefined);
-  });
+    console.log("✓ gets dashboard summary");
 
-  it("gets account by id", async () => {
+    // Get by ID
     const account = await caller.tracker.accounts.detail.byId({
-      id: accountId,
+      id: created.id,
     });
-    assert.equal(account.id, accountId);
+    assert.equal(account.id, created.id);
     assert.equal(account.storeName, "E2E Test Store");
-  });
+    console.log("✓ gets account by id");
 
-  it("updates an account", async () => {
+    // Update
     const updated = await caller.tracker.accounts.detail.update({
-      id: accountId,
+      id: created.id,
       storeName: "Updated Store",
       notes: "updated via e2e",
     });
     assert.equal(updated.storeName, "Updated Store");
     assert.equal(updated.notes, "updated via e2e");
-  });
+    console.log("✓ updates an account");
 
-  it("deletes an account", async () => {
+    // Delete
     const deleted = await caller.tracker.accounts.detail.delete({
-      id: accountId,
+      id: created.id,
     });
     assert.equal(deleted.success, true);
+    const remaining = await caller.tracker.accounts.list.all();
+    assert.ok(!remaining.some((a) => a.id === created.id));
+    console.log("✓ deletes an account");
 
-    const accounts = await caller.tracker.accounts.list.all();
-    assert.ok(!accounts.some((a) => a.id === accountId));
-  });
+    console.log("\n6/6 tests passed");
+  } finally {
+    await teardown();
+  }
+}
+
+run().catch((err) => {
+  console.error("E2E FAILED:", err);
+  process.exit(1);
 });
