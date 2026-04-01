@@ -56,3 +56,31 @@ jobs:
             APP_DIR=${{ matrix.dir }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install redeploy deps
+        run: npm install --prefix infra/railway
+
+      - name: Resolve Railway environment
+        id: env
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          if [[ "$BRANCH" == "main" ]]; then
+            echo "railway_env=production" >> "$GITHUB_OUTPUT"
+          else
+            echo "railway_env=$BRANCH" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Trigger Railway redeploy
+        run: npx --prefix infra/railway tsx infra/railway/src/redeploy.ts ${{ steps.env.outputs.railway_env }}
+        env:
+          RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}

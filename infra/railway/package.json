@@ -1,0 +1,20 @@
+{
+  "name": "@stock-tracker/railway-infra",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "tsx src/setup.ts",
+    "setup:develop": "tsx src/setup.ts develop",
+    "setup:stage": "tsx src/setup.ts stage",
+    "setup:production": "tsx src/setup.ts production"
+  },
+  "dependencies": {
+    "graphql-request": "^7.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.9.2"
+  }
+}
