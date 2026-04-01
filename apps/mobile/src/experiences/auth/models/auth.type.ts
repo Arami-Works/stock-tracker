@@ -1,3 +1,7 @@
+import type { Session } from "@supabase/supabase-js";
+
 export interface AuthState {
-  // TODO: Define state
+  session: Session | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
 }

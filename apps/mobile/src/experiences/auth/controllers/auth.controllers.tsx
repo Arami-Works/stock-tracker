@@ -1,7 +1,17 @@
-import { memo, createContext, useContext, type ReactNode } from "react";
+import {
+  memo,
+  createContext,
+  useContext,
+  useCallback,
+  useState,
+  type ReactNode,
+} from "react";
+import { supabase } from "../../../lib/supabase";
+import { apolloClient } from "../../../lib/apollo/provider";
 
 interface AuthControllersOutput {
-  // TODO: Define controller outputs
+  signOut: () => Promise<void>;
+  isSigningOut: boolean;
 }
 
 const ControllersContext = createContext<AuthControllersOutput | null>(null);
@@ -11,8 +21,21 @@ interface AuthControllersProps {
 }
 
 export const AuthControllers = memo<AuthControllersProps>(({ children }) => {
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const signOut = useCallback(async () => {
+    setIsSigningOut(true);
+    try {
+      await supabase.auth.signOut();
+      await apolloClient.resetStore();
+    } finally {
+      setIsSigningOut(false);
+    }
+  }, []);
+
   const value: AuthControllersOutput = {
-    // TODO: Initialize controllers
+    signOut,
+    isSigningOut,
   };
 
   return (
