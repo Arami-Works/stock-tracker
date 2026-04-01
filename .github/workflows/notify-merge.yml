@@ -24,6 +24,6 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"channel\": \"C0AJGRU7SD6\",
+              \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
               \"text\": \"📦 *stock-tracker 업데이트됨*\n• 커밋: \`${{ steps.info.outputs.sha }}\` — ${{ steps.info.outputs.message }}\n• 작성자: ${{ steps.info.outputs.author }}\n• <https://github.com/${{ github.repository }}/commit/${{ github.sha }}|GitHub에서 보기>\"
             }"

@@ -34,7 +34,13 @@ jobs:
       - name: Extract Linear issue ID
         id: linear
         run: |
-          ID=$(echo "${{ github.event.pull_request.title }}" | grep -oP '^\[([A-Z]+-\d+)\]' | tr -d '[]' || echo "")
+          TITLE="${{ github.event.pull_request.title }}"
+          if [[ "$TITLE" =~ ^\[([A-Z]+-[0-9]+)\] ]]; then
+            ID="${BASH_REMATCH[1]}"
+          else
+            ID=""
+            echo "::warning::No Linear issue ID found in PR title: ${TITLE}"
+          fi
           echo "issue_id=$ID" >> $GITHUB_OUTPUT
 
       - name: Dispatch to engineering-log

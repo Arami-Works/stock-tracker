@@ -84,7 +84,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"channel\": \"C0AJGRU7SD6\",
+              \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
               \"text\": \"${STATUS} *EAS Build* — ${PLATFORM} (${ENV})\n• <${LINK}|빌드 보기>\"
             }"
 
