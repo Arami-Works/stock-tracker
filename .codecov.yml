@@ -1,0 +1,30 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 50%
+        threshold: 5%
+    patch:
+      default:
+        informational: true
+
+ignore:
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.stories.tsx"
+  - "**/*.config.*"
+  - "**/node_modules/**"
+  - "infra/**"
+  - "packages/eslint-config/**"
+  - "packages/typescript-config/**"
+
+flags:
+  unit:
+    paths:
+      - apps/
+      - packages/
+    carryforward: true
+  e2e:
+    paths:
+      - apps/api/
+    carryforward: true

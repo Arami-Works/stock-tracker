@@ -4,11 +4,12 @@ on:
   pull_request:
     types: [ready_for_review]
     paths:
-      - 'apps/mobile/**'
-      - 'packages/**'
+      - "apps/mobile/**"
+      - "packages/**"
 
 jobs:
   maestro:
+    if: github.event.pull_request.base.ref == 'stage'
     runs-on: macos-latest
     timeout-minutes: 30
     steps:

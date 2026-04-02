@@ -1,0 +1,40 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "labels": ["dependencies"],
+  "schedule": ["before 9am on monday"],
+  "timezone": "Asia/Seoul",
+  "packageRules": [
+    {
+      "description": "Group monorepo workspace packages",
+      "matchPackagePatterns": ["@stock-tracker/*"],
+      "groupName": "workspace packages"
+    },
+    {
+      "description": "Auto-merge patch updates for devDependencies",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "description": "Group Expo SDK updates",
+      "matchPackagePatterns": ["expo", "@expo/*", "react-native"],
+      "groupName": "expo"
+    },
+    {
+      "description": "Group Apollo packages",
+      "matchPackagePatterns": ["@apollo/*", "graphql"],
+      "groupName": "apollo"
+    },
+    {
+      "description": "Group tRPC packages",
+      "matchPackagePatterns": ["@trpc/*"],
+      "groupName": "trpc"
+    },
+    {
+      "description": "Pin GitHub Actions digests",
+      "matchManagers": ["github-actions"],
+      "pinDigests": true
+    }
+  ]
+}

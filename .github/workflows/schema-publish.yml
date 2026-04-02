@@ -1,0 +1,54 @@
+name: Schema Publish
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/subgraphs/**"
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  publish:
+    if: vars.APOLLO_GRAPH_REF != ''
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build subgraphs
+        run: npx turbo run build --filter='./apps/subgraphs/*'
+
+      - name: Cache Rover CLI
+        id: rover-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.rover/bin
+          key: rover-${{ runner.os }}
+
+      - name: Install Rover
+        if: steps.rover-cache.outputs.cache-hit != 'true'
+        run: curl -sSL https://rover.apollo.dev/nix/latest | sh
+
+      - name: Publish schema
+        run: |
+          for schema in ./apps/subgraphs/*/schema.graphql; do
+            subgraph_dir=$(dirname "$schema")
+            subgraph_name=$(basename "$subgraph_dir")
+            echo "Publishing $subgraph_name..."
+            ~/.rover/bin/rover subgraph publish "$APOLLO_GRAPH_REF" \
+              --schema "$schema" \
+              --name "$subgraph_name" \
+              --routing-url "https://api-production.up.railway.app/$subgraph_name"
+          done
+        env:
+          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
+          APOLLO_GRAPH_REF: ${{ vars.APOLLO_GRAPH_REF }}
