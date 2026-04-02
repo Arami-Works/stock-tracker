@@ -4,6 +4,7 @@
   "labels": ["dependencies"],
   "schedule": ["before 9am on monday"],
   "timezone": "Asia/Seoul",
+  "rangeStrategy": "pin",
   "packageRules": [
     {
       "description": "Group monorepo workspace packages",
