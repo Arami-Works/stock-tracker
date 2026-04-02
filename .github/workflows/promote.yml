@@ -1,0 +1,58 @@
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      direction:
+        description: "Promotion direction"
+        required: true
+        type: choice
+        options:
+          - develop-to-stage
+          - stage-to-main
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Promote develop to stage
+        if: inputs.direction == 'develop-to-stage'
+        run: |
+          git checkout stage
+          git merge origin/develop --no-edit
+          npx changeset pre exit
+          npx changeset pre enter rc
+          npx changeset version
+          git add .
+          git commit -m "chore: promote to rc prerelease" || true
+          git push
+
+      - name: Promote stage to main
+        if: inputs.direction == 'stage-to-main'
+        run: |
+          git checkout main
+          git merge origin/stage --no-edit
+          npx changeset pre exit
+          npx changeset version
+          git add .
+          git commit -m "chore: promote to stable release" || true
+          git push

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": ["@changesets/changelog-github", { "repo": "cheunjm/stock-tracker" }],
+  "commit": false,
+  "fixed": [
+    [
+      "@stock-tracker/api",
+      "@stock-tracker/mobile",
+      "@stock-tracker/router",
+      "@stock-tracker/storybook",
+      "@stock-tracker/subgraph-tracker",
+      "@stock-tracker/prisma",
+      "@stock-tracker/types",
+      "@stock-tracker/validation",
+      "@stock-tracker/config",
+      "@stock-tracker/eslint-config",
+      "@stock-tracker/typescript-config"
+    ]
+  ],
+  "linked": [],
+  "access": "restricted",
+  "baseBranch": "develop",
+  "updateInternalDependencies": "patch",
+  "privatePackages": { "version": true, "tag": true }
+}

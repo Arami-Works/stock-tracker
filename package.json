@@ -21,6 +21,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
+    "@changesets/changelog-github": "^0.6.0",
+    "@changesets/cli": "^2.30.0",
     "ajv": "^8.18.0",
     "jest-junit": "^16.0.0",
     "lost-pixel": "^3.22.0",
