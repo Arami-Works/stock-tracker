@@ -1,0 +1,18 @@
+{
+  "mode": "pre",
+  "tag": "dev",
+  "initialVersions": {
+    "@stock-tracker/api": "0.0.0",
+    "@stock-tracker/mobile": "0.0.0",
+    "@stock-tracker/router": "0.0.0",
+    "@stock-tracker/storybook": "0.0.0",
+    "@stock-tracker/subgraph-tracker": "0.0.0",
+    "@stock-tracker/config": "0.0.0",
+    "@stock-tracker/eslint-config": "0.0.0",
+    "@stock-tracker/prisma": "0.0.0",
+    "@stock-tracker/types": "0.0.0",
+    "@stock-tracker/typescript-config": "0.0.0",
+    "@stock-tracker/validation": "0.0.0"
+  },
+  "changesets": []
+}
