@@ -11,6 +11,7 @@ type TrackerAccountsListSaListItemViewProps = {
   boutique?: string;
   totalSpend?: number;
   onPress?: () => void;
+  onLongPress?: () => void;
 };
 
 export const TrackerAccountsListSaListItemView = memo(
@@ -22,6 +23,7 @@ export const TrackerAccountsListSaListItemView = memo(
     boutique = "청담 부티크",
     totalSpend = 8200000,
     onPress,
+    onLongPress,
   }: TrackerAccountsListSaListItemViewProps) => {
     const statusText =
       state === "eligible"
@@ -41,6 +43,7 @@ export const TrackerAccountsListSaListItemView = memo(
       <Pressable
         style={styles.card}
         onPress={onPress}
+        onLongPress={onLongPress}
         testID={id ? `sa-list-item-${id}` : undefined}
       >
         <View style={styles.avatar}>

@@ -1,4 +1,5 @@
 import { memo } from "react";
+import { Pressable } from "react-native";
 import { TrackerPurchaseRowView } from "@/experiences/tracker/views";
 
 type TrackerHistoryBrowsePurchaseRowViewProps = {
@@ -6,11 +7,16 @@ type TrackerHistoryBrowsePurchaseRowViewProps = {
   productName?: string;
   date?: string;
   amount?: number;
+  onLongPress?: () => void;
 };
 
 export const TrackerHistoryBrowsePurchaseRowView = memo(
-  (props: TrackerHistoryBrowsePurchaseRowViewProps) => {
-    return <TrackerPurchaseRowView {...props} />;
+  ({ onLongPress, ...props }: TrackerHistoryBrowsePurchaseRowViewProps) => {
+    return (
+      <Pressable onLongPress={onLongPress} disabled={!onLongPress}>
+        <TrackerPurchaseRowView {...props} />
+      </Pressable>
+    );
   },
 );
 

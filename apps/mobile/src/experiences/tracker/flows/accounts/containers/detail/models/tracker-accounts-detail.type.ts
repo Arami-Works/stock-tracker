@@ -36,9 +36,12 @@ export type UpdatePurchaseInput = {
 
 export type TrackerAccountsDetailControllersOutput = {
   screenState: TrackerAccountsDetailScreenState;
+  accountId: string;
   name: string;
   initial: string;
   boutique: string;
+  saName: string;
+  notes: string;
   totalSpend: number;
   tankState: "eligible" | "notEligible" | "noPurchases";
   purchases: PurchaseItem[];

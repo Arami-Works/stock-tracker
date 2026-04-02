@@ -1,5 +1,5 @@
-import { memo, type ReactNode } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { memo, useState, type ReactNode } from "react";
+import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import type {
   TrackerAccountsListScreenState,
   SaAccountListItem,
@@ -8,6 +8,8 @@ import { TrackerAccountsListSaListItemView } from "./tracker-accounts-list-saLis
 import { TrackerAccountsListEmptyStateView } from "./tracker-accounts-list-emptyState.view";
 import { TrackerAccountsListErrorStateView } from "./tracker-accounts-list-errorState.view";
 import { TrackerAccountsListSkeletonCardView } from "./tracker-accounts-list-skeletonCard.view";
+import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
+import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_ACCOUNTS: SaAccountListItem[] = [
   {
@@ -57,6 +59,12 @@ type TrackerAccountsListViewsProps = {
   accounts?: SaAccountListItem[];
   onSaPress?: (id: string) => void;
   onRetry?: () => void;
+  onCreateAccount?: (data: {
+    storeName: string;
+    saName?: string;
+    notes?: string;
+  }) => Promise<void>;
+  onDeleteAccount?: (id: string) => Promise<void>;
 };
 
 export const TrackerAccountsListViews = memo(
@@ -64,7 +72,10 @@ export const TrackerAccountsListViews = memo(
     screenState = "default",
     accounts = STORYBOOK_ACCOUNTS,
     onSaPress,
+    onCreateAccount,
+    onDeleteAccount,
   }: TrackerAccountsListViewsProps) => {
+    const [showAccountModal, setShowAccountModal] = useState(false);
     const content: Record<TrackerAccountsListScreenState, ReactNode> = {
       default: (
         <>
@@ -79,6 +90,16 @@ export const TrackerAccountsListViews = memo(
                 boutique={sa.boutique}
                 totalSpend={sa.totalSpend}
                 onPress={() => onSaPress?.(sa.id)}
+                onLongPress={
+                  onDeleteAccount
+                    ? () =>
+                        showConfirmDialog({
+                          title: "계좌 삭제",
+                          message: `${sa.name} (${sa.boutique})을(를) 삭제하시겠습니까?`,
+                          onConfirm: () => onDeleteAccount(sa.id),
+                        })
+                    : undefined
+                }
               />
             </View>
           ))}
@@ -112,6 +133,24 @@ export const TrackerAccountsListViews = memo(
         >
           {content[screenState]}
         </ScrollView>
+        {(screenState === "default" || screenState === "empty") && (
+          <View style={styles.fabContainer}>
+            <Pressable
+              style={styles.addFab}
+              onPress={() => setShowAccountModal(true)}
+              testID="add-account-fab"
+            >
+              <Text style={styles.addFabIcon}>+</Text>
+            </Pressable>
+          </View>
+        )}
+        {onCreateAccount && (
+          <TrackerAccountFormModalView
+            visible={showAccountModal}
+            onClose={() => setShowAccountModal(false)}
+            onSubmit={onCreateAccount}
+          />
+        )}
       </View>
     );
   },
@@ -148,5 +187,28 @@ const styles = StyleSheet.create({
   },
   spacer12: {
     height: 12,
+  },
+  fabContainer: {
+    position: "absolute",
+    bottom: 96,
+    right: 20,
+  },
+  addFab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#FF2D55",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+  },
+  addFabIcon: {
+    fontSize: 24,
+    color: "#FFFFFF",
+    fontFamily: "Inter",
+    fontWeight: "700",
   },
 });

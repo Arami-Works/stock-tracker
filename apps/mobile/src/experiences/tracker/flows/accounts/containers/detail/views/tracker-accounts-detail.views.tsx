@@ -1,14 +1,20 @@
-import { memo, type ReactNode } from "react";
+import { memo, useState, useCallback, type ReactNode } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import type {
   TrackerAccountsDetailScreenState,
   PurchaseItem,
+  UpdateAccountInput,
+  CreatePurchaseInput,
+  UpdatePurchaseInput,
 } from "../models/tracker-accounts-detail.type";
 import { TrackerAccountsDetailSaHeaderView } from "./tracker-accounts-detail-saHeader.view";
 import { TrackerAccountsDetailTankStatusView } from "./tracker-accounts-detail-tankStatus.view";
 import { TrackerAccountsDetailPurchaseRowView } from "./tracker-accounts-detail-purchaseRow.view";
 import { TrackerAccountsDetailErrorStateView } from "./tracker-accounts-detail-errorState.view";
 import { TrackerAccountsDetailSkeletonCardView } from "./tracker-accounts-detail-skeletonCard.view";
+import { TrackerAccountsDetailEditAccountModalView } from "./tracker-accounts-detail-editAccountModal.view";
+import { TrackerAccountsDetailPurchaseFormModalView } from "./tracker-accounts-detail-purchaseFormModal.view";
+import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_PURCHASES: PurchaseItem[] = [
   {
@@ -42,8 +48,16 @@ type TrackerAccountsDetailViewsProps = {
   totalSpend?: number;
   tankState?: "eligible" | "notEligible" | "noPurchases";
   purchases?: PurchaseItem[];
+  accountId?: string;
+  saName?: string;
+  notes?: string;
   onBack?: () => void;
   onRetry?: () => void;
+  onUpdateAccount?: (input: UpdateAccountInput) => Promise<void>;
+  onDeleteAccount?: () => Promise<void>;
+  onCreatePurchase?: (input: CreatePurchaseInput) => Promise<void>;
+  onUpdatePurchase?: (id: string, input: UpdatePurchaseInput) => Promise<void>;
+  onDeletePurchase?: (id: string) => Promise<void>;
 };
 
 export const TrackerAccountsDetailViews = memo(
@@ -55,8 +69,69 @@ export const TrackerAccountsDetailViews = memo(
     totalSpend = 8200000,
     tankState = "eligible",
     purchases = STORYBOOK_PURCHASES,
+    accountId = "",
+    saName = "",
+    notes = "",
     onBack,
+    onUpdateAccount,
+    onDeleteAccount,
+    onCreatePurchase,
+    onUpdatePurchase,
+    onDeletePurchase,
   }: TrackerAccountsDetailViewsProps) => {
+    const [editAccountVisible, setEditAccountVisible] = useState(false);
+    const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
+    const [editingPurchase, setEditingPurchase] = useState<PurchaseItem | null>(
+      null,
+    );
+
+    const handleDeleteAccount = useCallback(() => {
+      if (!onDeleteAccount) return;
+      showConfirmDialog({
+        title: "계좌 삭제",
+        message:
+          "이 SA 계좌를 삭제하시겠습니까? 모든 구매 내역도 함께 삭제됩니다.",
+        onConfirm: () => {
+          void onDeleteAccount();
+        },
+      });
+    }, [onDeleteAccount]);
+
+    const handleDeletePurchase = useCallback(
+      (id: string) => {
+        if (!onDeletePurchase) return;
+        showConfirmDialog({
+          title: "구매 삭제",
+          message: "이 구매 내역을 삭제하시겠습니까?",
+          onConfirm: () => {
+            void onDeletePurchase(id);
+          },
+        });
+      },
+      [onDeletePurchase],
+    );
+
+    const handleEditPurchase = useCallback((purchase: PurchaseItem) => {
+      setEditingPurchase(purchase);
+      setPurchaseModalVisible(true);
+    }, []);
+
+    const handlePurchaseSubmit = useCallback(
+      async (data: CreatePurchaseInput) => {
+        if (editingPurchase && onUpdatePurchase) {
+          await onUpdatePurchase(editingPurchase.id, data);
+        } else if (onCreatePurchase) {
+          await onCreatePurchase(data);
+        }
+      },
+      [editingPurchase, onUpdatePurchase, onCreatePurchase],
+    );
+
+    const handlePurchaseModalClose = useCallback(() => {
+      setPurchaseModalVisible(false);
+      setEditingPurchase(null);
+    }, []);
+
     const content: Record<TrackerAccountsDetailScreenState, ReactNode> = {
       default: (
         <>
@@ -84,9 +159,22 @@ export const TrackerAccountsDetailViews = memo(
                 productName={p.productName}
                 date={p.date}
                 amount={p.amount}
+                onEdit={() => handleEditPurchase(p)}
+                onDelete={() => handleDeletePurchase(p.id)}
               />
             </View>
           ))}
+          <View style={styles.spacer20} />
+          <Pressable
+            style={styles.addPurchaseButton}
+            onPress={() => {
+              setEditingPurchase(null);
+              setPurchaseModalVisible(true);
+            }}
+            testID="accounts-detail-add-purchase"
+          >
+            <Text style={styles.addPurchaseText}>+ 구매 추가</Text>
+          </Pressable>
         </>
       ),
       loading: (
@@ -113,6 +201,25 @@ export const TrackerAccountsDetailViews = memo(
             <Text style={styles.backArrow}>←</Text>
           </Pressable>
           <Text style={styles.appBarTitle}>SA 상세</Text>
+          <View style={styles.appBarSpacer} />
+          {screenState === "default" && onUpdateAccount && (
+            <Pressable
+              onPress={() => setEditAccountVisible(true)}
+              style={styles.appBarAction}
+              testID="accounts-detail-edit"
+            >
+              <Text style={styles.appBarActionText}>편집</Text>
+            </Pressable>
+          )}
+          {screenState === "default" && onDeleteAccount && (
+            <Pressable
+              onPress={handleDeleteAccount}
+              style={styles.appBarAction}
+              testID="accounts-detail-delete"
+            >
+              <Text style={styles.appBarDeleteText}>삭제</Text>
+            </Pressable>
+          )}
         </View>
         <ScrollView
           style={styles.scrollView}
@@ -121,6 +228,37 @@ export const TrackerAccountsDetailViews = memo(
         >
           {content[screenState]}
         </ScrollView>
+
+        {onUpdateAccount && (
+          <TrackerAccountsDetailEditAccountModalView
+            visible={editAccountVisible}
+            onClose={() => setEditAccountVisible(false)}
+            onSubmit={onUpdateAccount}
+            currentValues={{
+              id: accountId,
+              storeName: boutique,
+              saName: saName,
+              notes: notes,
+            }}
+          />
+        )}
+
+        {(onCreatePurchase || onUpdatePurchase) && (
+          <TrackerAccountsDetailPurchaseFormModalView
+            visible={purchaseModalVisible}
+            onClose={handlePurchaseModalClose}
+            onSubmit={handlePurchaseSubmit}
+            defaultValues={
+              editingPurchase
+                ? {
+                    itemName: editingPurchase.productName,
+                    amount: editingPurchase.amount,
+                    purchaseDate: editingPurchase.date,
+                  }
+                : undefined
+            }
+          />
+        )}
       </View>
     );
   },
@@ -155,6 +293,25 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#1A1A1A",
   },
+  appBarSpacer: {
+    flex: 1,
+  },
+  appBarAction: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+  appBarActionText: {
+    fontFamily: "Inter",
+    fontWeight: "600",
+    fontSize: 14,
+    color: "#FF2D55",
+  },
+  appBarDeleteText: {
+    fontFamily: "Inter",
+    fontWeight: "600",
+    fontSize: 14,
+    color: "#999",
+  },
   scrollView: {
     flex: 1,
   },
@@ -168,6 +325,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#888",
     alignSelf: "flex-start",
+  },
+  addPurchaseButton: {
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#E5E5E5",
+    borderStyle: "dashed",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  addPurchaseText: {
+    fontFamily: "Inter",
+    fontWeight: "600",
+    fontSize: 14,
+    color: "#FF2D55",
   },
   spacer12: {
     height: 12,

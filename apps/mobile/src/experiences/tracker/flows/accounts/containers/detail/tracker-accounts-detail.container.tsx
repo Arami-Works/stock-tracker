@@ -12,13 +12,21 @@ const ConnectedViews = memo(() => {
   return (
     <TrackerAccountsDetailViews
       screenState={controllers.screenState}
+      accountId={controllers.accountId}
       name={controllers.name}
       initial={controllers.initial}
       boutique={controllers.boutique}
+      saName={controllers.saName}
+      notes={controllers.notes}
       totalSpend={controllers.totalSpend}
       tankState={controllers.tankState}
       purchases={controllers.purchases}
       onBack={controllers.onBack}
+      onUpdateAccount={controllers.onUpdateAccount}
+      onDeleteAccount={controllers.onDeleteAccount}
+      onCreatePurchase={controllers.onCreatePurchase}
+      onUpdatePurchase={controllers.onUpdatePurchase}
+      onDeletePurchase={controllers.onDeletePurchase}
     />
   );
 });

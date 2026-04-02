@@ -14,6 +14,8 @@ const ConnectedViews = memo(() => {
       screenState={controllers.screenState}
       accounts={controllers.accounts}
       onSaPress={controllers.onSaPress}
+      onCreateAccount={controllers.onCreateAccount}
+      onDeleteAccount={controllers.onDeleteAccount}
     />
   );
 });

@@ -1,5 +1,5 @@
-import { memo, type ReactNode } from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { memo, useState, type ReactNode } from "react";
+import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
 import type {
   TrackerDashboardHomeScreenState,
   TrackerDashboardHomeControllersOutput,
@@ -11,6 +11,7 @@ import { TrackerDashboardHomeRefreshFabView } from "./tracker-dashboard-home-ref
 import { TrackerDashboardHomeEmptyStateView } from "./tracker-dashboard-home-emptyState.view";
 import { TrackerDashboardHomeErrorStateView } from "./tracker-dashboard-home-errorState.view";
 import { TrackerSkeletonCardView } from "@/experiences/tracker/views";
+import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
 
 type TrackerDashboardHomeViewsProps =
   Partial<TrackerDashboardHomeControllersOutput> & {
@@ -27,7 +28,9 @@ export const TrackerDashboardHomeViews = memo(
     saAccounts = [],
     onSaPress,
     onRefresh,
+    onCreateAccount,
   }: TrackerDashboardHomeViewsProps) => {
+    const [showAccountModal, setShowAccountModal] = useState(false);
     const spendState =
       totalSpend > 0 ? "populated" : ("zero" as "populated" | "zero");
 
@@ -93,10 +96,29 @@ export const TrackerDashboardHomeViews = memo(
         >
           {content[screenState ?? "default"]}
         </ScrollView>
-        {screenState === "default" && (
+        {(screenState === "default" || screenState === "empty") && (
           <View style={styles.fabContainer}>
-            <TrackerDashboardHomeRefreshFabView onPress={onRefresh} />
+            {screenState === "default" && (
+              <>
+                <TrackerDashboardHomeRefreshFabView onPress={onRefresh} />
+                <View style={styles.fabSpacer} />
+              </>
+            )}
+            <Pressable
+              style={styles.addFab}
+              onPress={() => setShowAccountModal(true)}
+              testID="add-account-fab"
+            >
+              <Text style={styles.addFabIcon}>+</Text>
+            </Pressable>
           </View>
+        )}
+        {onCreateAccount && (
+          <TrackerAccountFormModalView
+            visible={showAccountModal}
+            onClose={() => setShowAccountModal(false)}
+            onSubmit={onCreateAccount}
+          />
         )}
       </View>
     );
@@ -136,6 +158,28 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 96,
     right: 20,
+    alignItems: "center",
+  },
+  fabSpacer: {
+    height: 12,
+  },
+  addFab: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "#FF2D55",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+  },
+  addFabIcon: {
+    fontSize: 24,
+    color: "#FFFFFF",
+    fontFamily: "Inter",
+    fontWeight: "700",
   },
   spacer16: {
     height: 16,

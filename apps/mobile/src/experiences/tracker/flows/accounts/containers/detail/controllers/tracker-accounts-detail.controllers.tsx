@@ -165,9 +165,12 @@ export const TrackerAccountsDetailControllers =
 
     const value: TrackerAccountsDetailControllersOutput = {
       screenState: "default",
+      accountId,
       name: account?.saName ?? account?.storeName ?? "",
       initial: (account?.saName ?? account?.storeName ?? "").charAt(0),
       boutique: account?.storeName ?? "",
+      saName: account?.saName ?? "",
+      notes: account?.notes ?? "",
       totalSpend,
       tankState,
       purchases,

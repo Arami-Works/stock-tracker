@@ -10,6 +10,7 @@ import { TrackerHistoryBrowsePurchaseRowView } from "./tracker-history-browse-pu
 import { TrackerHistoryBrowseEmptyStateView } from "./tracker-history-browse-emptyState.view";
 import { TrackerHistoryBrowseErrorStateView } from "./tracker-history-browse-errorState.view";
 import { TrackerHistoryBrowseSkeletonCardView } from "./tracker-history-browse-skeletonCard.view";
+import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_PURCHASES: PurchaseHistoryItem[] = [
   {
@@ -48,6 +49,7 @@ type TrackerHistoryBrowseViewsProps = {
   selectedFilter?: DateFilter;
   onFilterSelect?: (filter: DateFilter) => void;
   onRetry?: () => void;
+  onDeletePurchase?: (id: string) => Promise<void>;
 };
 
 export const TrackerHistoryBrowseViews = memo(
@@ -55,6 +57,7 @@ export const TrackerHistoryBrowseViews = memo(
     screenState = "default",
     purchases = STORYBOOK_PURCHASES,
     onFilterSelect,
+    onDeletePurchase,
   }: TrackerHistoryBrowseViewsProps) => {
     const scrollContent: Record<TrackerHistoryBrowseScreenState, ReactNode> = {
       default: (
@@ -67,6 +70,16 @@ export const TrackerHistoryBrowseViews = memo(
                 productName={p.productName}
                 date={p.date}
                 amount={p.amount}
+                onLongPress={
+                  onDeletePurchase
+                    ? () =>
+                        showConfirmDialog({
+                          title: "구매 삭제",
+                          message: `${p.productName}을(를) 삭제하시겠습니까?`,
+                          onConfirm: () => onDeletePurchase(p.id),
+                        })
+                    : undefined
+                }
               />
             </View>
           ))}

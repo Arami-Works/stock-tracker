@@ -15,6 +15,7 @@ const ConnectedViews = memo(() => {
       purchases={controllers.purchases}
       selectedFilter={controllers.selectedFilter}
       onFilterSelect={controllers.onFilterSelect}
+      onDeletePurchase={controllers.onDeletePurchase}
     />
   );
 });
