@@ -18,6 +18,7 @@ const ConnectedViews = memo(() => {
       totalSpend={controllers.totalSpend}
       tankState={controllers.tankState}
       purchases={controllers.purchases}
+      onBack={controllers.onBack}
     />
   );
 });

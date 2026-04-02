@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 
 type SaCardState = "eligible" | "notEligible" | "noPurchases";
 
@@ -9,6 +9,7 @@ type TrackerDashboardHomeSaCardViewProps = {
   initial?: string;
   boutique?: string;
   totalSpend?: number;
+  onPress?: () => void;
 };
 
 export const TrackerDashboardHomeSaCardView = memo(
@@ -18,6 +19,7 @@ export const TrackerDashboardHomeSaCardView = memo(
     initial = "김",
     boutique = "청담 부티크",
     totalSpend = 8200000,
+    onPress,
   }: TrackerDashboardHomeSaCardViewProps) => {
     const statusText =
       state === "eligible"
@@ -39,7 +41,7 @@ export const TrackerDashboardHomeSaCardView = memo(
         : `₩${totalSpend.toLocaleString()} 구매`;
 
     return (
-      <View style={styles.card}>
+      <Pressable style={styles.card} onPress={onPress}>
         <View style={styles.avatar}>
           <Text style={styles.avatarText}>{initial}</Text>
         </View>
@@ -48,7 +50,7 @@ export const TrackerDashboardHomeSaCardView = memo(
           {statusText}
         </Text>
         <Text style={styles.spend}>{spendText}</Text>
-      </View>
+      </Pressable>
     );
   },
 );

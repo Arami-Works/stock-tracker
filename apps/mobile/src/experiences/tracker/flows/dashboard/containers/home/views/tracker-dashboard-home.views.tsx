@@ -25,6 +25,7 @@ export const TrackerDashboardHomeViews = memo(
     totalSpend = 12450000,
     goalAmount = 30000000,
     saAccounts = [],
+    onSaPress,
     onRefresh,
   }: TrackerDashboardHomeViewsProps) => {
     const spendState =
@@ -49,6 +50,7 @@ export const TrackerDashboardHomeViews = memo(
                 initial={sa.initial}
                 boutique={sa.boutique}
                 totalSpend={sa.totalSpend}
+                onPress={() => onSaPress?.(sa.id)}
               />
             </View>
           ))}

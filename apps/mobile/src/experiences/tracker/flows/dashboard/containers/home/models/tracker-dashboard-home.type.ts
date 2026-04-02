@@ -23,4 +23,5 @@ export type TrackerDashboardHomeControllersOutput = {
   totalSpend: number;
   goalAmount: number;
   saAccounts: SaAccountData[];
+  onSaPress: (id: string) => void;
 };

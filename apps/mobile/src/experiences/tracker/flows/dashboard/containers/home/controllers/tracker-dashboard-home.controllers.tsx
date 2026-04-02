@@ -3,10 +3,13 @@ import {
   createContext,
   useContext,
   useMemo,
+  useCallback,
   type ReactNode,
 } from "react";
+import { useRouter } from "expo-router";
 import { useSuspenseQuery } from "@apollo/client/react";
 import { DASHBOARD_QUERY } from "@/lib/graphql/queries";
+import { useTrackerDashboardHomeLifecycle } from "../lifecycles";
 import type {
   TrackerDashboardHomeControllersOutput,
   TrackerDashboardHomeScreenState,
@@ -23,7 +26,9 @@ interface TrackerDashboardHomeControllersProps {
 
 export const TrackerDashboardHomeControllers =
   memo<TrackerDashboardHomeControllersProps>(({ children }) => {
-    const { data } = useSuspenseQuery(DASHBOARD_QUERY);
+    const router = useRouter();
+    const { data, refetch } = useSuspenseQuery(DASHBOARD_QUERY);
+    useTrackerDashboardHomeLifecycle(refetch);
 
     const screenState: TrackerDashboardHomeScreenState = !data?.accounts?.length
       ? "empty"
@@ -54,12 +59,20 @@ export const TrackerDashboardHomeControllers =
     const eligibilityStatus =
       totalSpend >= GOAL_AMOUNT ? "eligible" : "notEligible";
 
+    const onSaPress = useCallback(
+      (id: string) => {
+        router.push(`/tracker/accounts/detail/${id}`);
+      },
+      [router],
+    );
+
     const value: TrackerDashboardHomeControllersOutput = {
       screenState,
       eligibilityStatus,
       totalSpend,
       goalAmount: GOAL_AMOUNT,
       saAccounts,
+      onSaPress,
     };
 
     return (

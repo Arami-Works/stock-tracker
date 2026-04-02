@@ -16,4 +16,5 @@ export type SaAccountListItem = {
 export type TrackerAccountsListControllersOutput = {
   screenState: TrackerAccountsListScreenState;
   accounts: SaAccountListItem[];
+  onSaPress: (id: string) => void;
 };

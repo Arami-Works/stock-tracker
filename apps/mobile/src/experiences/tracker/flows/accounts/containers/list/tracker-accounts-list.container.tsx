@@ -13,6 +13,7 @@ const ConnectedViews = memo(() => {
     <TrackerAccountsListViews
       screenState={controllers.screenState}
       accounts={controllers.accounts}
+      onSaPress={controllers.onSaPress}
     />
   );
 });

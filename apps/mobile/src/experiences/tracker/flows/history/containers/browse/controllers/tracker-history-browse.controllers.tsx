@@ -9,6 +9,7 @@ import {
 } from "react";
 import { useSuspenseQuery } from "@apollo/client/react";
 import { PURCHASES_QUERY } from "@/lib/graphql/queries";
+import { useTrackerHistoryBrowseLifecycle } from "../lifecycles";
 import type {
   TrackerHistoryBrowseControllersOutput,
   TrackerHistoryBrowseScreenState,
@@ -44,7 +45,8 @@ function filterByDate(purchaseDate: string, filter: DateFilter): boolean {
 
 export const TrackerHistoryBrowseControllers =
   memo<TrackerHistoryBrowseControllersProps>(({ children }) => {
-    const { data } = useSuspenseQuery(PURCHASES_QUERY);
+    const { data, refetch } = useSuspenseQuery(PURCHASES_QUERY);
+    useTrackerHistoryBrowseLifecycle(refetch);
     const [selectedFilter, setSelectedFilter] = useState<DateFilter>("all");
 
     const purchases = useMemo(() => {

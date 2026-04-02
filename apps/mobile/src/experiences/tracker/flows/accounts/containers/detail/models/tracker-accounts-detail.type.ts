@@ -16,4 +16,5 @@ export type TrackerAccountsDetailControllersOutput = {
   totalSpend: number;
   tankState: "eligible" | "notEligible" | "noPurchases";
   purchases: PurchaseItem[];
+  onBack: () => void;
 };

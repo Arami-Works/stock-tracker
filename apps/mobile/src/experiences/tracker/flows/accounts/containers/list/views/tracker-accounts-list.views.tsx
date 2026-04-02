@@ -63,6 +63,7 @@ export const TrackerAccountsListViews = memo(
   ({
     screenState = "default",
     accounts = STORYBOOK_ACCOUNTS,
+    onSaPress,
   }: TrackerAccountsListViewsProps) => {
     const content: Record<TrackerAccountsListScreenState, ReactNode> = {
       default: (
@@ -76,6 +77,7 @@ export const TrackerAccountsListViews = memo(
                 initial={sa.initial}
                 boutique={sa.boutique}
                 totalSpend={sa.totalSpend}
+                onPress={() => onSaPress?.(sa.id)}
               />
             </View>
           ))}

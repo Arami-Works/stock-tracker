@@ -3,11 +3,14 @@ import {
   createContext,
   useContext,
   useMemo,
+  useCallback,
   type ReactNode,
 } from "react";
+import { useRouter } from "expo-router";
 import { useSuspenseQuery } from "@apollo/client/react";
 import { ACCOUNT_QUERY } from "@/lib/graphql/queries";
 import type { TrackerAccountsDetailControllersOutput } from "../models/tracker-accounts-detail.type";
+import { useTrackerAccountsDetailLifecycle } from "../lifecycles";
 
 const GOAL_AMOUNT = 30000000;
 
@@ -21,9 +24,11 @@ interface TrackerAccountsDetailControllersProps {
 
 export const TrackerAccountsDetailControllers =
   memo<TrackerAccountsDetailControllersProps>(({ children, accountId }) => {
-    const { data } = useSuspenseQuery(ACCOUNT_QUERY, {
+    const router = useRouter();
+    const { data, refetch } = useSuspenseQuery(ACCOUNT_QUERY, {
       variables: { id: accountId },
     });
+    useTrackerAccountsDetailLifecycle(refetch);
 
     const account = data?.account;
 
@@ -54,6 +59,10 @@ export const TrackerAccountsDetailControllers =
           ? ("eligible" as const)
           : ("notEligible" as const);
 
+    const onBack = useCallback(() => {
+      router.back();
+    }, [router]);
+
     const value: TrackerAccountsDetailControllersOutput = {
       screenState: "default",
       name: account?.saName ?? account?.storeName ?? "",
@@ -62,6 +71,7 @@ export const TrackerAccountsDetailControllers =
       totalSpend,
       tankState,
       purchases,
+      onBack,
     };
 
     return (

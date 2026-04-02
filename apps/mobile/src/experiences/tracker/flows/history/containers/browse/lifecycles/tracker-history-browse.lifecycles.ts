@@ -1,7 +1,5 @@
-import { useEffect } from "react";
+import { useRefetchOnFocus } from "@/shared/hooks/use-refetch-on-focus";
 
-export const useTrackerHistoryBrowseLifecycle = () => {
-  useEffect(() => {
-    // TODO: Mount/unmount effects
-  }, []);
+export const useTrackerHistoryBrowseLifecycle = (refetch: () => void) => {
+  useRefetchOnFocus(refetch);
 };

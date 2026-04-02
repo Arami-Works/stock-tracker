@@ -3,10 +3,13 @@ import {
   createContext,
   useContext,
   useMemo,
+  useCallback,
   type ReactNode,
 } from "react";
+import { useRouter } from "expo-router";
 import { useSuspenseQuery } from "@apollo/client/react";
 import { ACCOUNTS_QUERY } from "@/lib/graphql/queries";
+import { useTrackerAccountsListLifecycle } from "../lifecycles";
 import type {
   TrackerAccountsListControllersOutput,
   TrackerAccountsListScreenState,
@@ -23,7 +26,9 @@ interface TrackerAccountsListControllersProps {
 
 export const TrackerAccountsListControllers =
   memo<TrackerAccountsListControllersProps>(({ children }) => {
-    const { data } = useSuspenseQuery(ACCOUNTS_QUERY);
+    const router = useRouter();
+    const { data, refetch } = useSuspenseQuery(ACCOUNTS_QUERY);
+    useTrackerAccountsListLifecycle(refetch);
 
     const screenState: TrackerAccountsListScreenState = !data?.accounts?.length
       ? "empty"
@@ -49,9 +54,17 @@ export const TrackerAccountsListControllers =
       });
     }, [data?.accounts]);
 
+    const onSaPress = useCallback(
+      (id: string) => {
+        router.push(`/tracker/accounts/detail/${id}`);
+      },
+      [router],
+    );
+
     const value: TrackerAccountsListControllersOutput = {
       screenState,
       accounts,
+      onSaPress,
     };
 
     return (
