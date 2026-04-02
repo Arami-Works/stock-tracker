@@ -3,9 +3,12 @@ import { PrismaClient } from "@prisma/client";
 import { appRouter } from "../trpc/router.js";
 
 const prisma = new PrismaClient();
-const caller = appRouter.createCaller({ prisma });
-
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
+
+// Pass userId in context — backwards-compatible with current tRPC context.
+// TODO [INF-553]: Once protectedProcedure lands, this userId will be used
+// by auth-gated routes.
+const caller = appRouter.createCaller({ prisma, userId: TEST_USER_ID } as any);
 
 beforeAll(async () => {
   await prisma.auth_users.upsert({
@@ -24,6 +27,15 @@ afterAll(async () => {
   await prisma.tracker_accounts.deleteMany({});
   await prisma.auth_users.deleteMany({ where: { id: TEST_USER_ID } });
   await prisma.$disconnect();
+});
+
+describe("auth E2E", () => {
+  it("returns the seeded user from auth.me", async () => {
+    const result = await caller.auth.me();
+    expect(result).not.toBeNull();
+    expect(result?.id).toBe(TEST_USER_ID);
+    expect(result?.email).toBe("e2e@test.local");
+  });
 });
 
 describe("tRPC API E2E", () => {
