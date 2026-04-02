@@ -19,4 +19,5 @@ export type TrackerHistoryBrowseControllersOutput = {
   purchases: PurchaseHistoryItem[];
   selectedFilter: DateFilter;
   onFilterSelect: (filter: DateFilter) => void;
+  onDeletePurchase: (id: string) => Promise<void>;
 };

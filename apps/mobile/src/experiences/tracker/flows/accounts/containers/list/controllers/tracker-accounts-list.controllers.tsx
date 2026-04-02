@@ -7,8 +7,12 @@ import {
   type ReactNode,
 } from "react";
 import { useRouter } from "expo-router";
-import { useSuspenseQuery } from "@apollo/client/react";
-import { ACCOUNTS_QUERY } from "@/lib/graphql/queries";
+import { useSuspenseQuery, useMutation } from "@apollo/client/react";
+import { ACCOUNTS_QUERY, DASHBOARD_QUERY } from "@/lib/graphql/queries";
+import {
+  CreateAccountDocument,
+  DeleteAccountDocument,
+} from "@/lib/graphql/generated/graphql";
 import { useTrackerAccountsListLifecycle } from "../lifecycles";
 import type {
   TrackerAccountsListControllersOutput,
@@ -29,6 +33,27 @@ export const TrackerAccountsListControllers =
     const router = useRouter();
     const { data, refetch } = useSuspenseQuery(ACCOUNTS_QUERY);
     useTrackerAccountsListLifecycle(refetch);
+
+    const [createAccountMutation] = useMutation(CreateAccountDocument, {
+      refetchQueries: [{ query: DASHBOARD_QUERY }, { query: ACCOUNTS_QUERY }],
+    });
+    const [deleteAccountMutation] = useMutation(DeleteAccountDocument, {
+      refetchQueries: [{ query: DASHBOARD_QUERY }, { query: ACCOUNTS_QUERY }],
+    });
+
+    const onCreateAccount = useCallback(
+      async (input: { storeName: string; saName?: string; notes?: string }) => {
+        await createAccountMutation({ variables: { input } });
+      },
+      [createAccountMutation],
+    );
+
+    const onDeleteAccount = useCallback(
+      async (id: string) => {
+        await deleteAccountMutation({ variables: { id } });
+      },
+      [deleteAccountMutation],
+    );
 
     const screenState: TrackerAccountsListScreenState = !data?.accounts?.length
       ? "empty"
@@ -65,6 +90,8 @@ export const TrackerAccountsListControllers =
       screenState,
       accounts,
       onSaPress,
+      onCreateAccount,
+      onDeleteAccount,
     };
 
     return (

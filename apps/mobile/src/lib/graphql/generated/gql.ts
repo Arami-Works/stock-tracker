@@ -14,12 +14,24 @@ import { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+  "mutation UpdateAccount($input: UpdateAccountInput!) {\n  updateAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}\n\nmutation CreatePurchase($input: CreatePurchaseInput!) {\n  createPurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation UpdatePurchase($input: UpdatePurchaseInput!) {\n  updatePurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}": typeof types.UpdateAccountDocument;
+  "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}": typeof types.CreateAccountDocument;
+  "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}": typeof types.CreateAccountDocument;
+  "mutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}": typeof types.DeletePurchaseDocument;
   "\n  query Dashboard {\n    dashboard {\n      totalAccounts\n      totalPurchases\n      totalSpent\n    }\n    accounts {\n      id\n      storeName\n      saName\n      purchases {\n        id\n        amount\n      }\n    }\n  }\n": typeof types.DashboardDocument;
   "\n  query Accounts {\n    accounts {\n      id\n      storeName\n      saName\n      notes\n      createdAt\n      purchases {\n        id\n        itemName\n        amount\n        purchaseDate\n      }\n    }\n  }\n": typeof types.AccountsDocument;
   "\n  query Account($id: ID!) {\n    account(id: $id) {\n      id\n      storeName\n      saName\n      notes\n      createdAt\n      purchases {\n        id\n        itemName\n        itemCategory\n        amount\n        currency\n        purchaseDate\n        storeLocation\n        notes\n        createdAt\n      }\n    }\n  }\n": typeof types.AccountDocument;
   "\n  query Purchases($accountId: ID) {\n    purchases(accountId: $accountId) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n": typeof types.PurchasesDocument;
 };
 const documents: Documents = {
+  "mutation UpdateAccount($input: UpdateAccountInput!) {\n  updateAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}\n\nmutation CreatePurchase($input: CreatePurchaseInput!) {\n  createPurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation UpdatePurchase($input: UpdatePurchaseInput!) {\n  updatePurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}":
+    types.UpdateAccountDocument,
+  "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}":
+    types.CreateAccountDocument,
+  "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}":
+    types.CreateAccountDocument,
+  "mutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}":
+    types.DeletePurchaseDocument,
   "\n  query Dashboard {\n    dashboard {\n      totalAccounts\n      totalPurchases\n      totalSpent\n    }\n    accounts {\n      id\n      storeName\n      saName\n      purchases {\n        id\n        amount\n      }\n    }\n  }\n":
     types.DashboardDocument,
   "\n  query Accounts {\n    accounts {\n      id\n      storeName\n      saName\n      notes\n      createdAt\n      purchases {\n        id\n        itemName\n        amount\n        purchaseDate\n      }\n    }\n  }\n":
@@ -44,6 +56,30 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "mutation UpdateAccount($input: UpdateAccountInput!) {\n  updateAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}\n\nmutation CreatePurchase($input: CreatePurchaseInput!) {\n  createPurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation UpdatePurchase($input: UpdatePurchaseInput!) {\n  updatePurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}",
+): (typeof documents)["mutation UpdateAccount($input: UpdateAccountInput!) {\n  updateAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}\n\nmutation CreatePurchase($input: CreatePurchaseInput!) {\n  createPurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation UpdatePurchase($input: UpdatePurchaseInput!) {\n  updatePurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}",
+): (typeof documents)["mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}",
+): (typeof documents)["mutation CreateAccount($input: CreateAccountInput!) {\n  createAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "mutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}",
+): (typeof documents)["mutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

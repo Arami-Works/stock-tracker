@@ -7,8 +7,20 @@ import {
   type ReactNode,
 } from "react";
 import { useRouter } from "expo-router";
-import { useSuspenseQuery } from "@apollo/client/react";
-import { ACCOUNT_QUERY } from "@/lib/graphql/queries";
+import { useSuspenseQuery, useMutation } from "@apollo/client/react";
+import {
+  ACCOUNT_QUERY,
+  DASHBOARD_QUERY,
+  ACCOUNTS_QUERY,
+  PURCHASES_QUERY,
+} from "@/lib/graphql/queries";
+import {
+  UpdateAccountDocument,
+  DeleteAccountDocument,
+  CreatePurchaseDocument,
+  UpdatePurchaseDocument,
+  DeletePurchaseDocument,
+} from "@/lib/graphql/generated/graphql";
 import type { TrackerAccountsDetailControllersOutput } from "../models/tracker-accounts-detail.type";
 import { useTrackerAccountsDetailLifecycle } from "../lifecycles";
 
@@ -29,6 +41,32 @@ export const TrackerAccountsDetailControllers =
       variables: { id: accountId },
     });
     useTrackerAccountsDetailLifecycle(refetch);
+
+    const accountRefetchQueries = [
+      { query: ACCOUNT_QUERY, variables: { id: accountId } },
+      { query: DASHBOARD_QUERY },
+      { query: ACCOUNTS_QUERY },
+    ];
+    const purchaseRefetchQueries = [
+      ...accountRefetchQueries,
+      { query: PURCHASES_QUERY },
+    ];
+
+    const [updateAccountMutation] = useMutation(UpdateAccountDocument, {
+      refetchQueries: accountRefetchQueries,
+    });
+    const [deleteAccountMutation] = useMutation(DeleteAccountDocument, {
+      refetchQueries: [{ query: DASHBOARD_QUERY }, { query: ACCOUNTS_QUERY }],
+    });
+    const [createPurchaseMutation] = useMutation(CreatePurchaseDocument, {
+      refetchQueries: purchaseRefetchQueries,
+    });
+    const [updatePurchaseMutation] = useMutation(UpdatePurchaseDocument, {
+      refetchQueries: purchaseRefetchQueries,
+    });
+    const [deletePurchaseMutation] = useMutation(DeletePurchaseDocument, {
+      refetchQueries: purchaseRefetchQueries,
+    });
 
     const account = data?.account;
 
@@ -63,6 +101,68 @@ export const TrackerAccountsDetailControllers =
       router.back();
     }, [router]);
 
+    const onUpdateAccount = useCallback(
+      async (input: {
+        storeName?: string;
+        saName?: string;
+        notes?: string;
+      }) => {
+        await updateAccountMutation({
+          variables: { input: { id: accountId, ...input } },
+        });
+      },
+      [updateAccountMutation, accountId],
+    );
+
+    const onDeleteAccount = useCallback(async () => {
+      await deleteAccountMutation({ variables: { id: accountId } });
+      router.back();
+    }, [deleteAccountMutation, accountId, router]);
+
+    const onCreatePurchase = useCallback(
+      async (input: {
+        itemName: string;
+        itemCategory?: string;
+        amount: number;
+        currency?: string;
+        purchaseDate: string;
+        storeLocation?: string;
+        notes?: string;
+      }) => {
+        await createPurchaseMutation({
+          variables: { input: { accountId, ...input } },
+        });
+      },
+      [createPurchaseMutation, accountId],
+    );
+
+    const onUpdatePurchase = useCallback(
+      async (
+        id: string,
+        input: {
+          itemName?: string;
+          itemCategory?: string;
+          amount?: number;
+          currency?: string;
+          purchaseDate?: string;
+          storeLocation?: string;
+          notes?: string;
+        },
+      ) => {
+        await updatePurchaseMutation({
+          variables: { input: { id, ...input } },
+        });
+      },
+      [updatePurchaseMutation],
+    );
+
+    const onDeletePurchase = useCallback(
+      async (id: string) => {
+        await deletePurchaseMutation({ variables: { id } });
+      },
+      [deletePurchaseMutation],
+    );
+
     const value: TrackerAccountsDetailControllersOutput = {
       screenState: "default",
       name: account?.saName ?? account?.storeName ?? "",
@@ -72,6 +172,11 @@ export const TrackerAccountsDetailControllers =
       tankState,
       purchases,
       onBack,
+      onUpdateAccount,
+      onDeleteAccount,
+      onCreatePurchase,
+      onUpdatePurchase,
+      onDeletePurchase,
     };
 
     return (

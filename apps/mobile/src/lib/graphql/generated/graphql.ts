@@ -39,11 +39,62 @@ export type Account = {
   storeName: Scalars["String"]["output"];
 };
 
+export type CreateAccountInput = {
+  notes?: InputMaybe<Scalars["String"]["input"]>;
+  saName?: InputMaybe<Scalars["String"]["input"]>;
+  storeName: Scalars["String"]["input"];
+};
+
+export type CreatePurchaseInput = {
+  accountId: Scalars["ID"]["input"];
+  amount: Scalars["Float"]["input"];
+  currency?: InputMaybe<Scalars["String"]["input"]>;
+  itemCategory?: InputMaybe<Scalars["String"]["input"]>;
+  itemName: Scalars["String"]["input"];
+  notes?: InputMaybe<Scalars["String"]["input"]>;
+  purchaseDate: Scalars["String"]["input"];
+  storeLocation?: InputMaybe<Scalars["String"]["input"]>;
+};
+
 export type DashboardSummary = {
   __typename?: "DashboardSummary";
   totalAccounts: Scalars["Int"]["output"];
   totalPurchases: Scalars["Int"]["output"];
   totalSpent: Scalars["Float"]["output"];
+};
+
+export type Mutation = {
+  __typename?: "Mutation";
+  createAccount: Account;
+  createPurchase: Purchase;
+  deleteAccount: Scalars["Boolean"]["output"];
+  deletePurchase: Scalars["Boolean"]["output"];
+  updateAccount: Account;
+  updatePurchase: Purchase;
+};
+
+export type MutationCreateAccountArgs = {
+  input: CreateAccountInput;
+};
+
+export type MutationCreatePurchaseArgs = {
+  input: CreatePurchaseInput;
+};
+
+export type MutationDeleteAccountArgs = {
+  id: Scalars["ID"]["input"];
+};
+
+export type MutationDeletePurchaseArgs = {
+  id: Scalars["ID"]["input"];
+};
+
+export type MutationUpdateAccountArgs = {
+  input: UpdateAccountInput;
+};
+
+export type MutationUpdatePurchaseArgs = {
+  input: UpdatePurchaseInput;
 };
 
 export type Purchase = {
@@ -81,12 +132,120 @@ export type QueryPurchasesArgs = {
   accountId?: InputMaybe<Scalars["ID"]["input"]>;
 };
 
+export type UpdateAccountInput = {
+  id: Scalars["ID"]["input"];
+  notes?: InputMaybe<Scalars["String"]["input"]>;
+  saName?: InputMaybe<Scalars["String"]["input"]>;
+  storeName?: InputMaybe<Scalars["String"]["input"]>;
+};
+
+export type UpdatePurchaseInput = {
+  amount?: InputMaybe<Scalars["Float"]["input"]>;
+  currency?: InputMaybe<Scalars["String"]["input"]>;
+  id: Scalars["ID"]["input"];
+  itemCategory?: InputMaybe<Scalars["String"]["input"]>;
+  itemName?: InputMaybe<Scalars["String"]["input"]>;
+  notes?: InputMaybe<Scalars["String"]["input"]>;
+  purchaseDate?: InputMaybe<Scalars["String"]["input"]>;
+  storeLocation?: InputMaybe<Scalars["String"]["input"]>;
+};
+
 export type User = {
   __typename?: "User";
   createdAt: Scalars["String"]["output"];
   displayName?: Maybe<Scalars["String"]["output"]>;
   email: Scalars["String"]["output"];
   id: Scalars["ID"]["output"];
+};
+
+export type UpdateAccountMutationVariables = Exact<{
+  input: UpdateAccountInput;
+}>;
+
+export type UpdateAccountMutation = {
+  __typename?: "Mutation";
+  updateAccount: {
+    __typename?: "Account";
+    id: string;
+    storeName: string;
+    saName?: string | null;
+    notes?: string | null;
+    createdAt: string;
+  };
+};
+
+export type DeleteAccountMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type DeleteAccountMutation = {
+  __typename?: "Mutation";
+  deleteAccount: boolean;
+};
+
+export type CreatePurchaseMutationVariables = Exact<{
+  input: CreatePurchaseInput;
+}>;
+
+export type CreatePurchaseMutation = {
+  __typename?: "Mutation";
+  createPurchase: {
+    __typename?: "Purchase";
+    id: string;
+    itemName: string;
+    itemCategory?: string | null;
+    amount: number;
+    currency: string;
+    purchaseDate: string;
+    storeLocation?: string | null;
+    notes?: string | null;
+    createdAt: string;
+  };
+};
+
+export type UpdatePurchaseMutationVariables = Exact<{
+  input: UpdatePurchaseInput;
+}>;
+
+export type UpdatePurchaseMutation = {
+  __typename?: "Mutation";
+  updatePurchase: {
+    __typename?: "Purchase";
+    id: string;
+    itemName: string;
+    itemCategory?: string | null;
+    amount: number;
+    currency: string;
+    purchaseDate: string;
+    storeLocation?: string | null;
+    notes?: string | null;
+    createdAt: string;
+  };
+};
+
+export type DeletePurchaseMutationVariables = Exact<{
+  id: Scalars["ID"]["input"];
+}>;
+
+export type DeletePurchaseMutation = {
+  __typename?: "Mutation";
+  deletePurchase: boolean;
+};
+
+export type CreateAccountMutationVariables = Exact<{
+  input: CreateAccountInput;
+}>;
+
+export type CreateAccountMutation = {
+  __typename?: "Mutation";
+  createAccount: {
+    __typename?: "Account";
+    id: string;
+    storeName: string;
+    saName?: string | null;
+    notes?: string | null;
+    createdAt: string;
+  };
 };
 
 export type DashboardQueryVariables = Exact<{ [key: string]: never }>;
@@ -177,6 +336,348 @@ export type PurchasesQuery = {
   }>;
 };
 
+export const UpdateAccountDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UpdateAccount" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "UpdateAccountInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "updateAccount" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "storeName" } },
+                { kind: "Field", name: { kind: "Name", value: "saName" } },
+                { kind: "Field", name: { kind: "Name", value: "notes" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateAccountMutation,
+  UpdateAccountMutationVariables
+>;
+export const DeleteAccountDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "DeleteAccount" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "deleteAccount" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteAccountMutation,
+  DeleteAccountMutationVariables
+>;
+export const CreatePurchaseDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreatePurchase" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreatePurchaseInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createPurchase" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "itemName" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "itemCategory" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                { kind: "Field", name: { kind: "Name", value: "currency" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "purchaseDate" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "storeLocation" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "notes" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreatePurchaseMutation,
+  CreatePurchaseMutationVariables
+>;
+export const UpdatePurchaseDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UpdatePurchase" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "UpdatePurchaseInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "updatePurchase" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "itemName" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "itemCategory" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "amount" } },
+                { kind: "Field", name: { kind: "Name", value: "currency" } },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "purchaseDate" },
+                },
+                {
+                  kind: "Field",
+                  name: { kind: "Name", value: "storeLocation" },
+                },
+                { kind: "Field", name: { kind: "Name", value: "notes" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdatePurchaseMutation,
+  UpdatePurchaseMutationVariables
+>;
+export const DeletePurchaseDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "DeletePurchase" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: { kind: "Variable", name: { kind: "Name", value: "id" } },
+          type: {
+            kind: "NonNullType",
+            type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "deletePurchase" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "id" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "id" },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeletePurchaseMutation,
+  DeletePurchaseMutationVariables
+>;
+export const CreateAccountDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "CreateAccount" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "input" },
+          },
+          type: {
+            kind: "NonNullType",
+            type: {
+              kind: "NamedType",
+              name: { kind: "Name", value: "CreateAccountInput" },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createAccount" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "input" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "input" },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "storeName" } },
+                { kind: "Field", name: { kind: "Name", value: "saName" } },
+                { kind: "Field", name: { kind: "Name", value: "notes" } },
+                { kind: "Field", name: { kind: "Name", value: "createdAt" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateAccountMutation,
+  CreateAccountMutationVariables
+>;
 export const DashboardDocument = {
   kind: "Document",
   definitions: [

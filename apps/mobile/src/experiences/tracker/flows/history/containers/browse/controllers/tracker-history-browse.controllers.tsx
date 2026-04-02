@@ -7,8 +7,13 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import { useSuspenseQuery } from "@apollo/client/react";
-import { PURCHASES_QUERY } from "@/lib/graphql/queries";
+import { useSuspenseQuery, useMutation } from "@apollo/client/react";
+import {
+  PURCHASES_QUERY,
+  DASHBOARD_QUERY,
+  ACCOUNTS_QUERY,
+} from "@/lib/graphql/queries";
+import { DeletePurchaseDocument } from "@/lib/graphql/generated/graphql";
 import { useTrackerHistoryBrowseLifecycle } from "../lifecycles";
 import type {
   TrackerHistoryBrowseControllersOutput,
@@ -47,6 +52,22 @@ export const TrackerHistoryBrowseControllers =
   memo<TrackerHistoryBrowseControllersProps>(({ children }) => {
     const { data, refetch } = useSuspenseQuery(PURCHASES_QUERY);
     useTrackerHistoryBrowseLifecycle(refetch);
+
+    const [deletePurchaseMutation] = useMutation(DeletePurchaseDocument, {
+      refetchQueries: [
+        { query: PURCHASES_QUERY },
+        { query: DASHBOARD_QUERY },
+        { query: ACCOUNTS_QUERY },
+      ],
+    });
+
+    const onDeletePurchase = useCallback(
+      async (id: string) => {
+        await deletePurchaseMutation({ variables: { id } });
+      },
+      [deletePurchaseMutation],
+    );
+
     const [selectedFilter, setSelectedFilter] = useState<DateFilter>("all");
 
     const purchases = useMemo(() => {
@@ -79,6 +100,7 @@ export const TrackerHistoryBrowseControllers =
       purchases,
       selectedFilter,
       onFilterSelect,
+      onDeletePurchase,
     };
 
     return (

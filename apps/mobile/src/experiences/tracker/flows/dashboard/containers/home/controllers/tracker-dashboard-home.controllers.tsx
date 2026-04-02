@@ -7,8 +7,9 @@ import {
   type ReactNode,
 } from "react";
 import { useRouter } from "expo-router";
-import { useSuspenseQuery } from "@apollo/client/react";
-import { DASHBOARD_QUERY } from "@/lib/graphql/queries";
+import { useSuspenseQuery, useMutation } from "@apollo/client/react";
+import { DASHBOARD_QUERY, ACCOUNTS_QUERY } from "@/lib/graphql/queries";
+import { CreateAccountDocument } from "@/lib/graphql/generated/graphql";
 import { useTrackerDashboardHomeLifecycle } from "../lifecycles";
 import type {
   TrackerDashboardHomeControllersOutput,
@@ -29,6 +30,17 @@ export const TrackerDashboardHomeControllers =
     const router = useRouter();
     const { data, refetch } = useSuspenseQuery(DASHBOARD_QUERY);
     useTrackerDashboardHomeLifecycle(refetch);
+
+    const [createAccountMutation] = useMutation(CreateAccountDocument, {
+      refetchQueries: [{ query: DASHBOARD_QUERY }, { query: ACCOUNTS_QUERY }],
+    });
+
+    const onCreateAccount = useCallback(
+      async (input: { storeName: string; saName?: string; notes?: string }) => {
+        await createAccountMutation({ variables: { input } });
+      },
+      [createAccountMutation],
+    );
 
     const screenState: TrackerDashboardHomeScreenState = !data?.accounts?.length
       ? "empty"
@@ -73,6 +85,7 @@ export const TrackerDashboardHomeControllers =
       goalAmount: GOAL_AMOUNT,
       saAccounts,
       onSaPress,
+      onCreateAccount,
     };
 
     return (

@@ -17,6 +17,12 @@ export type SaAccountData = {
   state: "eligible" | "notEligible" | "noPurchases";
 };
 
+export type CreateAccountInput = {
+  storeName: string;
+  saName?: string;
+  notes?: string;
+};
+
 export type TrackerDashboardHomeControllersOutput = {
   screenState: TrackerDashboardHomeScreenState;
   eligibilityStatus: "eligible" | "notEligible";
@@ -24,4 +30,5 @@ export type TrackerDashboardHomeControllersOutput = {
   goalAmount: number;
   saAccounts: SaAccountData[];
   onSaPress: (id: string) => void;
+  onCreateAccount: (input: CreateAccountInput) => Promise<void>;
 };

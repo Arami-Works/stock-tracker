@@ -13,8 +13,16 @@ export type SaAccountListItem = {
   state: "eligible" | "notEligible" | "noPurchases";
 };
 
+export type CreateAccountInput = {
+  storeName: string;
+  saName?: string;
+  notes?: string;
+};
+
 export type TrackerAccountsListControllersOutput = {
   screenState: TrackerAccountsListScreenState;
   accounts: SaAccountListItem[];
   onSaPress: (id: string) => void;
+  onCreateAccount: (input: CreateAccountInput) => Promise<void>;
+  onDeleteAccount: (id: string) => Promise<void>;
 };
