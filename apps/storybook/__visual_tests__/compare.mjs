@@ -57,7 +57,9 @@ const expected = PNG.sync.read(readFileSync(baselinePath));
 // 3. Use baseline (Figma) dimensions as the canonical size
 const width = expected.width;
 const height = expected.height;
-console.log(`   Baseline: ${expected.width}×${expected.height}, Screenshot: ${actual.width}×${actual.height}`);
+console.log(
+  `   Baseline: ${expected.width}×${expected.height}, Screenshot: ${actual.width}×${actual.height}`,
+);
 
 // Crop both to same size (top-left aligned)
 function cropPNG(png, w, h) {
@@ -99,7 +101,9 @@ const diffPercent = ((numDiffPixels / totalPixels) * 100).toFixed(2);
 console.log(`\n${"─".repeat(50)}`);
 console.log(`📊 Results:`);
 console.log(`   Image size: ${width}×${height}`);
-console.log(`   Different pixels: ${numDiffPixels.toLocaleString()} / ${totalPixels.toLocaleString()}`);
+console.log(
+  `   Different pixels: ${numDiffPixels.toLocaleString()} / ${totalPixels.toLocaleString()}`,
+);
 console.log(`   Diff: ${diffPercent}%`);
 console.log(`   Diff image: ${diffPath}`);
 

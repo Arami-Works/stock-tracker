@@ -8,3 +8,9 @@ export const userOutputSchema = z.object({
   createdAt: z.date(),
   updatedAt: z.date(),
 });
+
+export const userUpsertInputSchema = z.object({
+  supabaseId: z.string().uuid(),
+  email: z.string().email(),
+  displayName: z.string().nullable().optional(),
+});

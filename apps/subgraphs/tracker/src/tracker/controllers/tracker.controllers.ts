@@ -1,20 +1,32 @@
+import type { TrpcClient } from "../../clients/trpc.js";
+
+interface SubgraphContext {
+  userId?: string;
+  userRole?: string;
+  trpc: TrpcClient;
+}
+
 export const trackerResolvers = {
   Query: {
-    dashboard: async () => {
-      // TODO: delegate to trpc.tracker.dashboard.home.summary.query()
-      return { totalAccounts: 0, totalPurchases: 0, totalSpent: 0 };
+    dashboard: async (_: unknown, __: unknown, context: SubgraphContext) => {
+      return context.trpc.tracker.dashboard.home.summary.query();
     },
-    accounts: async () => {
-      // TODO: delegate to trpc.tracker.accounts.list.all.query()
-      return [];
+    accounts: async (_: unknown, __: unknown, context: SubgraphContext) => {
+      return context.trpc.tracker.accounts.list.all.query();
     },
-    account: async (_: unknown, _args: { id: string }) => {
-      // TODO: delegate to trpc.tracker.accounts.detail.byId.query()
-      return null;
+    account: async (
+      _: unknown,
+      args: { id: string },
+      context: SubgraphContext,
+    ) => {
+      return context.trpc.tracker.accounts.detail.byId.query(args);
     },
-    purchases: async (_: unknown, _args: { accountId?: string }) => {
-      // TODO: delegate to trpc.tracker.history.browse.list.query()
-      return [];
+    purchases: async (
+      _: unknown,
+      args: { accountId?: string },
+      context: SubgraphContext,
+    ) => {
+      return context.trpc.tracker.history.browse.list.query(args);
     },
   },
   Mutation: {
@@ -101,16 +113,25 @@ export const trackerResolvers = {
     },
   },
   Account: {
-    __resolveReference: async (_ref: { id: string }) => {
-      return null;
+    __resolveReference: async (
+      ref: { id: string },
+      context: SubgraphContext,
+    ) => {
+      return context.trpc.tracker.accounts.detail.byId.query({ id: ref.id });
     },
-    purchases: async (_parent: { id: string }) => {
-      return [];
+    purchases: async (
+      parent: { id: string },
+      _: unknown,
+      context: SubgraphContext,
+    ) => {
+      return context.trpc.tracker.history.browse.list.query({
+        accountId: parent.id,
+      });
     },
   },
   Purchase: {
-    __resolveReference: async (_ref: { id: string }) => {
-      return null;
+    __resolveReference: async (ref: { id: string }) => {
+      return ref;
     },
   },
 };

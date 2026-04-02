@@ -1,3 +1,3 @@
-import { config } from '@stock-tracker/eslint-config/react-internal';
+import { config } from "@stock-tracker/eslint-config/react-internal";
 
 export default config;

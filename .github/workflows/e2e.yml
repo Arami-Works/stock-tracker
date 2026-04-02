@@ -4,8 +4,8 @@ on:
   pull_request:
     types: [ready_for_review]
     paths:
-      - 'apps/mobile/**'
-      - 'packages/**'
+      - "apps/mobile/**"
+      - "packages/**"
 
 jobs:
   maestro:

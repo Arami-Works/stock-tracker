@@ -5,6 +5,7 @@ import { authTypeDefs } from "./auth/views/auth.views.js";
 import { authResolvers } from "./auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "./tracker/views/tracker.views.js";
 import { trackerResolvers } from "./tracker/controllers/tracker.controllers.js";
+import { createTrpcClient } from "./clients/trpc.js";
 
 const server = new ApolloServer({
   schema: buildSubgraphSchema([
@@ -15,10 +16,18 @@ const server = new ApolloServer({
 
 const { url } = await startStandaloneServer(server, {
   listen: { port: Number(process.env["PORT"]) || 4001 },
-  context: async ({ req }) => ({
-    userId: req.headers["x-user-id"] as string | undefined,
-    userRole: req.headers["x-user-role"] as string | undefined,
-  }),
+  context: async ({ req }) => {
+    const headers = {
+      "x-user-id": req.headers["x-user-id"] as string | undefined,
+      "x-user-role": req.headers["x-user-role"] as string | undefined,
+    };
+    return {
+      ...headers,
+      userId: headers["x-user-id"],
+      userRole: headers["x-user-role"],
+      trpc: createTrpcClient(headers),
+    };
+  },
 });
 
 console.info(`Subgraph tracker ready at ${url}`);

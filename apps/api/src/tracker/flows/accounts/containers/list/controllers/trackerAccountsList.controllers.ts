@@ -28,15 +28,16 @@ export const trackerAccountsListControllers = (prisma: PrismaClient) => {
       return accounts.map(mapAccount);
     },
 
-    create: async (input: {
-      storeName: string;
-      saName?: string;
-      notes?: string;
-    }) => {
-      // TODO: get userId from context when auth is wired
-      const placeholderUserId = "00000000-0000-0000-0000-000000000000";
+    create: async (
+      input: {
+        storeName: string;
+        saName?: string;
+        notes?: string;
+      },
+      userId: string,
+    ) => {
       const account = await models.create({
-        authUserId: placeholderUserId,
+        authUserId: userId,
         ...input,
       });
       return mapAccount(account);

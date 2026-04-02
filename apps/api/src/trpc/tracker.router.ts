@@ -1,4 +1,4 @@
-import { router, publicProcedure } from "./trpc.js";
+import { router, publicProcedure, protectedProcedure } from "./trpc.js";
 import { trackerDashboardHomeControllers } from "../tracker/flows/dashboard/containers/home/controllers/index.js";
 import { trackerDashboardHomeViews } from "../tracker/flows/dashboard/containers/home/views/index.js";
 import { trackerAccountsListControllers } from "../tracker/flows/accounts/containers/list/controllers/index.js";
@@ -27,12 +27,12 @@ const accountsRouter = router({
         const ctrl = trackerAccountsListControllers(ctx.prisma);
         return ctrl.all();
       }),
-    create: publicProcedure
+    create: protectedProcedure
       .input(trackerAccountsListViews.create.input)
       .output(trackerAccountsListViews.create.output)
       .mutation(async ({ ctx, input }) => {
         const ctrl = trackerAccountsListControllers(ctx.prisma);
-        return ctrl.create(input);
+        return ctrl.create(input, ctx.userId);
       }),
   }),
   detail: router({
@@ -43,14 +43,14 @@ const accountsRouter = router({
         const ctrl = trackerAccountsDetailControllers(ctx.prisma);
         return ctrl.byId(input);
       }),
-    update: publicProcedure
+    update: protectedProcedure
       .input(trackerAccountsDetailViews.update.input)
       .output(trackerAccountsDetailViews.update.output)
       .mutation(async ({ ctx, input }) => {
         const ctrl = trackerAccountsDetailControllers(ctx.prisma);
         return ctrl.update(input);
       }),
-    delete: publicProcedure
+    delete: protectedProcedure
       .input(trackerAccountsDetailViews.delete.input)
       .output(trackerAccountsDetailViews.delete.output)
       .mutation(async ({ ctx, input }) => {
