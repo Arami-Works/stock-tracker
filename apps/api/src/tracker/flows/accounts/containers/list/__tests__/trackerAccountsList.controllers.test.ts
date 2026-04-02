@@ -57,7 +57,9 @@ describe("trackerAccountsListControllers", () => {
 
     it("returns empty array when no accounts exist", async () => {
       const prisma = makePrisma();
-      (prisma.tracker_accounts.findMany as jest.Mock).mockResolvedValue([] as any);
+      (prisma.tracker_accounts.findMany as jest.Mock).mockResolvedValue(
+        [] as any,
+      );
       const ctrl = trackerAccountsListControllers(prisma);
 
       const result = await ctrl.all();
