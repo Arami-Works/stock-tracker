@@ -13,7 +13,7 @@ const mockUser = {
 const makePrisma = (findUniqueReturn: typeof mockUser | null = mockUser) =>
   ({
     auth_users: {
-      findUnique: jest.fn().mockResolvedValue(findUniqueReturn as any),
+      findUnique: (jest.fn() as any).mockResolvedValue(findUniqueReturn),
     },
   }) as any;
 
