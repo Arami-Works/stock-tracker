@@ -36,7 +36,11 @@ export const trackerResolvers = {
     ) => {
       return context.trpc.tracker.accounts.detail.byId.query({ id: ref.id });
     },
-    purchases: async (parent: { id: string }, _: unknown, context: SubgraphContext) => {
+    purchases: async (
+      parent: { id: string },
+      _: unknown,
+      context: SubgraphContext,
+    ) => {
       return context.trpc.tracker.history.browse.list.query({
         accountId: parent.id,
       });
