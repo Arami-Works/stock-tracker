@@ -12,7 +12,7 @@
     "start": "node dist/server.js",
     "lint": "eslint .",
     "check-types": "tsc --noEmit",
-    "test": "jest --passWithNoTests --testPathIgnorePatterns='__tests__'",
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --passWithNoTests --testPathIgnorePatterns='src/__tests__'",
     "test:e2e": "vitest run --config vitest.e2e.config.ts --coverage"
   },
   "dependencies": {
