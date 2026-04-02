@@ -1,0 +1,44 @@
+# docker-compose.local.yml
+# Runs the backend services as Docker containers — mirrors the Railway production build.
+#
+# Usage (inject secrets via Doppler):
+#   doppler run --config develop -- docker compose -f docker-compose.local.yml up --build
+#
+# Or use the dashboard script:
+#   npm run dev:dashboard:docker
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/node-service.Dockerfile
+      args:
+        PACKAGE_NAME: "@stock-tracker/api"
+        APP_DIR: apps/api
+    ports:
+      - "4000:4000"
+    environment:
+      - DATABASE_URL
+      - NODE_ENV=production
+      - PORT=4000
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  subgraph:
+    build:
+      context: .
+      dockerfile: infra/docker/node-service.Dockerfile
+      args:
+        PACKAGE_NAME: "@stock-tracker/subgraph-tracker"
+        APP_DIR: apps/subgraphs/tracker
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+    depends_on:
+      api:
+        condition: service_healthy
