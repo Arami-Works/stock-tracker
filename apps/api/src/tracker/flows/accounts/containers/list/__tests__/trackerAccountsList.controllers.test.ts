@@ -2,10 +2,11 @@ import { jest, describe, it, expect } from "@jest/globals";
 import { trackerAccountsListControllers } from "../controllers/trackerAccountsList.controllers.js";
 
 const now = new Date("2025-01-01T00:00:00Z");
+const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 const mockDbAccount = {
   id: "acc-001",
-  auth_user_id: "00000000-0000-0000-0000-000000000000",
+  auth_user_id: TEST_USER_ID,
   store_name: "Test Store",
   sa_name: "Test SA",
   notes: "some notes",
@@ -17,17 +18,19 @@ const makePrisma = () =>
   ({
     tracker_accounts: {
       findMany: (jest.fn() as any).mockResolvedValue([mockDbAccount]),
-      create: (jest.fn() as any).mockImplementation(({ data }: { data: any }) => {
-        return Promise.resolve({
-          id: "new-acc-id",
-          auth_user_id: data.auth_user_id,
-          store_name: data.store_name,
-          sa_name: data.sa_name ?? null,
-          notes: data.notes ?? null,
-          created_at: now,
-          updated_at: now,
-        });
-      }),
+      create: (jest.fn() as any).mockImplementation(
+        ({ data }: { data: any }) => {
+          return Promise.resolve({
+            id: "new-acc-id",
+            auth_user_id: data.auth_user_id,
+            store_name: data.store_name,
+            sa_name: data.sa_name ?? null,
+            notes: data.notes ?? null,
+            created_at: now,
+            updated_at: now,
+          });
+        },
+      ),
     },
   }) as any;
 
@@ -37,9 +40,10 @@ describe("trackerAccountsListControllers", () => {
       const prisma = makePrisma();
       const ctrl = trackerAccountsListControllers(prisma);
 
-      const result = await ctrl.all();
+      const result = await ctrl.all(TEST_USER_ID);
 
       expect(prisma.tracker_accounts.findMany).toHaveBeenCalledWith({
+        where: { auth_user_id: TEST_USER_ID },
         orderBy: { created_at: "desc" },
       });
       expect(result).toEqual([
@@ -60,15 +64,13 @@ describe("trackerAccountsListControllers", () => {
       (prisma.tracker_accounts.findMany as any).mockResolvedValue([]);
       const ctrl = trackerAccountsListControllers(prisma);
 
-      const result = await ctrl.all();
+      const result = await ctrl.all(TEST_USER_ID);
 
       expect(result).toEqual([]);
     });
   });
 
   describe("create()", () => {
-    const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
-
     it("creates an account with required fields", async () => {
       const prisma = makePrisma();
       const ctrl = trackerAccountsListControllers(prisma);
@@ -80,7 +82,7 @@ describe("trackerAccountsListControllers", () => {
 
       expect(prisma.tracker_accounts.create).toHaveBeenCalledWith({
         data: {
-          auth_user_id: "00000000-0000-0000-0000-000000000000",
+          auth_user_id: TEST_USER_ID,
           store_name: "New Store",
           sa_name: undefined,
           notes: undefined,
@@ -107,7 +109,7 @@ describe("trackerAccountsListControllers", () => {
 
       expect(prisma.tracker_accounts.create).toHaveBeenCalledWith({
         data: {
-          auth_user_id: "00000000-0000-0000-0000-000000000000",
+          auth_user_id: TEST_USER_ID,
           store_name: "Full Store",
           sa_name: "SA Name",
           notes: "detailed notes",
@@ -119,9 +121,5 @@ describe("trackerAccountsListControllers", () => {
         notes: "detailed notes",
       });
     });
-
-    // NOTE: create() already accepts userId as a parameter. Once INF-553
-    // lands protectedProcedure, the router will pass ctx.userId here
-    // instead of the placeholder.
   });
 });

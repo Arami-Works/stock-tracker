@@ -30,12 +30,11 @@ afterAll(async () => {
 });
 
 describe("auth E2E", () => {
-  it("returns null from auth.me (no userId wired yet)", async () => {
-    // auth.me currently always passes undefined — returns null.
-    // TODO [INF-553]: Once userId is wired into the router, update this
-    // test to expect the seeded user object instead of null.
+  it("returns the seeded user from auth.me", async () => {
     const result = await caller.auth.me();
-    expect(result).toBeNull();
+    expect(result).not.toBeNull();
+    expect(result?.id).toBe(TEST_USER_ID);
+    expect(result?.email).toBe("e2e@test.local");
   });
 });
 
