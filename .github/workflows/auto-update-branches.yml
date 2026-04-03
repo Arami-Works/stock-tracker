@@ -6,4 +6,4 @@ on:
 
 jobs:
   update:
-    uses: Arami-Works/.github/.github/workflows/auto-update-branches.yml@main
+    uses: aramiworks/.github/.github/workflows/auto-update-branches.yml@main
