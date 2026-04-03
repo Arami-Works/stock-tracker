@@ -11,7 +11,10 @@
       "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development"
+      "channel": "development",
+      "env": {
+        "EXPO_PUBLIC_GRAPHQL_URL": "https://router-develop-97e5.up.railway.app"
+      }
     },
     "development:simulator": {
       "extends": "development",
@@ -28,11 +31,17 @@
     "preview": {
       "extends": "base",
       "distribution": "internal",
-      "channel": "preview"
+      "channel": "preview",
+      "env": {
+        "EXPO_PUBLIC_GRAPHQL_URL": "https://router-stage-9c63.up.railway.app"
+      }
     },
     "production": {
       "extends": "base",
-      "channel": "production"
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_GRAPHQL_URL": "https://router-production-1e15.up.railway.app"
+      }
     }
   },
   "submit": {
