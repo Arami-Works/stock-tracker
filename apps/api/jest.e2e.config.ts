@@ -29,11 +29,7 @@ const config: Config = {
   coverageProvider: "v8",
   coverageReporters: ["lcov", "text"],
   coverageDirectory: "coverage",
-  collectCoverageFrom: [
-    "src/**/*.ts",
-    "!src/__tests__/**",
-    "!src/server.ts",
-  ],
+  collectCoverageFrom: ["src/**/*.ts", "!src/__tests__/**", "!src/server.ts"],
 };
 
 export default config;
