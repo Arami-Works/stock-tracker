@@ -1,16 +1,15 @@
-name: Deploy Web
+name: Deploy Storybook
 
 on:
   push:
     branches: [main, develop, stage]
     paths:
-      - "apps/mobile/**"
+      - "apps/mobile/src/**/*.stories.tsx"
+      - "apps/storybook/**"
       - "packages/**"
-      - "package.json"
-      - "package-lock.json"
 
 concurrency:
-  group: web-${{ github.ref }}
+  group: storybook-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -30,16 +29,12 @@ jobs:
       - name: Build packages
         run: npx turbo run build --filter=@stock-tracker/validation --filter=@stock-tracker/types
 
-      - name: Export web
-        run: npx expo export --platform web
-        working-directory: apps/mobile
-
-      - name: Copy Vercel config
-        run: cp apps/mobile/vercel.json apps/mobile/dist/vercel.json
+      - name: Build Storybook
+        run: npx turbo run build --filter=@stock-tracker/storybook
 
       - name: Link project
-        run: npx vercel link --yes --token=${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --project stock-tracker-web
-        working-directory: apps/mobile/dist
+        run: npx vercel link --yes --token=${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --project stock-tracker-storybook
+        working-directory: apps/storybook/storybook-static
 
       - name: Resolve Vercel flags
         id: flags
@@ -57,22 +52,24 @@ jobs:
             --token=${{ secrets.VERCEL_TOKEN }} \
             --scope ${{ secrets.VERCEL_ORG_ID }})
           echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
-        working-directory: apps/mobile/dist
+        working-directory: apps/storybook/storybook-static
 
       - name: Set branch alias
         if: github.ref != 'refs/heads/main'
         run: |
           BRANCH="${{ github.ref_name }}"
           npx vercel alias set "${{ steps.deploy.outputs.url }}" \
-            "${BRANCH}.app.stocktracker.arami.so" \
+            "${BRANCH}.storybook.stocktracker.arami.so" \
             --token="${{ secrets.VERCEL_TOKEN }}" \
             --scope "${{ secrets.VERCEL_ORG_ID }}"
-        working-directory: apps/mobile/dist
+        working-directory: apps/storybook/storybook-static
 
       - name: Deployment summary
         run: |
-          echo "### Web deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Storybook deployed" >> "$GITHUB_STEP_SUMMARY"
           echo "URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
           if [[ "${{ github.ref }}" != "refs/heads/main" ]]; then
-            echo "Alias: https://${{ github.ref_name }}.app.stocktracker.arami.so" >> "$GITHUB_STEP_SUMMARY"
+            echo "Alias: https://${{ github.ref_name }}.storybook.stocktracker.arami.so" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Alias: https://storybook.stocktracker.arami.so" >> "$GITHUB_STEP_SUMMARY"
           fi
