@@ -1,20 +1,20 @@
 procs:
   api:
-    cmd: doppler run --config local -- npm run dev:api
+    cmd: doppler run -- npm run dev:api
     autostart: true
 
   subgraph:
-    cmd: doppler run --config local -- npm run dev:subgraph
+    cmd: doppler run -- npm run dev:subgraph
     autostart: true
 
   router:
-    cmd: doppler run --config local -- npm run dev:router
+    cmd: doppler run -- npm run dev:router
     autostart: true
 
   mobile:
-    cmd: doppler run --config local -- npm run dev:mobile
+    cmd: doppler run -- npm run dev:mobile
     autostart: true
 
   storybook:
-    cmd: doppler run --config local -- npm run dev:storybook
+    cmd: doppler run -- npm run dev:storybook
     autostart: false
