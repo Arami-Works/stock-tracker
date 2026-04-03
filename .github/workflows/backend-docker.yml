@@ -2,7 +2,7 @@ name: Backend Docker
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop, stage]
     paths:
       - "apps/api/**"
       - "apps/subgraphs/**"
@@ -53,8 +53,14 @@ jobs:
         id: tags
         run: |
           SHA="${{ github.sha }}"
+          BRANCH="${{ github.ref_name }}"
           IMAGE="ghcr.io/${{ github.repository_owner }}/stock-tracker-${{ matrix.service }}"
-          echo "tags=${IMAGE}:${SHA},${IMAGE}:latest" >> "$GITHUB_OUTPUT"
+          if [ "$BRANCH" = "main" ]; then
+            ENV_TAG="latest"
+          else
+            ENV_TAG="$BRANCH"
+          fi
+          echo "tags=${IMAGE}:${SHA},${IMAGE}:${ENV_TAG}" >> "$GITHUB_OUTPUT"
 
       - uses: docker/build-push-action@v6
         with:
@@ -79,7 +85,17 @@ jobs:
       - name: Install redeploy deps
         run: npm install --prefix infra/railway
 
+      - name: Resolve Railway environment
+        id: env
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          if [ "$BRANCH" = "main" ]; then
+            echo "name=production" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Trigger Railway redeploy
-        run: npx --prefix infra/railway tsx infra/railway/src/redeploy.ts production
+        run: npx --prefix infra/railway tsx infra/railway/src/redeploy.ts ${{ steps.env.outputs.name }}
         env:
           RAILWAY_API_TOKEN: ${{ secrets.RAILWAY_API_TOKEN }}
