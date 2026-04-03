@@ -22,6 +22,12 @@
         "simulator": true
       }
     },
+    "storybook": {
+      "extends": "development",
+      "env": {
+        "STORYBOOK_ENABLED": "true"
+      }
+    },
     "preview": {
       "extends": "base",
       "distribution": "internal",
