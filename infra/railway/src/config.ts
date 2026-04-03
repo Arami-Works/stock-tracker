@@ -34,14 +34,14 @@ export const ENVIRONMENTS: Record<string, EnvironmentConfig> = {
 export const SERVICES: ServiceDef[] = [
   {
     name: "api",
-    image: "ghcr.io/cheunjm/stock-tracker-api",
+    image: "ghcr.io/arami-works/stock-tracker-api",
     port: 4000,
     healthcheckPath: "/health",
   },
   // Future: uncomment when Dockerized
   // {
   //   name: "subgraph-tracker",
-  //   image: "ghcr.io/cheunjm/stock-tracker-subgraph-tracker",
+  //   image: "ghcr.io/arami-works/stock-tracker-subgraph-tracker",
   //   port: 4001,
   //   healthcheckPath: "/health",
   // },
