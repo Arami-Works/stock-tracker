@@ -31,3 +31,7 @@ supergraph:
 
 sandbox:
   enabled: true
+
+# Bind to all interfaces so rover dev is reachable from real devices on LAN
+server:
+  listen: 0.0.0.0:4002

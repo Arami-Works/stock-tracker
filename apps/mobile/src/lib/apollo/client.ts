@@ -3,7 +3,7 @@ import { setContext } from "@apollo/client/link/context";
 import { supabase } from "../supabase";
 
 const ROUTER_URL =
-  process.env.EXPO_PUBLIC_GRAPHQL_URL || "http://localhost:4000/graphql";
+  process.env.EXPO_PUBLIC_GRAPHQL_URL || "http://localhost:4002";
 
 const httpLink = new HttpLink({ uri: ROUTER_URL });
 
