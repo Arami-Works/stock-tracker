@@ -43,6 +43,10 @@ jobs:
 
       - name: Export web app
         if: steps.check-flows.outputs.has_flows == 'true'
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwbGFjZWhvbGRlciJ9.placeholder
+          EXPO_PUBLIC_GRAPHQL_URL: http://localhost:4002
         run: npx expo export --platform web
         working-directory: apps/mobile
 
