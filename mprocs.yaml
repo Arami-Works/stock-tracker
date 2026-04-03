@@ -8,7 +8,8 @@ procs:
     autostart: true
 
   router:
-    cmd: ["doppler", "run", "--project", "stock-tracker", "--config", "local", "--", "npm", "run", "dev:router"]
+    cmd: ["doppler", "run", "--project", "stock-tracker", "--config", "local", "--", "rover", "dev", "--supergraph-config", "supergraph.yaml", "--router-config", "router.yaml"]
+    cwd: apps/router
     autostart: true
 
   mobile:
