@@ -1,0 +1,5 @@
+{
+  "buildCommand": "npx turbo run build --filter=@stock-tracker/validation --filter=@stock-tracker/types && npx storybook build",
+  "outputDirectory": "storybook-static",
+  "cleanUrls": true
+}
