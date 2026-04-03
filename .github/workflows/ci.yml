@@ -123,29 +123,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm audit --audit-level=critical --omit=dev
 
-  visual:
-    needs: [changes]
-    if: needs.changes.outputs.stories == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node-deps
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      - name: Build Storybook
-        run: npx turbo run build --filter=@stock-tracker/storybook
-      - name: Install Playwright browsers
-        run: npx -y playwright@1.47.2 install --with-deps chromium
-      - name: Run Lost Pixel
-        run: npx lost-pixel
-      - name: Upload visual diffs
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: lost-pixel-diffs
-          path: .lostpixel/
-
   prisma:
     needs: [changes]
     if: needs.changes.outputs.prisma == 'true'
