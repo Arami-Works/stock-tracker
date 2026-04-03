@@ -42,7 +42,7 @@ jobs:
         run: npx prisma db push --schema packages/prisma/prisma/schema --skip-generate
       - name: Run E2E tests
         working-directory: apps/api
-        run: npx vitest run --config vitest.e2e.config.ts --coverage
+        run: NODE_OPTIONS='--experimental-vm-modules' npx jest --config jest.e2e.config.ts
       - name: Upload coverage to Codecov
         if: always()
         uses: codecov/codecov-action@v5

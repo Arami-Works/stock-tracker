@@ -23,8 +23,13 @@ const config: Config = {
     ],
   },
   transformIgnorePatterns: ["node_modules/(?!(@stock-tracker)/)"],
-  testMatch: ["**/__tests__/**/*.test.ts", "!**/__tests__/**/*.e2e.test.ts"],
+  testMatch: ["**/__tests__/**/*.e2e.test.ts"],
   testTimeout: 30000,
+  collectCoverage: true,
+  coverageProvider: "v8",
+  coverageReporters: ["lcov", "text"],
+  coverageDirectory: "coverage",
+  collectCoverageFrom: ["src/**/*.ts", "!src/__tests__/**", "!src/server.ts"],
 };
 
 export default config;
