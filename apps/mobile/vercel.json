@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run -w @stock-tracker/validation build && npm run -w @stock-tracker/types build && npx expo export --platform web",
+  "buildCommand": "npx turbo run build --filter=@stock-tracker/validation --filter=@stock-tracker/types && npx expo export --platform web",
   "outputDirectory": "dist",
   "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
