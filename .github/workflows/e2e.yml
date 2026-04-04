@@ -72,15 +72,27 @@ jobs:
         if: steps.check-flows.outputs.has_flows == 'true'
         run: npx wait-on http://localhost:8080 --timeout 30000
 
-      - name: Debug — check served content
+      - name: Debug — capture browser console
         if: steps.check-flows.outputs.has_flows == 'true'
         run: |
-          echo "=== Export directory ==="
-          find apps/mobile/dist -type f | head -30
-          echo "=== HTML content ==="
-          cat apps/mobile/dist/index.html
-          echo "=== Curl response ==="
-          curl -s http://localhost:8080 | head -50
+          npx puppeteer browsers install chrome
+          node -e "
+          const puppeteer = require('puppeteer');
+          (async () => {
+            const browser = await puppeteer.launch({
+              headless: 'new',
+              args: ['--no-sandbox', '--disable-setuid-sandbox']
+            });
+            const page = await browser.newPage();
+            page.on('console', msg => console.log('CONSOLE:', msg.type(), msg.text()));
+            page.on('pageerror', err => console.log('PAGE ERROR:', err.message));
+            await page.goto('http://localhost:8080', { waitUntil: 'networkidle0', timeout: 15000 }).catch(e => console.log('NAV ERROR:', e.message));
+            const content = await page.content();
+            console.log('PAGE TITLE:', await page.title());
+            console.log('ROOT HTML:', content.substring(content.indexOf('<div id=\"root\">'), content.indexOf('<div id=\"root\">') + 200));
+            await browser.close();
+          })();
+          "
 
       - name: Run Maestro E2E tests
         if: steps.check-flows.outputs.has_flows == 'true'
