@@ -72,6 +72,16 @@ jobs:
         if: steps.check-flows.outputs.has_flows == 'true'
         run: npx wait-on http://localhost:8080 --timeout 30000
 
+      - name: Debug — check served content
+        if: steps.check-flows.outputs.has_flows == 'true'
+        run: |
+          echo "=== Export directory ==="
+          find apps/mobile/dist -type f | head -30
+          echo "=== HTML content ==="
+          cat apps/mobile/dist/index.html
+          echo "=== Curl response ==="
+          curl -s http://localhost:8080 | head -50
+
       - name: Run Maestro E2E tests
         if: steps.check-flows.outputs.has_flows == 'true'
         run: |
