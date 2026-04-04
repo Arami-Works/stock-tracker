@@ -75,7 +75,7 @@ jobs:
       - name: Debug — capture browser output
         if: steps.check-flows.outputs.has_flows == 'true'
         run: |
-          timeout 15 google-chrome-stable --headless=new --dump-dom --no-sandbox --disable-gpu http://localhost:8080 2>&1 || true
+          timeout 20 google-chrome-stable --headless=new --dump-dom --no-sandbox --disable-gpu --virtual-time-budget=10000 --enable-logging=stderr --v=0 http://localhost:8080 2>&1 || true
 
       - name: Run Maestro E2E tests
         if: steps.check-flows.outputs.has_flows == 'true'
