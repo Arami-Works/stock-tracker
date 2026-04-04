@@ -1,6 +1,7 @@
 name: Backend Docker
 
 on:
+  workflow_dispatch:
   push:
     branches: [main, develop, stage]
     paths:
