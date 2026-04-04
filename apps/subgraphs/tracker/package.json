@@ -14,6 +14,7 @@
   "dependencies": {
     "@apollo/server": "^4.11.0",
     "@apollo/subgraph": "^2.9.0",
+    "@stock-tracker/api": "*",
     "@stock-tracker/types": "*",
     "@stock-tracker/validation": "*",
     "@trpc/client": "^11.1.0",
