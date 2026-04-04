@@ -2,15 +2,18 @@ name: E2E
 
 on:
   pull_request:
-    types: [ready_for_review]
+    types: [opened, synchronize, ready_for_review]
     paths:
       - "apps/mobile/**"
       - "packages/**"
 
+env:
+  MAESTRO_VERSION: 2.4.0
+  MAESTRO_APP_URL: http://localhost:8080
+
 jobs:
-  maestro:
-    if: github.event.pull_request.base.ref == 'stage'
-    runs-on: macos-latest
+  maestro-web:
+    runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -34,25 +37,47 @@ jobs:
         if: steps.check-flows.outputs.has_flows == 'true'
         run: npm ci
 
-      - name: Install Maestro CLI
+      - name: Build packages
+        if: steps.check-flows.outputs.has_flows == 'true'
+        run: npx turbo run build --filter='./packages/*'
+
+      - name: Export web app
         if: steps.check-flows.outputs.has_flows == 'true'
         env:
-          MAESTRO_VERSION: 1.39.15
+          EXPO_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwbGFjZWhvbGRlciJ9.placeholder
+          EXPO_PUBLIC_GRAPHQL_URL: http://localhost:4002
+          EXPO_PUBLIC_GOOGLE_CLIENT_ID: placeholder.apps.googleusercontent.com
+        run: npx expo export --platform web
+        working-directory: apps/mobile
+
+      - name: Serve web app
+        if: steps.check-flows.outputs.has_flows == 'true'
+        working-directory: apps/mobile
+        run: npx serve@latest dist -p 8080 &
+
+      - name: Install Maestro CLI
+        if: steps.check-flows.outputs.has_flows == 'true'
         run: |
           curl -fsSL -o /tmp/maestro-install.sh "https://get.maestro.mobile.dev"
           bash /tmp/maestro-install.sh
           rm /tmp/maestro-install.sh
 
-      - name: Build iOS app
+      - name: Start virtual display
         if: steps.check-flows.outputs.has_flows == 'true'
-        run: npx expo run:ios --no-install
-        working-directory: apps/mobile
+        run: |
+          Xvfb :99 -screen 0 1280x720x24 &
+          echo "DISPLAY=:99" >> "$GITHUB_ENV"
+
+      - name: Wait for server
+        if: steps.check-flows.outputs.has_flows == 'true'
+        run: npx wait-on http://localhost:8080 --timeout 30000
 
       - name: Run Maestro E2E tests
         if: steps.check-flows.outputs.has_flows == 'true'
         run: |
           export PATH="$PATH:$HOME/.maestro/bin"
-          maestro test apps/mobile/maestro/
+          maestro test --exclude-tags=authenticated apps/mobile/maestro/
 
       - name: Upload Maestro test results
         if: always() && steps.check-flows.outputs.has_flows == 'true'

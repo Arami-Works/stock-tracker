@@ -1,5 +1,7 @@
-appId: so.arami.stocktracker.app.develop
+url: ${MAESTRO_APP_URL}
 name: Dashboard Home
+tags:
+  - authenticated
 ---
 - launchApp
 
