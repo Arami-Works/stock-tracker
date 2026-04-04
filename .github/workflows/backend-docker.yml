@@ -62,13 +62,23 @@ jobs:
           fi
           echo "tags=${IMAGE}:${SHA},${IMAGE}:${ENV_TAG}" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve build args
+        id: build-args
+        if: matrix.package != ''
+        run: |
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "args<<$EOF" >> "$GITHUB_OUTPUT"
+          echo "PACKAGE_NAME=${{ matrix.package }}" >> "$GITHUB_OUTPUT"
+          echo "APP_DIR=${{ matrix.dir }}" >> "$GITHUB_OUTPUT"
+          echo "$EOF" >> "$GITHUB_OUTPUT"
+
       - uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
           tags: ${{ steps.tags.outputs.tags }}
-          build-args: ${{ matrix.package != '' && format('PACKAGE_NAME={0}\nAPP_DIR={1}', matrix.package, matrix.dir) || '' }}
+          build-args: ${{ steps.build-args.outputs.args }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
