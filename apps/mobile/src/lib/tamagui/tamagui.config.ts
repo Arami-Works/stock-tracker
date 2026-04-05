@@ -1,1 +1,1 @@
-export { config as default } from "@arami-works/ui";
+export { config as default } from "@aramiworks/ui";

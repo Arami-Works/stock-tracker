@@ -1,6 +1,6 @@
 import { memo, useState, type ReactNode } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
-import { Text, FAB } from "@arami-works/ui";
+import { Text, FAB } from "@aramiworks/ui";
 import type {
   TrackerDashboardHomeScreenState,
   TrackerDashboardHomeControllersOutput,

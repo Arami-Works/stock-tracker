@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { FAB } from "@arami-works/ui";
+import { FAB } from "@aramiworks/ui";
 
 type TrackerDashboardHomeRefreshFabViewProps = {
   onPress?: () => void;

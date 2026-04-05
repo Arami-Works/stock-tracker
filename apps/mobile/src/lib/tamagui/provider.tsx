@@ -1,5 +1,5 @@
 import { TamaguiProvider } from "tamagui";
-import { config } from "@arami-works/ui";
+import { config } from "@aramiworks/ui";
 import type { PropsWithChildren } from "react";
 
 export function AppTamaguiProvider({ children }: PropsWithChildren) {

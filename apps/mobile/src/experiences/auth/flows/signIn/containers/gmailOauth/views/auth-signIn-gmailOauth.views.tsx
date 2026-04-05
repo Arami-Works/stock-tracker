@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { View, StyleSheet } from "react-native";
-import { Button, Text, ProgressIndicator } from "@arami-works/ui";
+import { Button, Text, ProgressIndicator } from "@aramiworks/ui";
 import { useAuthSignInGmailOauthControllers } from "../controllers/auth-signIn-gmailOauth.controllers";
 
 export const AuthSignInGmailOauthViews = memo(() => {

@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@apollo/client": "^4.1.6",
-    "@arami-works/ui": "aramiworks/ui",
+    "@aramiworks/ui": "^0.2.1",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
     "@stock-tracker/config": "*",
