@@ -1,0 +1,69 @@
+name: EAS Update (OTA)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'apps/mobile/src/**'
+      - 'apps/mobile/app.config.ts'
+
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: "EAS update channel"
+        required: true
+        type: choice
+        options:
+          - develop
+          - stage
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve channel
+        id: channel
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "name=${{ inputs.channel }}" >> $GITHUB_OUTPUT
+          else
+            echo "name=master" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Read package version
+        id: version
+        run: echo "version=$(node -p "require('./apps/mobile/package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Publish OTA update
+        working-directory: apps/mobile
+        run: |
+          eas update \
+            --channel ${{ steps.channel.outputs.name }} \
+            --message "v${{ steps.version.outputs.version }} — ${{ github.event.head_commit.message || 'manual dispatch' }}" \
+            --non-interactive
+
+      - name: Notify Slack
+        if: success()
+        run: |
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
+              \"text\": \"🔄 *OTA Update published* — stock-tracker v${{ steps.version.outputs.version }}\n• Channel: ${{ steps.channel.outputs.name }}\n• <https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run>\"
+            }"

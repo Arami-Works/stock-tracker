@@ -1,0 +1,62 @@
+name: Prerelease
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: "Release phase"
+        required: true
+        type: choice
+        options:
+          - enter-dev
+          - enter-rc
+          - release-stable
+
+permissions:
+  contents: write
+
+jobs:
+  prerelease:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Enter dev prerelease
+        if: inputs.phase == 'enter-dev'
+        run: |
+          npx changeset pre exit 2>/dev/null || true
+          npx changeset pre enter dev
+          git add .
+          git commit -m "chore: enter dev prerelease mode" || true
+          git push
+
+      - name: Enter rc prerelease
+        if: inputs.phase == 'enter-rc'
+        run: |
+          npx changeset pre exit 2>/dev/null || true
+          npx changeset pre enter rc
+          git add .
+          git commit -m "chore: enter rc prerelease mode" || true
+          git push
+
+      - name: Release stable
+        if: inputs.phase == 'release-stable'
+        run: |
+          npx changeset pre exit
+          git add .
+          git commit -m "chore: exit prerelease — stable release" || true
+          git push

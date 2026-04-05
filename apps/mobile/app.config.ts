@@ -1,20 +1,20 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
 
 const ENV_SUFFIX: Record<string, string> = {
-  development: ".develop",
-  preview: ".stage",
-  production: "",
+  develop: ".develop",
+  stage: ".stage",
+  master: "",
 };
 
 const ENV_NAME: Record<string, string> = {
-  development: " (Dev)",
-  preview: " (Stage)",
-  production: "",
+  develop: " (Dev)",
+  stage: " (Stage)",
+  master: "",
 };
 
-const profile = process.env.EAS_BUILD_PROFILE ?? "development";
-const suffix = ENV_SUFFIX[profile] ?? ".develop";
-const nameSuffix = ENV_NAME[profile] ?? " (Dev)";
+const appEnv = process.env.APP_ENV ?? "develop";
+const suffix = ENV_SUFFIX[appEnv] ?? ".develop";
+const nameSuffix = ENV_NAME[appEnv] ?? " (Dev)";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
