@@ -7,45 +7,61 @@
     "base": {
       "node": "20.19.4"
     },
-    "development": {
+    "develop": {
       "extends": "base",
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development",
+      "channel": "develop",
       "env": {
+        "APP_ENV": "develop",
         "EXPO_PUBLIC_GRAPHQL_URL": "https://router-develop-97e5.up.railway.app"
       }
     },
-    "development:simulator": {
-      "extends": "development",
+    "develop-simulator": {
+      "extends": "develop",
       "ios": {
         "simulator": true
       }
     },
     "storybook": {
-      "extends": "development",
+      "extends": "develop",
       "env": {
         "STORYBOOK_ENABLED": "true"
       }
     },
-    "preview": {
+    "stage": {
       "extends": "base",
       "distribution": "internal",
-      "channel": "preview",
+      "channel": "stage",
       "env": {
+        "APP_ENV": "stage",
         "EXPO_PUBLIC_GRAPHQL_URL": "https://router-stage-9c63.up.railway.app"
       }
     },
-    "production": {
+    "stage-simulator": {
+      "extends": "stage",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "master": {
       "extends": "base",
-      "channel": "production",
+      "channel": "master",
       "env": {
+        "APP_ENV": "master",
         "EXPO_PUBLIC_GRAPHQL_URL": "https://router-production-1e15.up.railway.app"
+      }
+    },
+    "master-simulator": {
+      "extends": "master",
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
       }
     }
   },
   "submit": {
-    "production": {
+    "master": {
       "ios": {
         "appleId": "jaemin@cheunjm.com",
         "ascAppId": "TODO",
