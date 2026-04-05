@@ -7,19 +7,12 @@ const meta: Meta<typeof TrackerDashboardHomeRefreshFabView> = {
   title: "tracker/dashboard/home/refreshFab.view",
   component: TrackerDashboardHomeRefreshFabView,
   parameters: { layout: "centered" },
-  argTypes: {
-    state: {
-      control: { type: "select" },
-      options: ["default", "loading"],
-    },
-  },
 };
 
 export default meta;
 type Story = StoryObj<typeof TrackerDashboardHomeRefreshFabView>;
 
-export const Default: Story = { args: { state: "default" } };
-export const Loading: Story = { args: { state: "loading" } };
+export const Default: Story = { args: {} };
 
 export const FigmaMirror: Story = {
   render: () => (
@@ -28,11 +21,7 @@ export const FigmaMirror: Story = {
       variants={[
         {
           name: "default",
-          render: () => <TrackerDashboardHomeRefreshFabView state="default" />,
-        },
-        {
-          name: "loading",
-          render: () => <TrackerDashboardHomeRefreshFabView state="loading" />,
+          render: () => <TrackerDashboardHomeRefreshFabView />,
         },
       ]}
     />
