@@ -88,12 +88,14 @@ const accounts = await restFetch("/tracker_accounts", {
       store_name: "까르띠에 청담",
       sa_name: "김SA",
       notes: "E2E 테스트 계좌 1",
+      updated_at: now,
     },
     {
       auth_user_id: user.id,
       store_name: "까르띠에 롯데",
       sa_name: "이SA",
       notes: "E2E 테스트 계좌 2",
+      updated_at: now,
     },
   ]),
 });
@@ -112,6 +114,7 @@ await restFetch("/tracker_purchases", {
       currency: "KRW",
       purchase_date: "2025-06-15",
       store_location: "청담",
+      updated_at: now,
     },
     {
       tracker_account_id: sa1.id,
@@ -121,6 +124,7 @@ await restFetch("/tracker_purchases", {
       currency: "KRW",
       purchase_date: "2025-09-20",
       store_location: "청담",
+      updated_at: now,
     },
     {
       tracker_account_id: sa2.id,
@@ -130,6 +134,7 @@ await restFetch("/tracker_purchases", {
       currency: "KRW",
       purchase_date: "2025-11-01",
       store_location: "롯데",
+      updated_at: now,
     },
   ]),
 });
