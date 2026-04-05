@@ -7,7 +7,7 @@ Cartier purchase tracker. Turborepo monorepo with Expo mobile app and tRPC/Graph
 | Layer           | Choice                                   |
 | --------------- | ---------------------------------------- |
 | Mobile          | Expo SDK 55, Expo Router v4              |
-| Design system   | @aramiworks/ui (Tamagui + MD3)          |
+| Design system   | @aramiworks/ui (Tamagui + MD3)           |
 | State           | Zustand (per EFCV level)                 |
 | Forms           | React Hook Form + Zod                    |
 | Backend         | tRPC v11, Node.js TypeScript             |
