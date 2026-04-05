@@ -2,7 +2,7 @@ name: Schema Publish
 
 on:
   push:
-    branches: [main, develop, stage]
+    branches: [main]
     paths:
       - "apps/subgraphs/**"
 
@@ -41,14 +41,9 @@ jobs:
       - name: Resolve Apollo graph ref
         id: graph_ref
         run: |
-          BRANCH="${{ github.ref_name }}"
           BASE_REF="${{ vars.APOLLO_GRAPH_REF }}"
           GRAPH_ID="${BASE_REF%%@*}"
-          if [ "$BRANCH" = "main" ]; then
-            echo "ref=${GRAPH_ID}@current" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=${GRAPH_ID}@${BRANCH}" >> "$GITHUB_OUTPUT"
-          fi
+          echo "ref=${GRAPH_ID}@current" >> "$GITHUB_OUTPUT"
 
       - name: Publish schema
         run: |
