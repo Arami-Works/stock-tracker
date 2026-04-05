@@ -14,10 +14,12 @@
   "devDependencies": {
     "@stock-tracker/eslint-config": "*",
     "@stock-tracker/typescript-config": "*",
+    "@storybook/addon-essentials": "^8.0.0",
     "@storybook/react": "^8.0.0",
     "@storybook/react-vite": "^8.0.0",
     "react-native-web": "^0.21.2",
     "storybook": "^8.0.0",
+    "storybook-addon-designs": "^9.0.0",
     "typescript": "5.9.2",
     "vite": "^8.0.3"
   }
