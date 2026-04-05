@@ -15,7 +15,9 @@ async function main() {
     throw new Error("E2E_SUPABASE_USER_ID env var is required");
   }
 
-  console.log(`Seeding E2E data for ${E2E_EMAIL} (supabase_id: ${E2E_SUPABASE_ID})`);
+  console.log(
+    `Seeding E2E data for ${E2E_EMAIL} (supabase_id: ${E2E_SUPABASE_ID})`,
+  );
 
   // Upsert auth user
   const user = await prisma.auth_users.upsert({
