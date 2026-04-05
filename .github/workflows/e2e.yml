@@ -7,6 +7,10 @@ on:
       - "apps/mobile/**"
       - "packages/**"
 
+permissions:
+  contents: read
+  packages: read
+
 env:
   MAESTRO_VERSION: 2.4.0
   MAESTRO_APP_URL: http://localhost:8080
@@ -32,10 +36,14 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@aramiworks"
 
       - name: Install dependencies
         if: steps.check-flows.outputs.has_flows == 'true'
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build packages
         if: steps.check-flows.outputs.has_flows == 'true'
