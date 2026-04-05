@@ -52,12 +52,30 @@ jobs:
       - name: Export web app
         if: steps.check-flows.outputs.has_flows == 'true'
         env:
-          EXPO_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
-          EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwbGFjZWhvbGRlciJ9.placeholder
-          EXPO_PUBLIC_GRAPHQL_URL: http://localhost:4002
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_GRAPHQL_URL: ${{ secrets.E2E_GRAPHQL_URL }}
           EXPO_PUBLIC_GOOGLE_CLIENT_ID: placeholder.apps.googleusercontent.com
         run: npx expo export --platform web
         working-directory: apps/mobile
+
+      - name: Inject E2E session into index.html
+        if: steps.check-flows.outputs.has_flows == 'true'
+        env:
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        run: node scripts/e2e-inject-session.mjs
+
+      - name: Seed E2E test data
+        if: steps.check-flows.outputs.has_flows == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+        run: node scripts/e2e-seed.mjs
 
       - name: Serve web app
         if: steps.check-flows.outputs.has_flows == 'true'
@@ -85,7 +103,7 @@ jobs:
         if: steps.check-flows.outputs.has_flows == 'true'
         run: |
           export PATH="$PATH:$HOME/.maestro/bin"
-          maestro test --exclude-tags=authenticated apps/mobile/maestro/
+          maestro test apps/mobile/maestro/
 
       - name: Upload Maestro test results
         if: always() && steps.check-flows.outputs.has_flows == 'true'
