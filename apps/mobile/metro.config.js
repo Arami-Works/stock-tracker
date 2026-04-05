@@ -13,4 +13,21 @@ config.resolver.nodeModulesPaths = [
 ];
 config.resolver.unstable_enablePackageExports = true;
 
+const defaultResolver = config.resolver.resolveRequest;
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (moduleName === "@aramiworks/ui") {
+    return {
+      filePath: path.resolve(
+        monorepoRoot,
+        "node_modules/@aramiworks/ui/src/index.ts",
+      ),
+      type: "sourceFile",
+    };
+  }
+  if (defaultResolver) {
+    return defaultResolver(context, moduleName, platform);
+  }
+  return context.resolveRequest(context, moduleName, platform);
+};
+
 module.exports = config;

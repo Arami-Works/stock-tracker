@@ -14,13 +14,14 @@ const config: StorybookConfig = {
       ...config.resolve.alias,
       "react-native": "react-native-web",
       "@": path.resolve(__dirname, "../../mobile/src"),
-    };
-    config.optimizeDeps = {
-      ...config.optimizeDeps,
-      esbuildOptions: {
-        ...(config.optimizeDeps?.esbuildOptions as object),
-        loader: { ".js": "jsx" },
-      },
+      "@expo/vector-icons": path.resolve(
+        __dirname,
+        "./mocks/expo-vector-icons.js",
+      ),
+      "@expo/vector-icons/MaterialIcons": path.resolve(
+        __dirname,
+        "./mocks/expo-vector-icons.js",
+      ),
     };
     return config;
   },
