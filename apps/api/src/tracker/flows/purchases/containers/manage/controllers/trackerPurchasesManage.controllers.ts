@@ -8,7 +8,9 @@ type PurchaseWithAccount = NonNullable<
   >
 >;
 
-const mapPurchase = (p: PurchaseWithAccount | Omit<PurchaseWithAccount, "tracker_account">) => ({
+const mapPurchase = (
+  p: PurchaseWithAccount | Omit<PurchaseWithAccount, "tracker_account">,
+) => ({
   id: p.id,
   trackerAccountId: p.tracker_account_id,
   itemName: p.item_name,

@@ -102,10 +102,9 @@ export const trackerResolvers = {
       args: { id: string },
       context: SubgraphContext,
     ) => {
-      const result =
-        await context.trpc.tracker.purchases.manage.delete.mutate({
-          id: args.id,
-        });
+      const result = await context.trpc.tracker.purchases.manage.delete.mutate({
+        id: args.id,
+      });
       return result.success;
     },
   },

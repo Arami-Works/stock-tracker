@@ -38,29 +38,27 @@ const makePrisma = () =>
   ({
     tracker_purchases: {
       findUnique: (jest.fn() as any).mockResolvedValue(mockDbPurchase),
-      create: (jest.fn() as any).mockImplementation(
-        ({ data }: { data: any }) =>
-          Promise.resolve({
-            id: "new-pur-id",
-            tracker_account_id: data.tracker_account_id,
-            item_name: data.item_name,
-            item_category: data.item_category ?? null,
-            amount: new Decimal(String(data.amount ?? 0)),
-            currency: data.currency ?? "KRW",
-            purchase_date: data.purchase_date,
-            store_location: data.store_location ?? null,
-            notes: data.notes ?? null,
-            created_at: now,
-            updated_at: now,
-          }),
+      create: (jest.fn() as any).mockImplementation(({ data }: { data: any }) =>
+        Promise.resolve({
+          id: "new-pur-id",
+          tracker_account_id: data.tracker_account_id,
+          item_name: data.item_name,
+          item_category: data.item_category ?? null,
+          amount: new Decimal(String(data.amount ?? 0)),
+          currency: data.currency ?? "KRW",
+          purchase_date: data.purchase_date,
+          store_location: data.store_location ?? null,
+          notes: data.notes ?? null,
+          created_at: now,
+          updated_at: now,
+        }),
       ),
-      update: (jest.fn() as any).mockImplementation(
-        ({ data }: { data: any }) =>
-          Promise.resolve({
-            ...mockDbPurchase,
-            ...data,
-            tracker_account: undefined,
-          }),
+      update: (jest.fn() as any).mockImplementation(({ data }: { data: any }) =>
+        Promise.resolve({
+          ...mockDbPurchase,
+          ...data,
+          tracker_account: undefined,
+        }),
       ),
       delete: (jest.fn() as any).mockResolvedValue(mockDbPurchase),
     },
@@ -87,9 +85,9 @@ describe("trackerPurchasesManageControllers", () => {
       (prisma.tracker_purchases.findUnique as any).mockResolvedValue(null);
       const ctrl = trackerPurchasesManageControllers(prisma);
 
-      await expect(
-        ctrl.byId({ id: "missing" }, TEST_USER_ID),
-      ).rejects.toThrow(TRPCError);
+      await expect(ctrl.byId({ id: "missing" }, TEST_USER_ID)).rejects.toThrow(
+        TRPCError,
+      );
     });
 
     it("throws FORBIDDEN for wrong owner", async () => {
