@@ -8,6 +8,10 @@ on:
       - "packages/prisma/**"
       - "packages/validation/**"
 
+permissions:
+  contents: read
+  packages: read
+
 env:
   NODE_VERSION: 20
   DATABASE_URL: postgresql://postgres:test@localhost:5432/test
@@ -31,11 +35,10 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-      - run: npm ci
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build packages
         run: npx turbo run build --filter='./packages/*'
       - name: Push schema to test DB
