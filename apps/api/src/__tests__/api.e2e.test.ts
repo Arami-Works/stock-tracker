@@ -4,9 +4,6 @@ import { appRouter } from "../trpc/router.js";
 const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
-// Pass userId in context — backwards-compatible with current tRPC context.
-// TODO [INF-553]: Once protectedProcedure lands, this userId will be used
-// by auth-gated routes.
 const caller = appRouter.createCaller({ prisma, userId: TEST_USER_ID } as any);
 
 beforeAll(async () => {
@@ -90,5 +87,81 @@ describe("tRPC API E2E", () => {
 
     const accounts = await caller.tracker.accounts.list.all();
     expect(accounts.some((a) => a.id === accountId)).toBe(false);
+  });
+});
+
+describe("purchases E2E", () => {
+  let accountId: string;
+  let purchaseId: string;
+
+  beforeAll(async () => {
+    const account = await caller.tracker.accounts.list.create({
+      storeName: "Purchase Test Store",
+    });
+    accountId = account.id;
+  });
+
+  afterAll(async () => {
+    await prisma.tracker_purchases.deleteMany({
+      where: { tracker_account_id: accountId },
+    });
+    await prisma.tracker_accounts.deleteMany({ where: { id: accountId } });
+  });
+
+  it("creates a purchase", async () => {
+    const result = await caller.tracker.purchases.manage.create({
+      accountId,
+      itemName: "Test Ring",
+      amount: 5000000,
+      purchaseDate: "2025-01-15",
+      currency: "KRW",
+      itemCategory: "Ring",
+    });
+
+    expect(result.id).toBeDefined();
+    expect(result.itemName).toBe("Test Ring");
+    expect(result.amount).toBe("5000000");
+    expect(result.trackerAccountId).toBe(accountId);
+    purchaseId = result.id;
+  });
+
+  it("gets a purchase by id", async () => {
+    const result = await caller.tracker.purchases.manage.byId({
+      id: purchaseId,
+    });
+    expect(result.id).toBe(purchaseId);
+    expect(result.itemName).toBe("Test Ring");
+  });
+
+  it("lists purchases via history browse", async () => {
+    const results = await caller.tracker.history.browse.list({
+      accountId,
+    });
+    expect(results.length).toBeGreaterThanOrEqual(1);
+    expect(results.some((p) => p.id === purchaseId)).toBe(true);
+  });
+
+  it("updates a purchase", async () => {
+    const updated = await caller.tracker.purchases.manage.update({
+      id: purchaseId,
+      itemName: "Updated Ring",
+      amount: 6000000,
+      notes: "updated via e2e",
+    });
+    expect(updated.itemName).toBe("Updated Ring");
+    expect(updated.amount).toBe("6000000");
+    expect(updated.notes).toBe("updated via e2e");
+  });
+
+  it("deletes a purchase", async () => {
+    const deleted = await caller.tracker.purchases.manage.delete({
+      id: purchaseId,
+    });
+    expect(deleted.success).toBe(true);
+
+    const results = await caller.tracker.history.browse.list({
+      accountId,
+    });
+    expect(results.some((p) => p.id === purchaseId)).toBe(false);
   });
 });

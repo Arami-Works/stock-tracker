@@ -7,6 +7,8 @@ import { trackerAccountsDetailControllers } from "../tracker/flows/accounts/cont
 import { trackerAccountsDetailViews } from "../tracker/flows/accounts/containers/detail/views/index.js";
 import { trackerHistoryBrowseControllers } from "../tracker/flows/history/containers/browse/controllers/index.js";
 import { trackerHistoryBrowseViews } from "../tracker/flows/history/containers/browse/views/index.js";
+import { trackerPurchasesManageControllers } from "../tracker/flows/purchases/containers/manage/controllers/index.js";
+import { trackerPurchasesManageViews } from "../tracker/flows/purchases/containers/manage/views/index.js";
 
 const dashboardRouter = router({
   home: router({
@@ -72,8 +74,42 @@ const historyRouter = router({
   }),
 });
 
+const purchasesRouter = router({
+  manage: router({
+    byId: protectedProcedure
+      .input(trackerPurchasesManageViews.byId.input)
+      .output(trackerPurchasesManageViews.byId.output)
+      .query(async ({ ctx, input }) => {
+        const ctrl = trackerPurchasesManageControllers(ctx.prisma);
+        return ctrl.byId(input, ctx.userId);
+      }),
+    create: protectedProcedure
+      .input(trackerPurchasesManageViews.create.input)
+      .output(trackerPurchasesManageViews.create.output)
+      .mutation(async ({ ctx, input }) => {
+        const ctrl = trackerPurchasesManageControllers(ctx.prisma);
+        return ctrl.create(input, ctx.userId);
+      }),
+    update: protectedProcedure
+      .input(trackerPurchasesManageViews.update.input)
+      .output(trackerPurchasesManageViews.update.output)
+      .mutation(async ({ ctx, input }) => {
+        const ctrl = trackerPurchasesManageControllers(ctx.prisma);
+        return ctrl.update(input, ctx.userId);
+      }),
+    delete: protectedProcedure
+      .input(trackerPurchasesManageViews.delete.input)
+      .output(trackerPurchasesManageViews.delete.output)
+      .mutation(async ({ ctx, input }) => {
+        const ctrl = trackerPurchasesManageControllers(ctx.prisma);
+        return ctrl.delete(input, ctx.userId);
+      }),
+  }),
+});
+
 export const trackerRouter = router({
   dashboard: dashboardRouter,
   accounts: accountsRouter,
   history: historyRouter,
+  purchases: purchasesRouter,
 });
