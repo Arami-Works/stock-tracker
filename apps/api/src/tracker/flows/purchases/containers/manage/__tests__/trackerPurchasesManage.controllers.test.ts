@@ -45,21 +45,20 @@ const makePrisma = () =>
       findUnique: (jest.fn() as any).mockResolvedValue(
         mockDbPurchaseWithAccount,
       ),
-      create: (jest.fn() as any).mockImplementation(
-        ({ data }: { data: any }) =>
-          Promise.resolve({
-            id: "new-pur-id",
-            tracker_account_id: data.tracker_account_id,
-            item_name: data.item_name,
-            item_category: data.item_category ?? null,
-            amount: { toString: () => data.amount.toString() },
-            currency: data.currency ?? "KRW",
-            purchase_date: data.purchase_date,
-            store_location: data.store_location ?? null,
-            notes: data.notes ?? null,
-            created_at: now,
-            updated_at: now,
-          }),
+      create: (jest.fn() as any).mockImplementation(({ data }: { data: any }) =>
+        Promise.resolve({
+          id: "new-pur-id",
+          tracker_account_id: data.tracker_account_id,
+          item_name: data.item_name,
+          item_category: data.item_category ?? null,
+          amount: { toString: () => data.amount.toString() },
+          currency: data.currency ?? "KRW",
+          purchase_date: data.purchase_date,
+          store_location: data.store_location ?? null,
+          notes: data.notes ?? null,
+          created_at: now,
+          updated_at: now,
+        }),
       ),
       update: (jest.fn() as any).mockImplementation(
         ({ where, data }: { where: any; data: any }) =>
