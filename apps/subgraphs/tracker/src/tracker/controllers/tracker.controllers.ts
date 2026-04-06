@@ -32,21 +32,14 @@ export const trackerResolvers = {
   Mutation: {
     createAccount: async (
       _: unknown,
-      _args: { input: { storeName: string; saName?: string; notes?: string } },
+      args: { input: { storeName: string; saName?: string; notes?: string } },
+      context: SubgraphContext,
     ) => {
-      // TODO: delegate to trpc.tracker.accounts.create.mutate()
-      return {
-        id: "new-account",
-        storeName: "",
-        saName: null,
-        notes: null,
-        createdAt: new Date().toISOString(),
-        purchases: [],
-      };
+      return context.trpc.tracker.accounts.list.create.mutate(args.input);
     },
     updateAccount: async (
       _: unknown,
-      _args: {
+      args: {
         input: {
           id: string;
           storeName?: string;
@@ -54,62 +47,65 @@ export const trackerResolvers = {
           notes?: string;
         };
       },
+      context: SubgraphContext,
     ) => {
-      // TODO: delegate to trpc.tracker.accounts.update.mutate()
-      return {
-        id: _args.input.id,
-        storeName: "",
-        saName: null,
-        notes: null,
-        createdAt: new Date().toISOString(),
-        purchases: [],
-      };
+      return context.trpc.tracker.accounts.detail.update.mutate(args.input);
     },
-    deleteAccount: async (_: unknown, _args: { id: string }) => {
-      // TODO: delegate to trpc.tracker.accounts.delete.mutate()
-      return true;
+    deleteAccount: async (
+      _: unknown,
+      args: { id: string },
+      context: SubgraphContext,
+    ) => {
+      const result = await context.trpc.tracker.accounts.detail.delete.mutate({
+        id: args.id,
+      });
+      return result.success;
     },
     createPurchase: async (
       _: unknown,
-      _args: {
+      args: {
         input: {
           accountId: string;
           itemName: string;
+          itemCategory?: string;
           amount: number;
+          currency?: string;
           purchaseDate: string;
+          storeLocation?: string;
+          notes?: string;
         };
       },
+      context: SubgraphContext,
     ) => {
-      // TODO: delegate to trpc.tracker.purchases.create.mutate()
-      return {
-        id: "new-purchase",
-        itemName: "",
-        itemCategory: null,
-        amount: 0,
-        currency: "KRW",
-        purchaseDate: new Date().toISOString(),
-        storeLocation: null,
-        notes: null,
-        createdAt: new Date().toISOString(),
-      };
+      return context.trpc.tracker.purchases.manage.create.mutate(args.input);
     },
-    updatePurchase: async (_: unknown, _args: { input: { id: string } }) => {
-      // TODO: delegate to trpc.tracker.purchases.update.mutate()
-      return {
-        id: _args.input.id,
-        itemName: "",
-        itemCategory: null,
-        amount: 0,
-        currency: "KRW",
-        purchaseDate: new Date().toISOString(),
-        storeLocation: null,
-        notes: null,
-        createdAt: new Date().toISOString(),
-      };
+    updatePurchase: async (
+      _: unknown,
+      args: {
+        input: {
+          id: string;
+          itemName?: string;
+          itemCategory?: string | null;
+          amount?: number;
+          currency?: string;
+          purchaseDate?: string;
+          storeLocation?: string | null;
+          notes?: string | null;
+        };
+      },
+      context: SubgraphContext,
+    ) => {
+      return context.trpc.tracker.purchases.manage.update.mutate(args.input);
     },
-    deletePurchase: async (_: unknown, _args: { id: string }) => {
-      // TODO: delegate to trpc.tracker.purchases.delete.mutate()
-      return true;
+    deletePurchase: async (
+      _: unknown,
+      args: { id: string },
+      context: SubgraphContext,
+    ) => {
+      const result = await context.trpc.tracker.purchases.manage.delete.mutate({
+        id: args.id,
+      });
+      return result.success;
     },
   },
   Account: {
