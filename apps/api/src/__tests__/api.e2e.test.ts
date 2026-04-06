@@ -134,11 +134,11 @@ describe("purchases E2E", () => {
   });
 
   it("lists purchases via history browse", async () => {
-    const results = await caller.tracker.history.browse.list({
+    const { items } = await caller.tracker.history.browse.list({
       accountId,
     });
-    expect(results.length).toBeGreaterThanOrEqual(1);
-    expect(results.some((p) => p.id === purchaseId)).toBe(true);
+    expect(items.length).toBeGreaterThanOrEqual(1);
+    expect(items.some((p) => p.id === purchaseId)).toBe(true);
   });
 
   it("updates a purchase", async () => {
@@ -159,9 +159,9 @@ describe("purchases E2E", () => {
     });
     expect(deleted.success).toBe(true);
 
-    const results = await caller.tracker.history.browse.list({
+    const { items } = await caller.tracker.history.browse.list({
       accountId,
     });
-    expect(results.some((p) => p.id === purchaseId)).toBe(false);
+    expect(items.some((p) => p.id === purchaseId)).toBe(false);
   });
 });
