@@ -3,11 +3,6 @@ name: CI
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
-    paths-ignore:
-      - ".changeset/**"
-      - "CHANGELOG.md"
-      - "**.md"
-      - ".github/**"
 
 permissions:
   contents: read
@@ -23,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
+      code: ${{ steps.filter.outputs.code }}
       prisma: ${{ steps.filter.outputs.prisma }}
       migrations: ${{ steps.filter.outputs.migrations }}
       subgraphs: ${{ steps.filter.outputs.subgraphs }}
@@ -34,6 +30,15 @@ jobs:
         id: filter
         with:
           filters: |
+            code:
+              - 'apps/**'
+              - 'packages/**'
+              - 'package.json'
+              - 'package-lock.json'
+              - 'tsconfig.json'
+              - 'turbo.json'
+              - 'eslint.config.mjs'
+              - 'jest.config.ts'
             prisma:
               - 'packages/prisma/**'
             migrations:
@@ -49,6 +54,8 @@ jobs:
               - 'packages/ui/**'
 
   lint:
+    needs: [changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -60,6 +67,8 @@ jobs:
       - run: npm run lint
 
   check-types:
+    needs: [changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -71,6 +80,8 @@ jobs:
       - run: npm run check-types
 
   test:
+    needs: [changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -111,6 +122,8 @@ jobs:
           fail_ci_if_error: false
 
   format:
+    needs: [changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -122,6 +135,8 @@ jobs:
       - run: npm run format:check
 
   build:
+    needs: [changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -133,6 +148,8 @@ jobs:
       - run: npm run build
 
   audit:
+    needs: [changes]
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
