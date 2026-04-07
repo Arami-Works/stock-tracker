@@ -1,10 +1,15 @@
 import { PrismaClient } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 import { appRouter } from "../trpc/router.js";
 
 const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
 
 const caller = appRouter.createCaller({ prisma, userId: TEST_USER_ID } as any);
+const unauthCaller = appRouter.createCaller({
+  prisma,
+  userId: undefined,
+} as any);
 
 beforeAll(async () => {
   await prisma.auth_users.upsert({
@@ -163,5 +168,126 @@ describe("purchases E2E", () => {
       accountId,
     });
     expect(items.some((p) => p.id === purchaseId)).toBe(false);
+  });
+});
+
+describe("auth enforcement E2E", () => {
+  it("throws UNAUTHORIZED for auth.me without userId", async () => {
+    await expect(unauthCaller.auth.me()).rejects.toThrow(TRPCError);
+    try {
+      await unauthCaller.auth.me();
+    } catch (e) {
+      expect((e as TRPCError).code).toBe("UNAUTHORIZED");
+    }
+  });
+
+  it("throws UNAUTHORIZED for tracker.accounts.list.all without userId", async () => {
+    await expect(unauthCaller.tracker.accounts.list.all()).rejects.toThrow(
+      TRPCError,
+    );
+  });
+
+  it("throws UNAUTHORIZED for tracker.dashboard.home.summary without userId", async () => {
+    await expect(unauthCaller.tracker.dashboard.home.summary()).rejects.toThrow(
+      TRPCError,
+    );
+  });
+
+  it("allows public upsertFromSupabase without userId", async () => {
+    const publicSupabaseId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+    const result = await unauthCaller.auth.upsertFromSupabase({
+      supabaseId: publicSupabaseId,
+      email: "public@test.local",
+    });
+    expect(result.email).toBe("public@test.local");
+
+    await prisma.auth_users.deleteMany({
+      where: { supabase_id: publicSupabaseId },
+    });
+  });
+});
+
+describe("pagination E2E", () => {
+  let paginationAccountId: string;
+  const purchaseIds: string[] = [];
+
+  beforeAll(async () => {
+    const account = await caller.tracker.accounts.list.create({
+      storeName: "Pagination Test Store",
+    });
+    paginationAccountId = account.id;
+
+    for (let i = 0; i < 5; i++) {
+      const purchase = await caller.tracker.purchases.manage.create({
+        accountId: paginationAccountId,
+        itemName: `Pagination Item ${i}`,
+        amount: 1000000 * (i + 1),
+        purchaseDate: `2025-01-${String(i + 1).padStart(2, "0")}`,
+        currency: "KRW",
+      });
+      purchaseIds.push(purchase.id);
+    }
+  });
+
+  afterAll(async () => {
+    await prisma.tracker_purchases.deleteMany({
+      where: { tracker_account_id: paginationAccountId },
+    });
+    await prisma.tracker_accounts.deleteMany({
+      where: { id: paginationAccountId },
+    });
+  });
+
+  it("returns empty items for account with no purchases", async () => {
+    const emptyAccount = await caller.tracker.accounts.list.create({
+      storeName: "Empty Account",
+    });
+
+    const { items, nextCursor } = await caller.tracker.history.browse.list({
+      accountId: emptyAccount.id,
+    });
+
+    expect(items).toEqual([]);
+    expect(nextCursor).toBeNull();
+
+    await prisma.tracker_accounts.deleteMany({
+      where: { id: emptyAccount.id },
+    });
+  });
+
+  it("paginates through results with cursor", async () => {
+    const page1 = await caller.tracker.history.browse.list({
+      accountId: paginationAccountId,
+      limit: 2,
+      sortOrder: "desc",
+    });
+
+    expect(page1.items).toHaveLength(2);
+    expect(page1.nextCursor).not.toBeNull();
+
+    const page2 = await caller.tracker.history.browse.list({
+      accountId: paginationAccountId,
+      limit: 2,
+      sortOrder: "desc",
+      cursor: page1.nextCursor!,
+    });
+
+    expect(page2.items).toHaveLength(2);
+
+    const allItems = [...page1.items, ...page2.items];
+
+    if (page2.nextCursor) {
+      const page3 = await caller.tracker.history.browse.list({
+        accountId: paginationAccountId,
+        limit: 2,
+        sortOrder: "desc",
+        cursor: page2.nextCursor,
+      });
+      allItems.push(...page3.items);
+    }
+
+    const allIds = allItems.map((i) => i.id);
+    expect(allIds.length).toBeGreaterThanOrEqual(4);
+    expect(new Set(allIds).size).toBe(allIds.length);
   });
 });
