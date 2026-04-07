@@ -7,7 +7,7 @@ const config: StorybookConfig = {
     name: "@storybook/react-vite",
     options: {},
   },
-  addons: ["@storybook/addon-essentials", "storybook-addon-designs"],
+  addons: ["@storybook/addon-essentials", "@storybook/addon-designs"],
   viteFinal: async (config) => {
     config.resolve = config.resolve || {};
     // Use array format so more-specific aliases are matched before prefix aliases.
