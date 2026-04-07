@@ -11,7 +11,6 @@ on:
           - master
           - stage
           - develop
-          - storybook
         default: master
       platform:
         description: "Target platform"
@@ -94,6 +93,73 @@ jobs:
             -d "{
               \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
               \"text\": \"${STATUS} *EAS Build* — ${PLATFORM} (${PROFILE})\n• <${LINK}|빌드 보기>\"
+            }"
+
+      - name: Cleanup Apple API key
+        if: always() && matrix.platform == 'ios'
+        run: rm -rf "${RUNNER_TEMP}/appstoreconnect"
+
+  storybook:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      matrix:
+        platform: ${{ inputs.platform == 'all' && fromJSON('["android", "ios"]') || fromJSON(format('["{0}"]', inputs.platform)) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@aramiworks"
+
+      - run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: 16.4.1
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Write Apple API key
+        if: matrix.platform == 'ios'
+        run: |
+          mkdir -p ${RUNNER_TEMP}/appstoreconnect/private_keys
+          echo "${{ secrets.EXPO_APPLE_P8_KEY }}" > ${RUNNER_TEMP}/appstoreconnect/private_keys/AuthKey_${{ secrets.EXPO_APPLE_KEY_ID }}.p8
+
+      - name: Build Storybook
+        id: eas-build
+        run: |
+          eas build \
+            --profile storybook \
+            --platform ${{ matrix.platform }} \
+            --non-interactive \
+            --json | tee /tmp/eas-build-result.json
+          BUILD_URL=$(cat /tmp/eas-build-result.json | jq -r '.[0].buildDetailsPageUrl // empty')
+          echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
+        working-directory: apps/mobile
+        env:
+          EXPO_APPLE_KEY_ID: ${{ secrets.EXPO_APPLE_KEY_ID }}
+          EXPO_APPLE_ISSUER_ID: ${{ secrets.EXPO_APPLE_ISSUER_ID }}
+
+      - name: Notify Slack
+        if: always()
+        run: |
+          STATUS="${{ job.status == 'success' && '✅' || '❌' }}"
+          PLATFORM="${{ matrix.platform }}"
+          BUILD_URL="${{ steps.eas-build.outputs.build_url }}"
+          FALLBACK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          LINK="${BUILD_URL:-$FALLBACK}"
+
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
+              \"text\": \"${STATUS} *EAS Build* — ${PLATFORM} (storybook)\n• <${LINK}|빌드 보기>\"
             }"
 
       - name: Cleanup Apple API key
