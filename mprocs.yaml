@@ -9,10 +9,12 @@ procs:
         "--config",
         "local",
         "--",
-        "npm",
-        "run",
-        "dev:api",
+        "npx",
+        "tsx",
+        "watch",
+        "src/server.ts",
       ]
+    cwd: apps/api
     env:
       PORT: "4010"
     autostart: true
@@ -27,10 +29,12 @@ procs:
         "--config",
         "local",
         "--",
-        "npm",
-        "run",
-        "dev:subgraph",
+        "npx",
+        "tsx",
+        "watch",
+        "src/server.ts",
       ]
+    cwd: apps/subgraphs/tracker
     env:
       PORT: "4011"
     autostart: true
