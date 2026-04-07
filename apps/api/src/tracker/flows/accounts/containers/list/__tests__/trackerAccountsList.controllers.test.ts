@@ -3,6 +3,7 @@ import { trackerAccountsListControllers } from "../controllers/trackerAccountsLi
 
 const now = new Date("2025-01-01T00:00:00Z");
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000000";
+const OTHER_USER_ID = "11111111-1111-1111-1111-111111111111";
 
 const mockDbAccount = {
   id: "acc-001",
@@ -67,6 +68,18 @@ describe("trackerAccountsListControllers", () => {
       const result = await ctrl.all(TEST_USER_ID);
 
       expect(result).toEqual([]);
+    });
+
+    it("filters by userId for user isolation", async () => {
+      const prisma = makePrisma();
+      const ctrl = trackerAccountsListControllers(prisma);
+
+      await ctrl.all(OTHER_USER_ID);
+
+      expect(prisma.tracker_accounts.findMany).toHaveBeenCalledWith({
+        where: { auth_user_id: OTHER_USER_ID },
+        orderBy: { created_at: "desc" },
+      });
     });
   });
 
