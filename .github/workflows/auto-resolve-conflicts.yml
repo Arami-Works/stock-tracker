@@ -1,0 +1,14 @@
+name: Auto-resolve PR conflicts
+
+on:
+  workflow_run:
+    workflows: ["Auto-update PR branches"]
+    types: [completed]
+
+jobs:
+  resolve:
+    if: github.event.workflow_run.conclusion == 'success'
+    uses: aramiworks/.github/.github/workflows/auto-resolve-conflicts.yml@main
+    secrets:
+      CLAUDE_ARAMI_APP_ID: ${{ secrets.CLAUDE_ARAMI_APP_ID }}
+      CLAUDE_ARAMI_PRIVATE_KEY: ${{ secrets.CLAUDE_ARAMI_PRIVATE_KEY }}
