@@ -40,9 +40,14 @@ jobs:
       - name: Build Storybook
         run: npx turbo run build --filter=@stock-tracker/storybook
 
-      - name: Link project
-        run: npx vercel link --yes --token=${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --project stock-tracker-storybook
+      - name: Configure Vercel project
         working-directory: apps/storybook/storybook-static
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STORYBOOK_PROJECT_ID }}
+        run: |
+          mkdir -p .vercel
+          jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" '{"orgId":$org,"projectId":$proj}' > .vercel/project.json
 
       - name: Resolve Vercel flags
         id: flags
@@ -57,8 +62,7 @@ jobs:
         id: deploy
         run: |
           DEPLOY_URL=$(npx vercel deploy --yes ${{ steps.flags.outputs.prod }} \
-            --token=${{ secrets.VERCEL_TOKEN }} \
-            --scope ${{ secrets.VERCEL_ORG_ID }})
+            --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
         working-directory: apps/storybook/storybook-static
 
@@ -68,8 +72,7 @@ jobs:
           BRANCH="${{ github.ref_name }}"
           npx vercel alias set "${{ steps.deploy.outputs.url }}" \
             "${BRANCH}.storybook.stocktracker.arami.so" \
-            --token="${{ secrets.VERCEL_TOKEN }}" \
-            --scope "${{ secrets.VERCEL_ORG_ID }}"
+            --token="${{ secrets.VERCEL_TOKEN }}"
         working-directory: apps/storybook/storybook-static
 
       - name: Deployment summary

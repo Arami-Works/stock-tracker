@@ -27,14 +27,20 @@ jobs:
         with:
           node-version: 20
           cache: npm
+          registry-url: https://npm.pkg.github.com
+          scope: "@aramiworks"
 
       - uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
+      - uses: dopplerhq/cli-action@v3
+
       - name: Install dependencies
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Resolve channel
         id: channel
@@ -51,8 +57,11 @@ jobs:
 
       - name: Publish OTA update
         working-directory: apps/mobile
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          APP_ENV: master
         run: |
-          eas update \
+          doppler run -- eas update \
             --channel ${{ steps.channel.outputs.name }} \
             --message "v${{ steps.version.outputs.version }} — ${{ github.event.head_commit.message || 'manual dispatch' }}" \
             --non-interactive
