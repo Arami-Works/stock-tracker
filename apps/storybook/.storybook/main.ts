@@ -2,7 +2,7 @@ import type { StorybookConfig } from "@storybook/react-vite";
 import path from "path";
 
 const config: StorybookConfig = {
-  stories: ["../../mobile/src/**/*.stories.@(ts|tsx)"],
+  stories: ["../../mobile/src/**/*.story.@(ts|tsx)"],
   framework: {
     name: "@storybook/react-vite",
     options: {},
