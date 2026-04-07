@@ -45,17 +45,17 @@ render() {
   check_port 4010 && api_running=true
   check_port 4011 && subgraph_running=true
   check_port 4012 && router_running=true
-  check_port 8082 && ios_running=true
-  check_port 8083 && android_running=true
-  check_port 8084 && web_running=true
+  check_port 8092 && ios_running=true
+  check_port 8093 && android_running=true
+  check_port 8094 && web_running=true
   check_port 6006 && storybook_running=true
 
   printf "  %s  tRPC API               %s\n" "$(status_dot $api_running)" "$( $api_running && echo ':4010' || echo '--' )"
   printf "  %s  Subgraph (tracker)     %s\n" "$(status_dot $subgraph_running)" "$( $subgraph_running && echo ':4011' || echo '--' )"
   printf "  %s  Apollo Router          %s\n" "$(status_dot $router_running)" "$( $router_running && echo ':4012' || echo '--' )"
-  printf "  %s  Expo iOS               %s\n" "$(status_dot $ios_running)" "$( $ios_running && echo ':8082' || echo '--' )"
-  printf "  %s  Expo Android           %s\n" "$(status_dot $android_running)" "$( $android_running && echo ':8083' || echo '--' )"
-  printf "  %s  Expo Web               %s\n" "$(status_dot $web_running)" "$( $web_running && echo ':8084' || echo '--' )"
+  printf "  %s  Expo iOS               %s\n" "$(status_dot $ios_running)" "$( $ios_running && echo ':8092' || echo '--' )"
+  printf "  %s  Expo Android           %s\n" "$(status_dot $android_running)" "$( $android_running && echo ':8093' || echo '--' )"
+  printf "  %s  Expo Web               %s\n" "$(status_dot $web_running)" "$( $web_running && echo ':8094' || echo '--' )"
   printf "  %s  Storybook              %s\n" "$(status_dot $storybook_running)" "$( $storybook_running && echo ':6006' || echo '--' )"
   echo
 

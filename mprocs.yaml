@@ -51,8 +51,10 @@ procs:
         "--",
         "rover",
         "dev",
-        "--supergraph-config",
-        "supergraph.yaml",
+        "--name",
+        "tracker",
+        "--url",
+        "http://localhost:4011",
         "--router-config",
         "router.yaml",
         "--supergraph-port",
@@ -75,7 +77,7 @@ procs:
         "expo",
         "start",
         "--port",
-        "8082",
+        "8092",
         "--ios",
       ]
     cwd: apps/mobile
@@ -95,7 +97,7 @@ procs:
         "expo",
         "start",
         "--port",
-        "8083",
+        "8093",
         "--android",
       ]
     cwd: apps/mobile
@@ -115,7 +117,7 @@ procs:
         "expo",
         "start",
         "--port",
-        "8084",
+        "8094",
         "--web",
       ]
     cwd: apps/mobile

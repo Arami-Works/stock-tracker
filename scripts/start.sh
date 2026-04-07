@@ -84,13 +84,13 @@ case "$cmd" in
     start_service "router" "$DOPPLER npm run dev:router"
     ;;
   ios)
-    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8082 --ios"
+    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8092 --ios"
     ;;
   android)
-    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8083 --android"
+    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8093 --android"
     ;;
   web)
-    start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8084 --web"
+    start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8094 --web"
     ;;
   storybook)
     start_service "storybook" "$DOPPLER npm run dev:storybook"
@@ -104,9 +104,9 @@ case "$cmd" in
     start_service "api" "PORT=4010 $DOPPLER npm run dev:api"
     start_service "subgraph" "PORT=4011 $DOPPLER npm run dev:subgraph"
     start_service "router" "$DOPPLER npm run dev:router"
-    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8082 --ios"
-    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8083 --android"
-    start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8084 --web"
+    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8092 --ios"
+    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8093 --android"
+    start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8094 --web"
     start_service "storybook" "$DOPPLER npm run dev:storybook"
     ;;
   stop)
