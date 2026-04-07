@@ -46,8 +46,8 @@
     "packages/*"
   ],
   "overrides": {
-    "react": "$react",
-    "react-dom": "$react-dom",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
     "ajv-keywords": {
       "ajv": "^8.17.1"
     },
