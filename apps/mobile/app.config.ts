@@ -1,5 +1,8 @@
 import { ExpoConfig, ConfigContext } from "expo/config";
 
+const { version } = require("./package.json");
+const [major, minor] = version.split(".");
+
 const ENV_SUFFIX: Record<string, string> = {
   develop: ".develop",
   stage: ".stage",
@@ -55,7 +58,5 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   updates: {
     url: "https://u.expo.dev/73ca08db-3807-4b8a-9aff-4058cd066b22",
   },
-  runtimeVersion: {
-    policy: "appVersion",
-  },
+  runtimeVersion: `${major}.${minor}`,
 });
