@@ -39,7 +39,7 @@ jobs:
               - 'apps/subgraphs/*/Dockerfile'
               - 'apps/service-*/Dockerfile'
             stories:
-              - 'apps/mobile/src/**/*.stories.tsx'
+              - 'apps/mobile/src/**/*.story.tsx'
               - 'apps/storybook/**'
               - 'packages/ui/**'
 
