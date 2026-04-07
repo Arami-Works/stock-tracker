@@ -3,6 +3,11 @@ name: CI
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+    paths-ignore:
+      - ".changeset/**"
+      - "CHANGELOG.md"
+      - "**.md"
+      - ".github/**"
 
 permissions:
   contents: read
