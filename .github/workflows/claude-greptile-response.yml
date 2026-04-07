@@ -1,0 +1,20 @@
+name: Claude Greptile Response
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+concurrency:
+  group: greptile-response-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  respond:
+    if: >
+      github.event.review.user.login == 'greptile-apps[bot]' &&
+      github.event.review.state == 'commented'
+    uses: aramiworks/.github/.github/workflows/claude-greptile-response.yml@main
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      CLAUDE_ARAMI_APP_ID: ${{ secrets.CLAUDE_ARAMI_APP_ID }}
+      CLAUDE_ARAMI_PRIVATE_KEY: ${{ secrets.CLAUDE_ARAMI_PRIVATE_KEY }}
