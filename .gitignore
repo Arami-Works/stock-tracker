@@ -35,6 +35,9 @@ android/
 # Debug
 npm-debug.log*
 
+# Dev dashboard logs
+logs/
+
 # Misc
 .DS_Store
 *.pem
