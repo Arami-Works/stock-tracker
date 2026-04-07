@@ -52,9 +52,9 @@ jobs:
       - name: Export web app
         if: steps.check-flows.outputs.has_flows == 'true'
         env:
-          EXPO_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
-          EXPO_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwbGFjZWhvbGRlciJ9.placeholder
-          EXPO_PUBLIC_GRAPHQL_URL: http://localhost:4002
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          EXPO_PUBLIC_GRAPHQL_URL: ${{ secrets.E2E_GRAPHQL_URL }}
           EXPO_PUBLIC_GOOGLE_CLIENT_ID: placeholder.apps.googleusercontent.com
         run: npx expo export --platform web
         working-directory: apps/mobile
@@ -81,11 +81,47 @@ jobs:
         if: steps.check-flows.outputs.has_flows == 'true'
         run: npx wait-on http://localhost:8080 --timeout 30000
 
-      - name: Run Maestro E2E tests
+      - name: Run unauthenticated flows
         if: steps.check-flows.outputs.has_flows == 'true'
         run: |
           export PATH="$PATH:$HOME/.maestro/bin"
           maestro test --exclude-tags=authenticated apps/mobile/maestro/
+
+      - name: Inject E2E session into index.html
+        if: steps.check-flows.outputs.has_flows == 'true'
+        env:
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          E2E_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+          E2E_USER_PASSWORD: ${{ secrets.E2E_USER_PASSWORD }}
+        run: node scripts/e2e-inject-session.mjs
+
+      - name: Seed E2E test data
+        if: steps.check-flows.outputs.has_flows == 'true'
+        env:
+          E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+          E2E_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+          E2E_USER_EMAIL: ${{ secrets.E2E_USER_EMAIL }}
+        run: node scripts/e2e-seed.mjs
+
+      - name: Check GraphQL backend reachability
+        if: steps.check-flows.outputs.has_flows == 'true'
+        id: check-backend
+        env:
+          E2E_GRAPHQL_URL: ${{ secrets.E2E_GRAPHQL_URL }}
+        run: |
+          if curl -sf --connect-timeout 5 "$E2E_GRAPHQL_URL" > /dev/null 2>&1; then
+            echo "reachable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "reachable=false" >> "$GITHUB_OUTPUT"
+            echo "GraphQL backend unreachable — skipping authenticated flows (will run after INF-551 deploys backend)"
+          fi
+
+      - name: Run authenticated flows
+        if: steps.check-flows.outputs.has_flows == 'true' && steps.check-backend.outputs.reachable == 'true'
+        run: |
+          export PATH="$PATH:$HOME/.maestro/bin"
+          maestro test --include-tags=authenticated apps/mobile/maestro/
 
       - name: Upload Maestro test results
         if: always() && steps.check-flows.outputs.has_flows == 'true'

@@ -14,7 +14,7 @@
       "channel": "develop",
       "env": {
         "APP_ENV": "develop",
-        "EXPO_PUBLIC_GRAPHQL_URL": "https://router-develop-97e5.up.railway.app"
+        "EXPO_PUBLIC_GRAPHQL_URL": "https://router.develop.stock-tracker.arami.so"
       }
     },
     "develop-simulator": {
@@ -35,7 +35,7 @@
       "channel": "stage",
       "env": {
         "APP_ENV": "stage",
-        "EXPO_PUBLIC_GRAPHQL_URL": "https://router-stage-9c63.up.railway.app"
+        "EXPO_PUBLIC_GRAPHQL_URL": "https://router.stage.stock-tracker.arami.so"
       }
     },
     "stage-simulator": {
@@ -49,7 +49,7 @@
       "channel": "master",
       "env": {
         "APP_ENV": "master",
-        "EXPO_PUBLIC_GRAPHQL_URL": "https://router-production-1e15.up.railway.app"
+        "EXPO_PUBLIC_GRAPHQL_URL": "https://router.stock-tracker.arami.so"
       }
     },
     "master-simulator": {
