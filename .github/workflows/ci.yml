@@ -156,7 +156,8 @@ jobs:
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           storybookBuildDir: apps/storybook/storybook-static
-          exitOnceUploaded: true
+          autoAcceptChanges: main
+          onlyChanged: true
 
   prisma:
     needs: [changes]

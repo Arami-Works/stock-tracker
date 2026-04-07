@@ -8,11 +8,11 @@ on:
         required: true
         type: choice
         options:
-          - production
-          - preview
-          - development
+          - master
+          - stage
+          - develop
           - storybook
-        default: production
+        default: master
       platform:
         description: "Target platform"
         required: true

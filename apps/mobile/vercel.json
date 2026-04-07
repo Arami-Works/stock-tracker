@@ -1,5 +1,6 @@
 {
   "buildCommand": "npx turbo run build --filter=@stock-tracker/validation --filter=@stock-tracker/types && npx expo export --platform web",
   "outputDirectory": "dist",
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }],
+  "github": { "enabled": false }
 }
