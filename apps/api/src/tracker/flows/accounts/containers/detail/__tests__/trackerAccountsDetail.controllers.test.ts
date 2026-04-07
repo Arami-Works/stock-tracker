@@ -37,13 +37,12 @@ const makePrisma = () =>
   ({
     tracker_accounts: {
       findUnique: (jest.fn() as any).mockResolvedValue(mockDbAccount),
-      update: (jest.fn() as any).mockImplementation(
-        ({ data }: { data: any }) =>
-          Promise.resolve({
-            ...mockDbAccount,
-            ...data,
-            tracker_purchases: undefined,
-          }),
+      update: (jest.fn() as any).mockImplementation(({ data }: { data: any }) =>
+        Promise.resolve({
+          ...mockDbAccount,
+          ...data,
+          tracker_purchases: undefined,
+        }),
       ),
       delete: (jest.fn() as any).mockResolvedValue(mockDbAccount),
     },
@@ -71,9 +70,9 @@ describe("trackerAccountsDetailControllers", () => {
       (prisma.tracker_accounts.findUnique as any).mockResolvedValue(null);
       const ctrl = trackerAccountsDetailControllers(prisma);
 
-      await expect(
-        ctrl.byId({ id: "missing" }, TEST_USER_ID),
-      ).rejects.toThrow(TRPCError);
+      await expect(ctrl.byId({ id: "missing" }, TEST_USER_ID)).rejects.toThrow(
+        TRPCError,
+      );
     });
 
     it("throws FORBIDDEN for wrong owner", async () => {

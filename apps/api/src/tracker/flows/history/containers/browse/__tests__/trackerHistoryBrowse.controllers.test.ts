@@ -52,10 +52,7 @@ describe("trackerHistoryBrowseControllers", () => {
     });
 
     it("returns items with null nextCursor on last page", async () => {
-      const purchases = [
-        makeMockPurchase("pur-1"),
-        makeMockPurchase("pur-2"),
-      ];
+      const purchases = [makeMockPurchase("pur-1"), makeMockPurchase("pur-2")];
       const prisma = makePrisma(purchases);
       const ctrl = trackerHistoryBrowseControllers(prisma);
 
