@@ -41,7 +41,7 @@ jobs:
         run: npx turbo run build --filter=@stock-tracker/storybook
 
       - name: Write Vercel config
-        run: printf '{"cleanUrls":true}\n' > apps/storybook/storybook-static/vercel.json
+        run: printf '{"cleanUrls":true,"github":{"enabled":false}}\n' > apps/storybook/storybook-static/vercel.json
 
       - name: Configure Vercel project
         working-directory: apps/storybook/storybook-static

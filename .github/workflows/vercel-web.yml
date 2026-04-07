@@ -48,7 +48,7 @@ jobs:
           APP_ENV: master
 
       - name: Write Vercel config
-        run: printf '{"rewrites":[{"source":"/(.*)","destination":"/index.html"}]}\n' > apps/mobile/dist/vercel.json
+        run: printf '{"rewrites":[{"source":"/(.*)","destination":"/index.html"}],"github":{"enabled":false}}\n' > apps/mobile/dist/vercel.json
 
       - name: Configure Vercel project
         working-directory: apps/mobile/dist
