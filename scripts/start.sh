@@ -68,36 +68,45 @@ stop_service() {
   rm -f "$pidfile"
 }
 
-ALL_SERVICES="api subgraph router mobile storybook"
+MOBILE_DIR="$REPO_ROOT/apps/mobile"
+ALL_SERVICES="api subgraph router ios android web storybook"
 
 cmd="${1:-all}"
 
 case "$cmd" in
   api)
-    start_service "api" "$DOPPLER npm run dev:api"
+    start_service "api" "PORT=4010 $DOPPLER npm run dev:api"
     ;;
   subgraph)
-    start_service "subgraph" "$DOPPLER npm run dev:subgraph"
+    start_service "subgraph" "PORT=4011 $DOPPLER npm run dev:subgraph"
     ;;
   router)
     start_service "router" "$DOPPLER npm run dev:router"
     ;;
-  mobile)
-    start_service "mobile" "$DOPPLER npm run dev:mobile"
+  ios)
+    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8082 --ios"
+    ;;
+  android)
+    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8083 --android"
+    ;;
+  web)
+    start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8084 --web"
     ;;
   storybook)
     start_service "storybook" "$DOPPLER npm run dev:storybook"
     ;;
   backend)
-    start_service "api" "$DOPPLER npm run dev:api"
-    start_service "subgraph" "$DOPPLER npm run dev:subgraph"
+    start_service "api" "PORT=4010 $DOPPLER npm run dev:api"
+    start_service "subgraph" "PORT=4011 $DOPPLER npm run dev:subgraph"
     start_service "router" "$DOPPLER npm run dev:router"
     ;;
   all)
-    start_service "api" "$DOPPLER npm run dev:api"
-    start_service "subgraph" "$DOPPLER npm run dev:subgraph"
+    start_service "api" "PORT=4010 $DOPPLER npm run dev:api"
+    start_service "subgraph" "PORT=4011 $DOPPLER npm run dev:subgraph"
     start_service "router" "$DOPPLER npm run dev:router"
-    start_service "mobile" "$DOPPLER npm run dev:mobile"
+    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8082 --ios"
+    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8083 --android"
+    start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8084 --web"
     start_service "storybook" "$DOPPLER npm run dev:storybook"
     ;;
   stop)
@@ -108,7 +117,7 @@ case "$cmd" in
     ;;
   *)
     err "Unknown command: $cmd"
-    echo "Usage: $0 [api|subgraph|router|mobile|storybook|backend|all|stop]"
+    echo "Usage: $0 [api|subgraph|router|ios|android|web|storybook|backend|all|stop]"
     exit 1
     ;;
 esac

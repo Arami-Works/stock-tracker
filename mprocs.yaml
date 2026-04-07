@@ -13,6 +13,8 @@ procs:
         "run",
         "dev:api",
       ]
+    env:
+      PORT: "4010"
     autostart: true
 
   subgraph:
@@ -29,6 +31,8 @@ procs:
         "run",
         "dev:subgraph",
       ]
+    env:
+      PORT: "4011"
     autostart: true
 
   router:
@@ -47,11 +51,13 @@ procs:
         "supergraph.yaml",
         "--router-config",
         "router.yaml",
+        "--supergraph-port",
+        "4012",
       ]
     cwd: apps/router
     autostart: true
 
-  mobile:
+  ios:
     cmd:
       [
         "doppler",
@@ -61,10 +67,54 @@ procs:
         "--config",
         "local",
         "--",
-        "npm",
-        "run",
-        "dev:mobile",
+        "npx",
+        "expo",
+        "start",
+        "--port",
+        "8082",
+        "--ios",
       ]
+    cwd: apps/mobile
+    autostart: true
+
+  android:
+    cmd:
+      [
+        "doppler",
+        "run",
+        "--project",
+        "stock-tracker",
+        "--config",
+        "local",
+        "--",
+        "npx",
+        "expo",
+        "start",
+        "--port",
+        "8083",
+        "--android",
+      ]
+    cwd: apps/mobile
+    autostart: true
+
+  web:
+    cmd:
+      [
+        "doppler",
+        "run",
+        "--project",
+        "stock-tracker",
+        "--config",
+        "local",
+        "--",
+        "npx",
+        "expo",
+        "start",
+        "--port",
+        "8084",
+        "--web",
+      ]
+    cwd: apps/mobile
     autostart: true
 
   storybook:
