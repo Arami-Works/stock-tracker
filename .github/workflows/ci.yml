@@ -49,7 +49,7 @@ jobs:
               - 'apps/subgraphs/*/Dockerfile'
               - 'apps/service-*/Dockerfile'
             stories:
-              - 'apps/mobile/src/**/*.stories.tsx'
+              - 'apps/mobile/src/**/*.story.tsx'
               - 'apps/storybook/**'
               - 'packages/ui/**'
 
@@ -180,6 +180,7 @@ jobs:
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
           storybookBuildDir: apps/storybook/storybook-static
+          storybookBaseDir: apps/storybook
           autoAcceptChanges: main
           onlyChanged: true
 
