@@ -1,12 +1,16 @@
-url: ${MAESTRO_APP_URL}
-name: Accounts Detail
+appId: so.arami.stocktracker.app
+name: Accounts - Detail
 tags:
   - authenticated
 ---
 - launchApp
 - tapOn: "계좌"
+- assertVisible:
+    id: "accounts-list-screen"
 - tapOn:
     id: "sa-list-item-1"
+- assertVisible:
+    id: "accounts-detail-screen"
 - assertVisible: "SA 상세"
 - assertVisible:
     id: "accounts-detail-sa-header"
@@ -14,6 +18,9 @@ tags:
     id: "accounts-detail-tank-status"
 - assertVisible:
     id: "purchase-row-1"
+- assertVisible:
+    id: "accounts-detail-add-purchase"
 - tapOn:
     id: "accounts-detail-back"
-- assertVisible: "SA 계좌"
+- assertVisible:
+    id: "accounts-list-screen"

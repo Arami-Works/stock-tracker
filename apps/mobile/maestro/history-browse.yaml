@@ -1,17 +1,26 @@
-url: ${MAESTRO_APP_URL}
-name: History Browse
+appId: so.arami.stocktracker.app
+name: History - Browse
 tags:
   - authenticated
 ---
 - launchApp
 - tapOn: "히스토리"
+- assertVisible:
+    id: "history-browse-screen"
+- assertVisible:
+    id: "history-browse-title"
 - assertVisible: "구매 히스토리"
 - assertVisible:
     id: "date-filter-bar"
-- tapOn: "3개월"
-- tapOn: "전체"
-- scrollUntilVisible:
-    element:
-      id: "date-filter-bar"
-    direction: DOWN
-    timeout: 5000
+- assertVisible:
+    id: "date-filter-thisMonth"
+- assertVisible:
+    id: "date-filter-threeMonths"
+- assertVisible:
+    id: "date-filter-thisYear"
+- assertVisible:
+    id: "date-filter-all"
+- tapOn:
+    id: "date-filter-threeMonths"
+- tapOn:
+    id: "date-filter-all"

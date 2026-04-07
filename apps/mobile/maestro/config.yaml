@@ -1,2 +1,2 @@
-url: ${MAESTRO_APP_URL}
+appId: so.arami.stocktracker.app
 name: Stock Tracker E2E
