@@ -1,7 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { OverviewLayout } from "@aramiworks/ui";
-import { TrackerAccountsDetailViews } from "../tracker-accounts-detail.views";
+import { TrackerAccountsDetailViews } from "../views/tracker-accounts-detail.views";
 
 const meta: Meta<typeof TrackerAccountsDetailViews> = {
   title: "tracker/accounts/detail",
@@ -27,9 +27,18 @@ export const Overview: Story = {
     <OverviewLayout
       viewName="tracker-accounts-detail"
       variants={[
-        { name: "default", render: () => <TrackerAccountsDetailViews screenState="default" /> },
-        { name: "loading", render: () => <TrackerAccountsDetailViews screenState="loading" /> },
-        { name: "error", render: () => <TrackerAccountsDetailViews screenState="error" /> },
+        {
+          name: "default",
+          render: () => <TrackerAccountsDetailViews screenState="default" />,
+        },
+        {
+          name: "loading",
+          render: () => <TrackerAccountsDetailViews screenState="loading" />,
+        },
+        {
+          name: "error",
+          render: () => <TrackerAccountsDetailViews screenState="error" />,
+        },
       ]}
     />
   ),

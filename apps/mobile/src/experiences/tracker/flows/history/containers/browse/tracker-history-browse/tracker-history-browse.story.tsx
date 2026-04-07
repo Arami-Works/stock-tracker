@@ -1,7 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { OverviewLayout } from "@aramiworks/ui";
-import { TrackerHistoryBrowseViews } from "../tracker-history-browse.views";
+import { TrackerHistoryBrowseViews } from "../views/tracker-history-browse.views";
 
 const meta: Meta<typeof TrackerHistoryBrowseViews> = {
   title: "tracker/history/browse",
@@ -28,10 +28,22 @@ export const Overview: Story = {
     <OverviewLayout
       viewName="tracker-history-browse"
       variants={[
-        { name: "default", render: () => <TrackerHistoryBrowseViews screenState="default" /> },
-        { name: "empty", render: () => <TrackerHistoryBrowseViews screenState="empty" /> },
-        { name: "loading", render: () => <TrackerHistoryBrowseViews screenState="loading" /> },
-        { name: "error", render: () => <TrackerHistoryBrowseViews screenState="error" /> },
+        {
+          name: "default",
+          render: () => <TrackerHistoryBrowseViews screenState="default" />,
+        },
+        {
+          name: "empty",
+          render: () => <TrackerHistoryBrowseViews screenState="empty" />,
+        },
+        {
+          name: "loading",
+          render: () => <TrackerHistoryBrowseViews screenState="loading" />,
+        },
+        {
+          name: "error",
+          render: () => <TrackerHistoryBrowseViews screenState="error" />,
+        },
       ]}
     />
   ),
