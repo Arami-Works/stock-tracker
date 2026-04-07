@@ -47,8 +47,8 @@ jobs:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
           APP_ENV: master
 
-      - name: Copy Vercel config
-        run: cp apps/mobile/vercel.json apps/mobile/dist/vercel.json
+      - name: Write Vercel config
+        run: printf '{"rewrites":[{"source":"/(.*)","destination":"/index.html"}],"github":{"enabled":false}}\n' > apps/mobile/dist/vercel.json
 
       - name: Configure Vercel project
         working-directory: apps/mobile/dist
