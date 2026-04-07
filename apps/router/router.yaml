@@ -16,6 +16,8 @@ headers:
       - insert:
           name: x-user-role
           from_context: claims.role
+      - propagate:
+          named: x-request-id
 
 cors:
   policies:
@@ -26,6 +28,7 @@ cors:
         - content-type
         - x-user-id
         - x-user-role
+        - x-request-id
 
 supergraph:
   introspection: true
