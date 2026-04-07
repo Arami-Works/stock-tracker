@@ -21,7 +21,7 @@ const nameSuffix = ENV_NAME[appEnv] ?? " (Dev)";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  owner: "arami-works",
+  owner: "aramiworks",
   name: `Stock Tracker${nameSuffix}`,
   slug: "stock-tracker",
   version: "0.0.1",
