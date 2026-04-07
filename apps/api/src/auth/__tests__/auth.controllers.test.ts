@@ -14,6 +14,17 @@ const makePrisma = (findUniqueReturn: typeof mockUser | null = mockUser) =>
   ({
     auth_users: {
       findUnique: (jest.fn() as any).mockResolvedValue(findUniqueReturn),
+      upsert: (jest.fn() as any).mockImplementation(
+        ({ create }: { create: any }) =>
+          Promise.resolve({
+            id: "new-user-id",
+            supabase_id: create.supabase_id,
+            email: create.email,
+            display_name: create.display_name,
+            created_at: mockUser.created_at,
+            updated_at: mockUser.updated_at,
+          }),
+      ),
     },
   }) as any;
 
@@ -58,6 +69,67 @@ describe("authControllers", () => {
       expect(prisma.auth_users.findUnique).toHaveBeenCalledWith({
         where: { supabase_id: "nonexistent-supabase-id" },
       });
+    });
+  });
+
+  describe("upsertFromSupabase()", () => {
+    it("creates a new user", async () => {
+      const prisma = makePrisma();
+      const ctrl = authControllers(prisma);
+
+      const result = await ctrl.upsertFromSupabase({
+        supabaseId: "new-supabase-id",
+        email: "new@example.com",
+        displayName: "New User",
+      });
+
+      expect(prisma.auth_users.upsert).toHaveBeenCalledWith({
+        where: { supabase_id: "new-supabase-id" },
+        create: {
+          supabase_id: "new-supabase-id",
+          email: "new@example.com",
+          display_name: "New User",
+        },
+        update: {
+          email: "new@example.com",
+          display_name: "New User",
+        },
+      });
+      expect(result.email).toBe("new@example.com");
+      expect(result.displayName).toBe("New User");
+    });
+
+    it("updates an existing user", async () => {
+      const prisma = makePrisma();
+      const ctrl = authControllers(prisma);
+
+      const result = await ctrl.upsertFromSupabase({
+        supabaseId: mockUser.supabase_id,
+        email: "updated@example.com",
+        displayName: "Updated Name",
+      });
+
+      expect(prisma.auth_users.upsert).toHaveBeenCalled();
+      expect(result).toBeDefined();
+    });
+
+    it("handles null displayName", async () => {
+      const prisma = makePrisma();
+      const ctrl = authControllers(prisma);
+
+      const result = await ctrl.upsertFromSupabase({
+        supabaseId: "new-supabase-id",
+        email: "new@example.com",
+        displayName: null,
+      });
+
+      expect(prisma.auth_users.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          create: expect.objectContaining({ display_name: null }),
+          update: expect.objectContaining({ display_name: null }),
+        }),
+      );
+      expect(result.displayName).toBeNull();
     });
   });
 });
