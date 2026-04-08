@@ -16,6 +16,8 @@ export const createTrpcClient = (
           const h: Record<string, string> = {};
           if (headers["x-user-id"]) h["x-user-id"] = headers["x-user-id"];
           if (headers["x-user-role"]) h["x-user-role"] = headers["x-user-role"];
+          if (headers["x-request-id"])
+            h["x-request-id"] = headers["x-request-id"];
           return h;
         },
       }),

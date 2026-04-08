@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { appRouter } from "./trpc/router.js";
 import { createContext } from "./trpc/trpc.js";
@@ -13,6 +14,12 @@ const server = createHTTPServer({
       res.end(JSON.stringify({ status: "ok" }));
       return;
     }
+
+    if (!req.headers["x-request-id"]) {
+      req.headers["x-request-id"] = randomUUID();
+    }
+    res.setHeader("x-request-id", req.headers["x-request-id"]);
+
     next();
   },
 });
