@@ -84,6 +84,7 @@ API_DIR="$REPO_ROOT/apps/api"
 SUBGRAPH_DIR="$REPO_ROOT/apps/subgraphs/tracker"
 ROUTER_DIR="$REPO_ROOT/apps/router"
 MOBILE_DIR="$REPO_ROOT/apps/mobile"
+STORYBOOK_DIR="$REPO_ROOT/apps/storybook"
 ALL_SERVICES="api subgraph router ios android web storybook"
 
 cmd="${1:-all}"
@@ -99,16 +100,16 @@ case "$cmd" in
     start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
     ;;
   ios)
-    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8092 --ios"
+    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo run:ios --port 8092"
     ;;
   android)
-    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8093 --android"
+    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo run:android --port 8093"
     ;;
   web)
     start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8094 --web"
     ;;
   storybook)
-    start_service "storybook" "$DOPPLER npm run dev:storybook"
+    start_service "storybook" "cd '$STORYBOOK_DIR' && $DOPPLER npx storybook dev -p 6006"
     ;;
   backend)
     start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
@@ -119,10 +120,10 @@ case "$cmd" in
     start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
     start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
     start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
-    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8092 --ios"
-    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8093 --android"
+    start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo run:ios --port 8092"
+    start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo run:android --port 8093"
     start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8094 --web"
-    start_service "storybook" "$DOPPLER npm run dev:storybook"
+    start_service "storybook" "cd '$STORYBOOK_DIR' && $DOPPLER npx storybook dev -p 6006"
     ;;
   stop)
     for svc in $ALL_SERVICES; do
