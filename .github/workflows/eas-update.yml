@@ -7,6 +7,9 @@ on:
       - 'apps/mobile/src/**'
       - 'apps/mobile/app.config.ts'
 
+  release:
+    types: [published]
+
   workflow_dispatch:
     inputs:
       channel:
@@ -16,9 +19,14 @@ on:
         options:
           - develop
           - stage
+          - master
 
 jobs:
   update:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'release' && startsWith(github.event.release.tag_name, '@stock-tracker/mobile@')) ||
+      (github.event_name == 'push' && !startsWith(github.event.head_commit.message, 'chore: version packages'))
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -47,6 +55,16 @@ jobs:
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "name=${{ inputs.channel }}" >> $GITHUB_OUTPUT
+          elif [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+            VERSION="${TAG##*@}"
+            if [[ "$VERSION" == *-dev.* ]]; then
+              echo "name=develop" >> $GITHUB_OUTPUT
+            elif [[ "$VERSION" == *-rc.* ]]; then
+              echo "name=stage" >> $GITHUB_OUTPUT
+            else
+              echo "name=master" >> $GITHUB_OUTPUT
+            fi
           else
             echo "name=master" >> $GITHUB_OUTPUT
           fi
@@ -59,11 +77,11 @@ jobs:
         working-directory: apps/mobile
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
-          APP_ENV: master
+          APP_ENV: ${{ steps.channel.outputs.name }}
         run: |
           doppler run -- eas update \
             --channel ${{ steps.channel.outputs.name }} \
-            --message "v${{ steps.version.outputs.version }} — ${{ github.event.head_commit.message || 'manual dispatch' }}" \
+            --message "v${{ steps.version.outputs.version }} — ${{ github.event.head_commit.message || github.event.release.name || 'manual dispatch' }}" \
             --non-interactive
 
       - name: Notify Slack
