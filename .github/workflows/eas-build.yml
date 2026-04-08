@@ -103,7 +103,8 @@ jobs:
             --platform ${{ matrix.platform }} \
             --non-interactive \
             --json | tee /tmp/eas-build-result.json
-          BUILD_URL=$(cat /tmp/eas-build-result.json | jq -r '.[0].buildDetailsPageUrl // empty')
+          BUILD_ID=$(jq -r '.[0].id // empty' /tmp/eas-build-result.json)
+          BUILD_URL="https://expo.dev/accounts/aramiworks/projects/stock-tracker/builds/${BUILD_ID}"
           echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
         working-directory: apps/mobile
         env:
@@ -120,13 +121,14 @@ jobs:
           FALLBACK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           LINK="${BUILD_URL:-$FALLBACK}"
 
-          curl -s -X POST https://slack.com/api/chat.postMessage \
+          RESPONSE=$(curl -s -X POST https://slack.com/api/chat.postMessage \
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
               \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
               \"text\": \"${STATUS} *EAS Build* — ${PLATFORM} (${PROFILE})\n• <${LINK}|빌드 보기>\"
-            }"
+            }")
+          echo "Slack response: $RESPONSE"
 
       - name: Cleanup Apple API key
         if: always() && matrix.platform == 'ios'
@@ -172,7 +174,8 @@ jobs:
             --platform ${{ matrix.platform }} \
             --non-interactive \
             --json | tee /tmp/eas-build-result.json
-          BUILD_URL=$(cat /tmp/eas-build-result.json | jq -r '.[0].buildDetailsPageUrl // empty')
+          BUILD_ID=$(jq -r '.[0].id // empty' /tmp/eas-build-result.json)
+          BUILD_URL="https://expo.dev/accounts/aramiworks/projects/stock-tracker/builds/${BUILD_ID}"
           echo "build_url=$BUILD_URL" >> "$GITHUB_OUTPUT"
         working-directory: apps/mobile
         env:
@@ -188,13 +191,14 @@ jobs:
           FALLBACK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           LINK="${BUILD_URL:-$FALLBACK}"
 
-          curl -s -X POST https://slack.com/api/chat.postMessage \
+          RESPONSE=$(curl -s -X POST https://slack.com/api/chat.postMessage \
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
               \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
               \"text\": \"${STATUS} *EAS Build* — ${PLATFORM} (storybook)\n• <${LINK}|빌드 보기>\"
-            }"
+            }")
+          echo "Slack response: $RESPONSE"
 
       - name: Cleanup Apple API key
         if: always() && matrix.platform == 'ios'
