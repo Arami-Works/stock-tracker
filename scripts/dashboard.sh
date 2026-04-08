@@ -41,17 +41,21 @@ render() {
   # --- Services ---
   printf "${CYAN}Services${RESET}\n"
 
-  local api_running=false subgraph_running=false router_running=false mobile_running=false storybook_running=false
-  check_port 4000 && api_running=true
-  check_port 4001 && subgraph_running=true
-  check_port 4080 && router_running=true
-  check_port 8081 && mobile_running=true
+  local api_running=false subgraph_running=false router_running=false ios_running=false android_running=false web_running=false storybook_running=false
+  check_port 4010 && api_running=true
+  check_port 4011 && subgraph_running=true
+  check_port 4012 && router_running=true
+  check_port 8092 && ios_running=true
+  check_port 8093 && android_running=true
+  check_port 8094 && web_running=true
   check_port 6006 && storybook_running=true
 
-  printf "  %s  tRPC API               %s\n" "$(status_dot $api_running)" "$( $api_running && echo ':4000' || echo '--' )"
-  printf "  %s  Subgraph (tracker)     %s\n" "$(status_dot $subgraph_running)" "$( $subgraph_running && echo ':4001' || echo '--' )"
-  printf "  %s  Apollo Router          %s\n" "$(status_dot $router_running)" "$( $router_running && echo ':4080' || echo '--' )"
-  printf "  %s  Expo Mobile            %s\n" "$(status_dot $mobile_running)" "$( $mobile_running && echo ':8081' || echo '--' )"
+  printf "  %s  tRPC API               %s\n" "$(status_dot $api_running)" "$( $api_running && echo ':4010' || echo '--' )"
+  printf "  %s  Subgraph (tracker)     %s\n" "$(status_dot $subgraph_running)" "$( $subgraph_running && echo ':4011' || echo '--' )"
+  printf "  %s  Apollo Router          %s\n" "$(status_dot $router_running)" "$( $router_running && echo ':4012' || echo '--' )"
+  printf "  %s  Expo iOS               %s\n" "$(status_dot $ios_running)" "$( $ios_running && echo ':8092' || echo '--' )"
+  printf "  %s  Expo Android           %s\n" "$(status_dot $android_running)" "$( $android_running && echo ':8093' || echo '--' )"
+  printf "  %s  Expo Web               %s\n" "$(status_dot $web_running)" "$( $web_running && echo ':8094' || echo '--' )"
   printf "  %s  Storybook              %s\n" "$(status_dot $storybook_running)" "$( $storybook_running && echo ':6006' || echo '--' )"
   echo
 
@@ -123,7 +127,7 @@ render() {
   printf "${CYAN}Logs${RESET}\n"
 
   local has_logs=false
-  for logfile in api subgraph router mobile storybook; do
+  for logfile in api subgraph router ios android web storybook; do
     local path="$logs_dir/${logfile}.log"
     if [[ -f "$path" ]]; then
       has_logs=true
