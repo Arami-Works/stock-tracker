@@ -8,6 +8,10 @@ const meta: Meta<typeof TrackerDashboardHomeSpendSummaryCardView> = {
   component: TrackerDashboardHomeSpendSummaryCardView,
   parameters: {
     layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=240-3",
+    },
   },
   argTypes: {
     state: {

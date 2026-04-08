@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerAccountsDetailSaHeaderView> = {
   title: "tracker/accounts/detail/saHeader.view",
   component: TrackerAccountsDetailSaHeaderView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=241-6",
+    },
+  },
 };
 
 export default meta;

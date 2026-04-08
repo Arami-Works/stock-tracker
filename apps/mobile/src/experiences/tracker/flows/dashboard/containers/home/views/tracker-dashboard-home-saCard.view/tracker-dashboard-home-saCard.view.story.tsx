@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerDashboardHomeSaCardView> = {
   title: "tracker/dashboard/home/saCard.view",
   component: TrackerDashboardHomeSaCardView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=240-4",
+    },
+  },
   argTypes: {
     state: {
       control: { type: "select" },

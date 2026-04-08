@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerDashboardHomeErrorStateView> = {
   title: "tracker/dashboard/home/errorState.view",
   component: TrackerDashboardHomeErrorStateView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=240-6",
+    },
+  },
 };
 
 export default meta;
