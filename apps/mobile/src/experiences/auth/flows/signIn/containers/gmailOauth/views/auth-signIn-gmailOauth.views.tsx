@@ -37,6 +37,7 @@ export const AuthSignInGmailOauthViews = memo(() => {
             disabled={isSigningIn}
             minWidth={200}
             color="$primary"
+            testID="sign-in-google-button"
           >
             Sign in with Google
           </Button>
