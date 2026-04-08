@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerAccountsListSaListItemView> = {
   title: "tracker/accounts/list/saListItem.view",
   component: TrackerAccountsListSaListItemView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=241-2",
+    },
+  },
   argTypes: {
     state: {
       control: { type: "select" },

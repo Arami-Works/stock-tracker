@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerHistoryBrowseSkeletonCardView> = {
   title: "tracker/history/browse/skeletonCard.view",
   component: TrackerHistoryBrowseSkeletonCardView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=241-15",
+    },
+  },
 };
 
 export default meta;

@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerHistoryBrowseErrorStateView> = {
   title: "tracker/history/browse/errorState.view",
   component: TrackerHistoryBrowseErrorStateView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=241-14",
+    },
+  },
 };
 
 export default meta;
