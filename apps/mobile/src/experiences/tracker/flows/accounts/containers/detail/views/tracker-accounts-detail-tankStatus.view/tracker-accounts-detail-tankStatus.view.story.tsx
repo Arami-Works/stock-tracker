@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerAccountsDetailTankStatusView> = {
   title: "tracker/accounts/detail/tankStatus.view",
   component: TrackerAccountsDetailTankStatusView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=241-7",
+    },
+  },
   argTypes: {
     state: {
       control: { type: "select" },

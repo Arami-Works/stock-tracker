@@ -6,7 +6,13 @@ import { TrackerDashboardHomeViews } from "../views/tracker-dashboard-home.views
 const meta: Meta<typeof TrackerDashboardHomeViews> = {
   title: "tracker/dashboard/home",
   component: TrackerDashboardHomeViews,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "fullscreen",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=269-2",
+    },
+  },
   argTypes: {
     screenState: {
       control: { type: "select" },
