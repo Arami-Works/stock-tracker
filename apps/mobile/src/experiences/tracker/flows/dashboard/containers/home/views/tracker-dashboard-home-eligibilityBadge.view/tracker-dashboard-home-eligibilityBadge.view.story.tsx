@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerDashboardHomeEligibilityBadgeView> = {
   title: "tracker/dashboard/home/eligibilityBadge.view",
   component: TrackerDashboardHomeEligibilityBadgeView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=240-2",
+    },
+  },
   argTypes: {
     state: {
       control: { type: "select" },
