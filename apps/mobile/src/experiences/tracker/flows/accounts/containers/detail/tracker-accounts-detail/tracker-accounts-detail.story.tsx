@@ -6,7 +6,13 @@ import { TrackerAccountsDetailViews } from "../views/tracker-accounts-detail.vie
 const meta: Meta<typeof TrackerAccountsDetailViews> = {
   title: "tracker/accounts/detail",
   component: TrackerAccountsDetailViews,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "fullscreen",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=269-4",
+    },
+  },
   argTypes: {
     screenState: {
       control: { type: "select" },

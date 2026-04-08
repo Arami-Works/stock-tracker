@@ -6,7 +6,13 @@ import { TrackerHistoryBrowseViews } from "../views/tracker-history-browse.views
 const meta: Meta<typeof TrackerHistoryBrowseViews> = {
   title: "tracker/history/browse",
   component: TrackerHistoryBrowseViews,
-  parameters: { layout: "fullscreen" },
+  parameters: {
+    layout: "fullscreen",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=269-5",
+    },
+  },
   argTypes: {
     screenState: {
       control: { type: "select" },
