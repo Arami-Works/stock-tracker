@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import {
   createClient,
   createServiceDomain,
@@ -21,6 +22,9 @@ if (!token) {
   process.exit(1);
 }
 
+const ghcrPat = process.env["GHCR_PAT"];
+const dopplerToken = process.env["DOPPLER_TOKEN"];
+
 const envArg = process.argv[2];
 if (!envArg || !ENVIRONMENTS[envArg]) {
   console.error(
@@ -31,6 +35,40 @@ if (!envArg || !ENVIRONMENTS[envArg]) {
 
 const envConfig: EnvironmentConfig = ENVIRONMENTS[envArg]!;
 const client = createClient(token);
+
+function readDopplerSecrets(
+  config: string,
+  keys: string[],
+): Record<string, string> {
+  if (!dopplerToken) {
+    console.log("  DOPPLER_TOKEN not set — skipping secret sync");
+    return {};
+  }
+
+  const result: Record<string, string> = {};
+  const missing: string[] = [];
+
+  for (const key of keys) {
+    try {
+      const raw = execSync(
+        `doppler secrets get ${key} --project ${PROJECT_NAME} --config ${config} --json`,
+        { env: { ...process.env, DOPPLER_TOKEN: dopplerToken }, stdio: ["pipe", "pipe", "pipe"] },
+      ).toString();
+      const parsed = JSON.parse(raw) as Record<string, { computed: string }>;
+      if (parsed[key]) {
+        result[key] = parsed[key].computed;
+      }
+    } catch {
+      missing.push(key);
+    }
+  }
+
+  if (missing.length > 0) {
+    console.log(`  Warning: missing from Doppler ${config}: ${missing.join(", ")}`);
+  }
+
+  return result;
+}
 
 async function setupService(
   projectId: string,
@@ -46,18 +84,48 @@ async function setupService(
     imageWithTag,
   );
 
-  // Configure service instance for this environment
-  await updateServiceInstance(client, svc.id, environmentId, {
-    startCommand: "npm run start",
-    healthcheckPath: service.healthcheckPath,
-  });
-  console.log(`  Configured ${service.name} instance`);
+  // Configure service instance (image source, credentials, start command)
+  const baseConfig: Record<string, unknown> = {
+    source: { image: imageWithTag },
+    healthcheckPath: service.healthcheckPath ?? "",
+  };
 
-  // Set environment variables (non-secret — secrets come from Doppler)
+  // startCommand: set per service, or empty string to use Dockerfile CMD
+  baseConfig.startCommand = service.startCommand ?? "";
+
+  if (ghcrPat) {
+    try {
+      await updateServiceInstance(client, svc.id, environmentId, {
+        ...baseConfig,
+        registryCredentials: { username: "github", password: ghcrPat },
+      });
+      console.log(`  Configured ${service.name}: ${imageWithTag} (with GHCR creds)`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      if (msg.includes("Pro users")) {
+        console.log(`  Registry credentials require Pro plan — retrying without`);
+        await updateServiceInstance(client, svc.id, environmentId, baseConfig);
+        console.log(`  Configured ${service.name}: ${imageWithTag} (no creds — packages must be public)`);
+      } else {
+        throw err;
+      }
+    }
+  } else {
+    await updateServiceInstance(client, svc.id, environmentId, baseConfig);
+    console.log(`  Configured ${service.name}: ${imageWithTag}`);
+  }
+
+  // Set base environment variables
   const vars: Record<string, string> = {
     PORT: String(service.port),
     NODE_ENV: config.nodeEnv,
   };
+
+  // Sync service-specific secrets from Doppler
+  if (service.envVars.length > 0) {
+    const secrets = readDopplerSecrets(config.dopplerConfig, service.envVars);
+    Object.assign(vars, secrets);
+  }
 
   for (const [name, value] of Object.entries(vars)) {
     await upsertVariable(client, projectId, environmentId, svc.id, name, value);
@@ -102,12 +170,6 @@ async function main(): Promise<void> {
 
   console.log("\n─".repeat(40));
   console.log(`Done. Railway "${envArg}" environment is configured.`);
-  console.log(
-    "\nNext steps:",
-    "\n  - Ensure GHCR credentials are set in Railway for private image pulls",
-    "\n  - Configure Doppler → Railway sync for DATABASE_URL and secrets",
-    "\n  - Push to branch to trigger Docker build + Railway redeploy",
-  );
 }
 
 main().catch((err) => {
