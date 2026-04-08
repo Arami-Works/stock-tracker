@@ -1,4 +1,13 @@
 comment: false
+flags:
+  unit:
+    paths:
+      - apps/api/src/
+    carryforward: true
+  e2e:
+    paths:
+      - apps/api/src/
+    carryforward: true
 coverage:
   status:
     project:
