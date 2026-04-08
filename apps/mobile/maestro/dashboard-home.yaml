@@ -1,26 +1,23 @@
+appId: so.arami.stocktracker.app
 url: ${MAESTRO_APP_URL}
-name: Dashboard Home
+name: Dashboard - Home
 tags:
   - authenticated
 ---
 - launchApp
-
 - assertVisible:
     id: "dashboard-home-screen"
-
 - assertVisible:
     id: "dashboard-home-title"
 - assertVisible: "대시보드"
-
 - assertVisible:
     id: "eligibility-badge"
-
 - assertVisible:
     id: "spend-summary-card"
-
-- tapOn:
+- assertVisible:
+    id: "add-account-fab"
+- assertVisible:
     id: "refresh-fab"
-
 - scrollUntilVisible:
     element:
       id: "sa-card-.*"
