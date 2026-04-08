@@ -7,6 +7,11 @@ import { createContext } from "../trpc/trpc.js";
 let server: ReturnType<typeof createHTTPServer>;
 const TEST_PORT = 4099;
 
+/** superjson wraps tRPC error responses as { json, meta } */
+function errorData(body: any): any {
+  return body.error?.json?.data ?? body.error?.data;
+}
+
 function request(
   path: string,
   options: {
@@ -68,7 +73,7 @@ beforeAll(async () => {
 });
 
 afterAll(() => {
-  server.server.close();
+  server.close();
 });
 
 describe("requestId in error responses", () => {
@@ -80,8 +85,9 @@ describe("requestId in error responses", () => {
     expect(res.status).toBe(401);
     const body = res.body as any;
     expect(body.error).toBeDefined();
-    expect(body.error.data.requestId).toBeDefined();
-    expect(typeof body.error.data.requestId).toBe("string");
+    const data = errorData(body);
+    expect(data.requestId).toBeDefined();
+    expect(typeof data.requestId).toBe("string");
   });
 
   it("returns x-request-id response header", async () => {
@@ -102,7 +108,7 @@ describe("requestId in error responses", () => {
 
     expect(res.headers["x-request-id"]).toBe(customId);
     const body = res.body as any;
-    expect(body.error.data.requestId).toBe(customId);
+    expect(errorData(body).requestId).toBe(customId);
   });
 
   it("generates a UUID requestId when none provided", async () => {
@@ -111,7 +117,7 @@ describe("requestId in error responses", () => {
     });
 
     const body = res.body as any;
-    const requestId = body.error.data.requestId;
+    const requestId = errorData(body).requestId;
     expect(requestId).toMatch(
       /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/,
     );
