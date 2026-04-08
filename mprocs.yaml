@@ -17,6 +17,7 @@ procs:
     cwd: apps/api
     env:
       PORT: "4010"
+    stop: "SIGTERM"
     autostart: true
 
   subgraph:
@@ -37,6 +38,7 @@ procs:
     cwd: apps/subgraphs/tracker
     env:
       PORT: "4011"
+    stop: "SIGTERM"
     autostart: true
 
   router:
@@ -61,6 +63,7 @@ procs:
         "4012",
       ]
     cwd: apps/router
+    stop: "SIGTERM"
     autostart: true
 
   ios:
@@ -75,12 +78,12 @@ procs:
         "--",
         "npx",
         "expo",
-        "start",
+        "run:ios",
         "--port",
         "8092",
-        "--ios",
       ]
     cwd: apps/mobile
+    stop: "SIGTERM"
     autostart: true
 
   android:
@@ -95,12 +98,12 @@ procs:
         "--",
         "npx",
         "expo",
-        "start",
+        "run:android",
         "--port",
         "8093",
-        "--android",
       ]
     cwd: apps/mobile
+    stop: "SIGTERM"
     autostart: true
 
   web:
@@ -121,6 +124,7 @@ procs:
         "--web",
       ]
     cwd: apps/mobile
+    stop: "SIGTERM"
     autostart: true
 
   storybook:
@@ -133,8 +137,12 @@ procs:
         "--config",
         "local",
         "--",
-        "npm",
-        "run",
-        "dev:storybook",
+        "npx",
+        "storybook",
+        "dev",
+        "-p",
+        "6006",
       ]
-    autostart: false
+    cwd: apps/storybook
+    stop: "SIGTERM"
+    autostart: true
