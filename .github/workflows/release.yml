@@ -3,6 +3,11 @@ name: Release
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
   contents: write
@@ -15,6 +20,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ secrets.OPENCLAW_BOT_APP_ID }}
+          private-key: ${{ secrets.OPENCLAW_BOT_PRIVATE_KEY }}
+
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -26,10 +38,11 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: changesets/action@v1
+        id: changesets
         with:
           version: npx changeset version
           title: "chore: version packages"
           commit: "chore: version packages"
           createGithubReleases: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
