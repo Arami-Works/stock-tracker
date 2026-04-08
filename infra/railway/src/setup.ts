@@ -52,7 +52,10 @@ function readDopplerSecrets(
     try {
       const raw = execSync(
         `doppler secrets get ${key} --project ${PROJECT_NAME} --config ${config} --json`,
-        { env: { ...process.env, DOPPLER_TOKEN: dopplerToken }, stdio: ["pipe", "pipe", "pipe"] },
+        {
+          env: { ...process.env, DOPPLER_TOKEN: dopplerToken },
+          stdio: ["pipe", "pipe", "pipe"],
+        },
       ).toString();
       const parsed = JSON.parse(raw) as Record<string, { computed: string }>;
       if (parsed[key]) {
@@ -64,7 +67,9 @@ function readDopplerSecrets(
   }
 
   if (missing.length > 0) {
-    console.log(`  Warning: missing from Doppler ${config}: ${missing.join(", ")}`);
+    console.log(
+      `  Warning: missing from Doppler ${config}: ${missing.join(", ")}`,
+    );
   }
 
   return result;
@@ -99,13 +104,19 @@ async function setupService(
         ...baseConfig,
         registryCredentials: { username: "github", password: ghcrPat },
       });
-      console.log(`  Configured ${service.name}: ${imageWithTag} (with GHCR creds)`);
+      console.log(
+        `  Configured ${service.name}: ${imageWithTag} (with GHCR creds)`,
+      );
     } catch (err) {
       const msg = err instanceof Error ? err.message : "";
       if (msg.includes("Pro users")) {
-        console.log(`  Registry credentials require Pro plan — retrying without`);
+        console.log(
+          `  Registry credentials require Pro plan — retrying without`,
+        );
         await updateServiceInstance(client, svc.id, environmentId, baseConfig);
-        console.log(`  Configured ${service.name}: ${imageWithTag} (no creds — packages must be public)`);
+        console.log(
+          `  Configured ${service.name}: ${imageWithTag} (no creds — packages must be public)`,
+        );
       } else {
         throw err;
       }
