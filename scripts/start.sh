@@ -6,11 +6,13 @@ set -euo pipefail
 # and pipes output to logs/*.log so the dashboard can tail them.
 #
 # Usage:
-#   ./scripts/start.sh api            # tRPC service
-#   ./scripts/start.sh subgraph       # Apollo subgraph
-#   ./scripts/start.sh router         # Apollo Router (rover dev)
-#   ./scripts/start.sh mobile         # Expo dev server
-#   ./scripts/start.sh storybook      # Storybook web
+#   ./scripts/start.sh api            # tRPC service (:4010)
+#   ./scripts/start.sh subgraph       # Apollo subgraph (:4011)
+#   ./scripts/start.sh router         # Apollo Router (:4012)
+#   ./scripts/start.sh ios            # Expo iOS (:8092)
+#   ./scripts/start.sh android        # Expo Android (:8093)
+#   ./scripts/start.sh web            # Expo Web (:8094)
+#   ./scripts/start.sh storybook      # Storybook web (:6006)
 #   ./scripts/start.sh backend        # api + subgraph + router
 #   ./scripts/start.sh all            # Everything
 #   ./scripts/start.sh stop           # Kill all managed services
@@ -68,6 +70,9 @@ stop_service() {
   rm -f "$pidfile"
 }
 
+API_DIR="$REPO_ROOT/apps/api"
+SUBGRAPH_DIR="$REPO_ROOT/apps/subgraphs/tracker"
+ROUTER_DIR="$REPO_ROOT/apps/router"
 MOBILE_DIR="$REPO_ROOT/apps/mobile"
 ALL_SERVICES="api subgraph router ios android web storybook"
 
@@ -75,13 +80,13 @@ cmd="${1:-all}"
 
 case "$cmd" in
   api)
-    start_service "api" "PORT=4010 $DOPPLER npm run dev:api"
+    start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
     ;;
   subgraph)
-    start_service "subgraph" "PORT=4011 $DOPPLER npm run dev:subgraph"
+    start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
     ;;
   router)
-    start_service "router" "$DOPPLER npm run dev:router"
+    start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
     ;;
   ios)
     start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8092 --ios"
@@ -96,14 +101,14 @@ case "$cmd" in
     start_service "storybook" "$DOPPLER npm run dev:storybook"
     ;;
   backend)
-    start_service "api" "PORT=4010 $DOPPLER npm run dev:api"
-    start_service "subgraph" "PORT=4011 $DOPPLER npm run dev:subgraph"
-    start_service "router" "$DOPPLER npm run dev:router"
+    start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
+    start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
+    start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
     ;;
   all)
-    start_service "api" "PORT=4010 $DOPPLER npm run dev:api"
-    start_service "subgraph" "PORT=4011 $DOPPLER npm run dev:subgraph"
-    start_service "router" "$DOPPLER npm run dev:router"
+    start_service "api" "cd '$API_DIR' && PORT=4010 $DOPPLER npx tsx watch src/server.ts"
+    start_service "subgraph" "cd '$SUBGRAPH_DIR' && PORT=4011 $DOPPLER npx tsx watch src/server.ts"
+    start_service "router" "cd '$ROUTER_DIR' && $DOPPLER rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012"
     start_service "ios" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8092 --ios"
     start_service "android" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8093 --android"
     start_service "web" "cd '$MOBILE_DIR' && $DOPPLER npx expo start --port 8094 --web"

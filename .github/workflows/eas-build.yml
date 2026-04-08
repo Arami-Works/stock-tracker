@@ -22,8 +22,11 @@ on:
           - ios
         default: all
 
+  release:
+    types: [published]
+
 concurrency:
-  group: eas-build-${{ github.ref }}-${{ inputs.profile }}
+  group: eas-build-${{ inputs.profile || github.event.release.tag_name }}
   cancel-in-progress: true
 
 permissions:
@@ -31,12 +34,42 @@ permissions:
   packages: read
 
 jobs:
+  resolve-params:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      startsWith(github.event.release.tag_name, '@stock-tracker/mobile@')
+    runs-on: ubuntu-latest
+    outputs:
+      profile: ${{ steps.params.outputs.profile }}
+      platform: ${{ steps.params.outputs.platform }}
+    steps:
+      - name: Resolve build parameters
+        id: params
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "profile=${{ inputs.profile }}" >> "$GITHUB_OUTPUT"
+            echo "platform=${{ inputs.platform }}" >> "$GITHUB_OUTPUT"
+          else
+            TAG="${{ github.event.release.tag_name }}"
+            VERSION="${TAG##*@}"
+
+            if [[ "$VERSION" == *-dev.* ]]; then
+              echo "profile=develop" >> "$GITHUB_OUTPUT"
+            elif [[ "$VERSION" == *-rc.* ]]; then
+              echo "profile=stage" >> "$GITHUB_OUTPUT"
+            else
+              echo "profile=master" >> "$GITHUB_OUTPUT"
+            fi
+            echo "platform=all" >> "$GITHUB_OUTPUT"
+          fi
+
   build:
+    needs: [resolve-params]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       matrix:
-        platform: ${{ inputs.platform == 'all' && fromJSON('["android", "ios"]') || fromJSON(format('["{0}"]', inputs.platform)) }}
+        platform: ${{ needs.resolve-params.outputs.platform == 'all' && fromJSON('["android", "ios"]') || fromJSON(format('["{0}"]', needs.resolve-params.outputs.platform)) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -66,7 +99,7 @@ jobs:
         id: eas-build
         run: |
           eas build \
-            --profile ${{ inputs.profile }} \
+            --profile ${{ needs.resolve-params.outputs.profile }} \
             --platform ${{ matrix.platform }} \
             --non-interactive \
             --json | tee /tmp/eas-build-result.json
@@ -82,7 +115,7 @@ jobs:
         run: |
           STATUS="${{ job.status == 'success' && '✅' || '❌' }}"
           PLATFORM="${{ matrix.platform }}"
-          PROFILE="${{ inputs.profile }}"
+          PROFILE="${{ needs.resolve-params.outputs.profile }}"
           BUILD_URL="${{ steps.eas-build.outputs.build_url }}"
           FALLBACK="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           LINK="${BUILD_URL:-$FALLBACK}"
@@ -100,11 +133,12 @@ jobs:
         run: rm -rf "${RUNNER_TEMP}/appstoreconnect"
 
   storybook:
+    needs: [resolve-params]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       matrix:
-        platform: ${{ inputs.platform == 'all' && fromJSON('["android", "ios"]') || fromJSON(format('["{0}"]', inputs.platform)) }}
+        platform: ${{ needs.resolve-params.outputs.platform == 'all' && fromJSON('["android", "ios"]') || fromJSON(format('["{0}"]', needs.resolve-params.outputs.platform)) }}
     steps:
       - uses: actions/checkout@v4
 
