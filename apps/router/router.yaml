@@ -31,5 +31,8 @@ supergraph:
   introspection: true
   listen: 0.0.0.0:4002
 
+homepage:
+  enabled: false
+
 sandbox:
   enabled: true
