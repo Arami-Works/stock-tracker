@@ -51,6 +51,15 @@ start_service() {
   log "$name started (pid $!)"
 }
 
+kill_tree() {
+  local pid="$1"
+  local child
+  for child in $(pgrep -P "$pid" 2>/dev/null); do
+    kill_tree "$child"
+  done
+  kill "$pid" 2>/dev/null || true
+}
+
 stop_service() {
   local name="$1"
   local pidfile="$PIDS_DIR/${name}.pid"
@@ -63,8 +72,9 @@ stop_service() {
   pid=$(cat "$pidfile")
   if kill -0 "$pid" 2>/dev/null; then
     log "Stopping $name (pid $pid)"
-    kill "$pid" 2>/dev/null || true
+    kill_tree "$pid"
     sleep 1
+    kill_tree "$pid"
     kill -9 "$pid" 2>/dev/null || true
   fi
   rm -f "$pidfile"
