@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { purchaseCreateInputSchema } from "@stock-tracker/validation";
@@ -31,6 +32,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
     onSubmit,
     defaultValues,
   }: TrackerAccountsDetailPurchaseFormModalViewProps) => {
+    const { t } = useTranslation("tracker");
     const isEdit = !!defaultValues;
 
     const {
@@ -96,52 +98,60 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
     return (
       <FormModal
         visible={visible}
-        title={isEdit ? "구매 수정" : "구매 추가"}
-        submitLabel={isEdit ? "수정" : "추가"}
+        title={
+          isEdit
+            ? t("purchases.form.edit.title")
+            : t("purchases.form.add.title")
+        }
+        submitLabel={
+          isEdit
+            ? t("purchases.form.edit.submit")
+            : t("purchases.form.add.submit")
+        }
         onSubmit={handleSubmit(handleFormSubmit)}
         onClose={handleClose}
       >
         <TextInputField
           control={control}
           name="itemName"
-          label="상품명"
-          placeholder="트리니티 링"
+          label={t("purchases.form.fields.itemName.label")}
+          placeholder={t("purchases.form.fields.itemName.placeholder")}
           error={errors.itemName?.message}
         />
         <TextInputField
           control={control}
           name="amount"
-          label="금액"
-          placeholder="3200000"
+          label={t("purchases.form.fields.amount.label")}
+          placeholder={t("purchases.form.fields.amount.placeholder")}
           keyboardType="numeric"
           error={errors.amount?.message}
         />
         <TextInputField
           control={control}
           name="purchaseDate"
-          label="구매일 (YYYY-MM-DD)"
-          placeholder="2024-03-15"
+          label={t("purchases.form.fields.purchaseDate.label")}
+          placeholder={t("purchases.form.fields.purchaseDate.placeholder")}
           error={errors.purchaseDate?.message}
         />
         <TextInputField
           control={control}
           name="itemCategory"
-          label="카테고리 (선택)"
-          placeholder="주얼리"
+          label={t("purchases.form.fields.itemCategory.label")}
+          placeholder={t("purchases.form.fields.itemCategory.placeholder")}
           error={errors.itemCategory?.message}
         />
         <TextInputField
           control={control}
           name="storeLocation"
-          label="매장 (선택)"
-          placeholder="청담 부티크"
+          label={t("purchases.form.fields.storeLocation.label")}
+          placeholder={t("purchases.form.fields.storeLocation.placeholder")}
           error={errors.storeLocation?.message}
         />
         <TextInputField
           control={control}
           name="notes"
-          label="메모 (선택)"
-          placeholder="메모를 입력하세요"
+          label={t("purchases.form.fields.notes.label")}
+          placeholder={t("purchases.form.fields.notes.placeholder")}
           multiline
           error={errors.notes?.message}
         />

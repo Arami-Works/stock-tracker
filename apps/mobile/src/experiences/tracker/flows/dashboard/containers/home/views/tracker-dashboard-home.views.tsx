@@ -1,6 +1,7 @@
 import { memo, useState, type ReactNode } from "react";
 import { View, ScrollView, StyleSheet } from "react-native";
 import { Text, FAB } from "@aramiworks/ui";
+import { useTranslation } from "react-i18next";
 import type {
   TrackerDashboardHomeScreenState,
   TrackerDashboardHomeControllersOutput,
@@ -31,6 +32,7 @@ export const TrackerDashboardHomeViews = memo(
     onRefresh,
     onCreateAccount,
   }: TrackerDashboardHomeViewsProps) => {
+    const { t } = useTranslation("tracker");
     const [showAccountModal, setShowAccountModal] = useState(false);
     const spendState =
       totalSpend > 0 ? "populated" : ("zero" as "populated" | "zero");
@@ -87,7 +89,7 @@ export const TrackerDashboardHomeViews = memo(
         <View style={styles.statusBar} />
         <View style={styles.appBar}>
           <Text role="title" size="large" testID="dashboard-home-title">
-            대시보드
+            {t("dashboard.title")}
           </Text>
         </View>
         <ScrollView
@@ -109,7 +111,7 @@ export const TrackerDashboardHomeViews = memo(
               icon="add"
               color="primary"
               onPress={() => setShowAccountModal(true)}
-              accessibilityLabel="계좌 추가"
+              accessibilityLabel={t("dashboard.addAccountFab")}
               testID="add-account-fab"
             />
           </View>

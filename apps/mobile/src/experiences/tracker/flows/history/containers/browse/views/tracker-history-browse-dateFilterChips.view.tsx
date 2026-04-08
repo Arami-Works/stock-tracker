@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type DateFilter = "thisMonth" | "threeMonths" | "thisYear" | "all";
 
@@ -8,11 +9,11 @@ type TrackerHistoryBrowseDateFilterChipsViewProps = {
   onSelect?: (filter: DateFilter) => void;
 };
 
-const FILTERS: { key: DateFilter; label: string }[] = [
-  { key: "thisMonth", label: "이번 달" },
-  { key: "threeMonths", label: "3개월" },
-  { key: "thisYear", label: "올해" },
-  { key: "all", label: "전체" },
+const FILTER_KEYS: DateFilter[] = [
+  "thisMonth",
+  "threeMonths",
+  "thisYear",
+  "all",
 ];
 
 export const TrackerHistoryBrowseDateFilterChipsView = memo(
@@ -20,21 +21,22 @@ export const TrackerHistoryBrowseDateFilterChipsView = memo(
     selected = "thisMonth",
     onSelect,
   }: TrackerHistoryBrowseDateFilterChipsViewProps) => {
+    const { t } = useTranslation("tracker");
     return (
       <View style={styles.container}>
-        {FILTERS.map((filter) => {
-          const isSelected = filter.key === selected;
+        {FILTER_KEYS.map((key) => {
+          const isSelected = key === selected;
           return (
             <Pressable
-              key={filter.key}
-              testID={`date-filter-${filter.key}`}
+              key={key}
+              testID={`date-filter-${key}`}
               style={[styles.chip, isSelected && styles.chipSelected]}
-              onPress={() => onSelect?.(filter.key)}
+              onPress={() => onSelect?.(key)}
             >
               <Text
                 style={[styles.chipText, isSelected && styles.chipTextSelected]}
               >
-                {filter.label}
+                {t(`history.browse.filters.${key}`)}
               </Text>
             </Pressable>
           );

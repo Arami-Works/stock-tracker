@@ -1,5 +1,6 @@
 import { memo, useState, useCallback, type ReactNode } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsDetailScreenState,
   PurchaseItem,
@@ -79,6 +80,7 @@ export const TrackerAccountsDetailViews = memo(
     onUpdatePurchase,
     onDeletePurchase,
   }: TrackerAccountsDetailViewsProps) => {
+    const { t } = useTranslation("tracker");
     const [editAccountVisible, setEditAccountVisible] = useState(false);
     const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
     const [editingPurchase, setEditingPurchase] = useState<PurchaseItem | null>(
@@ -88,9 +90,8 @@ export const TrackerAccountsDetailViews = memo(
     const handleDeleteAccount = useCallback(() => {
       if (!onDeleteAccount) return;
       showConfirmDialog({
-        title: "계좌 삭제",
-        message:
-          "이 SA 계좌를 삭제하시겠습니까? 모든 구매 내역도 함께 삭제됩니다.",
+        title: t("accounts.list.confirm.deleteAccount.title"),
+        message: t("common:confirm.deleteAccount.message"),
         onConfirm: () => {
           void onDeleteAccount();
         },
@@ -101,8 +102,8 @@ export const TrackerAccountsDetailViews = memo(
       (id: string) => {
         if (!onDeletePurchase) return;
         showConfirmDialog({
-          title: "구매 삭제",
-          message: "이 구매 내역을 삭제하시겠습니까?",
+          title: t("common:confirm.deletePurchase.title"),
+          message: t("common:confirm.deletePurchase.message"),
           onConfirm: () => {
             void onDeletePurchase(id);
           },
@@ -148,7 +149,9 @@ export const TrackerAccountsDetailViews = memo(
             testID="accounts-detail-tank-status"
           />
           <View style={styles.spacer20} />
-          <Text style={styles.sectionLabel}>최근 구매 내역</Text>
+          <Text style={styles.sectionLabel}>
+            {t("accounts.detail.recentPurchases")}
+          </Text>
           <View style={styles.spacer12} />
           {purchases.map((p, i) => (
             <View key={p.id}>
@@ -173,7 +176,9 @@ export const TrackerAccountsDetailViews = memo(
             }}
             testID="accounts-detail-add-purchase"
           >
-            <Text style={styles.addPurchaseText}>+ 구매 추가</Text>
+            <Text style={styles.addPurchaseText}>
+              {t("accounts.detail.addPurchase")}
+            </Text>
           </Pressable>
         </>
       ),
@@ -200,7 +205,7 @@ export const TrackerAccountsDetailViews = memo(
           >
             <Text style={styles.backArrow}>←</Text>
           </Pressable>
-          <Text style={styles.appBarTitle}>SA 상세</Text>
+          <Text style={styles.appBarTitle}>{t("accounts.detail.title")}</Text>
           <View style={styles.appBarSpacer} />
           {screenState === "default" && onUpdateAccount && (
             <Pressable
@@ -208,7 +213,9 @@ export const TrackerAccountsDetailViews = memo(
               style={styles.appBarAction}
               testID="accounts-detail-edit"
             >
-              <Text style={styles.appBarActionText}>편집</Text>
+              <Text style={styles.appBarActionText}>
+                {t("accounts.detail.editAction")}
+              </Text>
             </Pressable>
           )}
           {screenState === "default" && onDeleteAccount && (
@@ -217,7 +224,9 @@ export const TrackerAccountsDetailViews = memo(
               style={styles.appBarAction}
               testID="accounts-detail-delete"
             >
-              <Text style={styles.appBarDeleteText}>삭제</Text>
+              <Text style={styles.appBarDeleteText}>
+                {t("accounts.detail.deleteAction")}
+              </Text>
             </Pressable>
           )}
         </View>

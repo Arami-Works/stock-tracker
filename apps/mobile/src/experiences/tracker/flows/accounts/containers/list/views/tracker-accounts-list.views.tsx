@@ -1,5 +1,6 @@
 import { memo, useState, type ReactNode } from "react";
 import { View, Text, ScrollView, StyleSheet, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsListScreenState,
   SaAccountListItem,
@@ -75,6 +76,7 @@ export const TrackerAccountsListViews = memo(
     onCreateAccount,
     onDeleteAccount,
   }: TrackerAccountsListViewsProps) => {
+    const { t } = useTranslation("tracker");
     const [showAccountModal, setShowAccountModal] = useState(false);
     const content: Record<TrackerAccountsListScreenState, ReactNode> = {
       default: (
@@ -94,8 +96,11 @@ export const TrackerAccountsListViews = memo(
                   onDeleteAccount
                     ? () =>
                         showConfirmDialog({
-                          title: "계좌 삭제",
-                          message: `${sa.name} (${sa.boutique})을(를) 삭제하시겠습니까?`,
+                          title: t("accounts.list.confirm.deleteAccount.title"),
+                          message: t(
+                            "accounts.list.confirm.deleteAccount.message",
+                            { name: sa.name, boutique: sa.boutique },
+                          ),
                           onConfirm: () => onDeleteAccount(sa.id),
                         })
                     : undefined
@@ -123,7 +128,7 @@ export const TrackerAccountsListViews = memo(
         <View style={styles.statusBar} />
         <View style={styles.appBar}>
           <Text style={styles.appBarTitle} testID="accounts-list-title">
-            SA 계좌
+            {t("accounts.list.title")}
           </Text>
         </View>
         <ScrollView

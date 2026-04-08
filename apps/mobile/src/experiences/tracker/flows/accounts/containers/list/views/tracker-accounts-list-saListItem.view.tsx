@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type SaListItemState = "eligible" | "notEligible" | "noPurchases";
 
@@ -25,12 +26,18 @@ export const TrackerAccountsListSaListItemView = memo(
     onPress,
     onLongPress,
   }: TrackerAccountsListSaListItemViewProps) => {
+    const { t } = useTranslation("tracker");
+
     const statusText =
       state === "eligible"
-        ? `자격 충족 · ₩${totalSpend.toLocaleString()}`
+        ? t("accounts.list.saListItem.statusEligible", {
+            amount: totalSpend.toLocaleString(),
+          })
         : state === "notEligible"
-          ? `자격 미충족 · ₩${totalSpend.toLocaleString()}`
-          : "구매 없음 · ₩0";
+          ? t("accounts.list.saListItem.statusNotEligible", {
+              amount: totalSpend.toLocaleString(),
+            })
+          : t("accounts.list.saListItem.statusNoPurchases");
 
     const statusColor =
       state === "eligible"

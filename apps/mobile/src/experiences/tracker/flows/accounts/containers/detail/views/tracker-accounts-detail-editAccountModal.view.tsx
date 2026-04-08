@@ -1,4 +1,5 @@
 import { memo, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { accountUpdateInputSchema } from "@stock-tracker/validation";
@@ -31,6 +32,7 @@ export const TrackerAccountsDetailEditAccountModalView = memo(
     onSubmit,
     currentValues,
   }: TrackerAccountsDetailEditAccountModalViewProps) => {
+    const { t } = useTranslation("tracker");
     const {
       control,
       handleSubmit,
@@ -78,30 +80,30 @@ export const TrackerAccountsDetailEditAccountModalView = memo(
     return (
       <FormModal
         visible={visible}
-        title="SA 계좌 수정"
-        submitLabel="수정"
+        title={t("accounts.form.edit.title")}
+        submitLabel={t("accounts.form.edit.submit")}
         onSubmit={handleSubmit(handleFormSubmit)}
         onClose={handleClose}
       >
         <TextInputField
           control={control}
           name="storeName"
-          label="부티크 이름"
-          placeholder="청담 부티크"
+          label={t("accounts.form.fields.boutiqueName.label")}
+          placeholder={t("accounts.form.fields.boutiqueName.placeholder")}
           error={errors.storeName?.message}
         />
         <TextInputField
           control={control}
           name="saName"
-          label="SA 이름 (선택)"
-          placeholder="김서연 SA"
+          label={t("accounts.form.fields.saName.label")}
+          placeholder={t("accounts.form.fields.saName.placeholder")}
           error={errors.saName?.message}
         />
         <TextInputField
           control={control}
           name="notes"
-          label="메모 (선택)"
-          placeholder="메모를 입력하세요"
+          label={t("accounts.form.fields.notes.label")}
+          placeholder={t("accounts.form.fields.notes.placeholder")}
           multiline
           error={errors.notes?.message}
         />

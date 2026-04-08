@@ -1,5 +1,6 @@
 import { memo, type ReactNode } from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 import type {
   TrackerHistoryBrowseScreenState,
   DateFilter,
@@ -59,6 +60,7 @@ export const TrackerHistoryBrowseViews = memo(
     onFilterSelect,
     onDeletePurchase,
   }: TrackerHistoryBrowseViewsProps) => {
+    const { t } = useTranslation("tracker");
     const scrollContent: Record<TrackerHistoryBrowseScreenState, ReactNode> = {
       default: (
         <>
@@ -74,8 +76,13 @@ export const TrackerHistoryBrowseViews = memo(
                   onDeletePurchase
                     ? () =>
                         showConfirmDialog({
-                          title: "구매 삭제",
-                          message: `${p.productName}을(를) 삭제하시겠습니까?`,
+                          title: t(
+                            "history.browse.confirmDelete.title",
+                            "구매 삭제",
+                          ),
+                          message: t("history.browse.confirmDelete.message", {
+                            name: p.productName,
+                          }),
                           onConfirm: () => onDeletePurchase(p.id),
                         })
                     : undefined
@@ -103,7 +110,7 @@ export const TrackerHistoryBrowseViews = memo(
         <View style={styles.statusBar} />
         <View style={styles.appBar}>
           <Text style={styles.appBarTitle} testID="history-browse-title">
-            구매 히스토리
+            {t("history.browse.title")}
           </Text>
         </View>
         {screenState !== "error" && (
