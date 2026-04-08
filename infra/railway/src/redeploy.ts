@@ -1,10 +1,13 @@
 /**
- * Triggers a Railway redeploy for all services in a given environment.
+ * Triggers a fresh Railway deploy for all services in a given environment.
  * Called from CI after Docker image push.
+ *
+ * Uses serviceInstanceDeploy (not deploymentRedeploy) to pick up the latest
+ * service instance config instead of replaying old deployment snapshots.
  *
  * Usage: RAILWAY_API_TOKEN=xxx tsx src/redeploy.ts <develop|stage|production>
  */
-import { GraphQLClient, gql } from "graphql-request";
+import { gql } from "graphql-request";
 import {
   createClient,
   listEnvironments,
@@ -30,52 +33,8 @@ if (!envArg || !ENVIRONMENTS[envArg]) {
 const envConfig = ENVIRONMENTS[envArg]!;
 const client = createClient(token);
 
-async function getLatestDeploymentId(
-  gqlClient: GraphQLClient,
-  serviceId: string,
-  environmentId: string,
-): Promise<string | null> {
-  const data = await gqlClient.request<{
-    deployments: { edges: { node: { id: string } }[] };
-  }>(
-    gql`
-      query deployments($input: DeploymentListInput!, $first: Int) {
-        deployments(input: $input, first: $first) {
-          edges {
-            node {
-              id
-            }
-          }
-        }
-      }
-    `,
-    {
-      input: { serviceId, environmentId },
-      first: 1,
-    },
-  );
-  return data.deployments.edges[0]?.node.id ?? null;
-}
-
-async function redeployService(
-  gqlClient: GraphQLClient,
-  deploymentId: string,
-): Promise<void> {
-  await gqlClient.request(
-    gql`
-      mutation deploymentRedeploy($id: String!) {
-        deploymentRedeploy(id: $id) {
-          id
-          status
-        }
-      }
-    `,
-    { id: deploymentId },
-  );
-}
-
 async function main(): Promise<void> {
-  console.log(`Triggering redeploy for: ${envArg}`);
+  console.log(`Triggering deploy for: ${envArg}`);
 
   // Resolve project
   const projects = await listProjects(client);
@@ -88,27 +47,34 @@ async function main(): Promise<void> {
   if (!env)
     throw new Error(`Environment "${envConfig.railwayEnvName}" not found`);
 
-  // Resolve services and redeploy
+  // Resolve services and deploy
   const services = await listServices(client, project.id);
   const serviceNames = SERVICES.map((s) => s.name);
 
   for (const svc of services) {
     if (!serviceNames.includes(svc.name)) continue;
 
-    const deploymentId = await getLatestDeploymentId(client, svc.id, env.id);
-    if (!deploymentId) {
-      console.log(`  ${svc.name}: no deployment found, skipping`);
-      continue;
-    }
-
-    await redeployService(client, deploymentId);
-    console.log(`  ${svc.name}: redeployed`);
+    await client.request(
+      gql`
+        mutation serviceInstanceDeploy(
+          $serviceId: String!
+          $environmentId: String!
+        ) {
+          serviceInstanceDeploy(
+            serviceId: $serviceId
+            environmentId: $environmentId
+          )
+        }
+      `,
+      { serviceId: svc.id, environmentId: env.id },
+    );
+    console.log(`  ${svc.name}: deployed`);
   }
 
   console.log("Done.");
 }
 
 main().catch((err) => {
-  console.error("Redeploy failed:", err);
+  console.error("Deploy failed:", err);
   process.exit(1);
 });
