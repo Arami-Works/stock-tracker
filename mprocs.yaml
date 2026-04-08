@@ -9,10 +9,14 @@ procs:
         "--config",
         "local",
         "--",
-        "npm",
-        "run",
-        "dev:api",
+        "npx",
+        "tsx",
+        "watch",
+        "src/server.ts",
       ]
+    cwd: apps/api
+    env:
+      PORT: "4010"
     autostart: true
 
   subgraph:
@@ -25,10 +29,14 @@ procs:
         "--config",
         "local",
         "--",
-        "npm",
-        "run",
-        "dev:subgraph",
+        "npx",
+        "tsx",
+        "watch",
+        "src/server.ts",
       ]
+    cwd: apps/subgraphs/tracker
+    env:
+      PORT: "4011"
     autostart: true
 
   router:
@@ -43,15 +51,19 @@ procs:
         "--",
         "rover",
         "dev",
-        "--supergraph-config",
-        "supergraph.yaml",
+        "--name",
+        "tracker",
+        "--url",
+        "http://localhost:4011",
         "--router-config",
         "router.yaml",
+        "--supergraph-port",
+        "4012",
       ]
     cwd: apps/router
     autostart: true
 
-  mobile:
+  ios:
     cmd:
       [
         "doppler",
@@ -61,10 +73,54 @@ procs:
         "--config",
         "local",
         "--",
-        "npm",
-        "run",
-        "dev:mobile",
+        "npx",
+        "expo",
+        "start",
+        "--port",
+        "8092",
+        "--ios",
       ]
+    cwd: apps/mobile
+    autostart: true
+
+  android:
+    cmd:
+      [
+        "doppler",
+        "run",
+        "--project",
+        "stock-tracker",
+        "--config",
+        "local",
+        "--",
+        "npx",
+        "expo",
+        "start",
+        "--port",
+        "8093",
+        "--android",
+      ]
+    cwd: apps/mobile
+    autostart: true
+
+  web:
+    cmd:
+      [
+        "doppler",
+        "run",
+        "--project",
+        "stock-tracker",
+        "--config",
+        "local",
+        "--",
+        "npx",
+        "expo",
+        "start",
+        "--port",
+        "8094",
+        "--web",
+      ]
+    cwd: apps/mobile
     autostart: true
 
   storybook:
