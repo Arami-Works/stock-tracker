@@ -6,7 +6,13 @@ import { OverviewLayout } from "@aramiworks/ui";
 const meta: Meta<typeof TrackerAccountsDetailPurchaseRowView> = {
   title: "tracker/accounts/detail/purchaseRow.view",
   component: TrackerAccountsDetailPurchaseRowView,
-  parameters: { layout: "centered" },
+  parameters: {
+    layout: "centered",
+    design: {
+      type: "figma",
+      url: "https://www.figma.com/design/MSJ05A0BXBDTO0powtUMg3?node-id=241-8",
+    },
+  },
   argTypes: {
     type: { control: { type: "select" }, options: ["regular", "tank"] },
   },
