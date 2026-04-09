@@ -14,7 +14,10 @@ import { supabase } from "../../../../../../../lib/supabase";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const GOOGLE_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID!;
+const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
+const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+const GOOGLE_ANDROID_CLIENT_ID =
+  process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
 
 interface AuthSignInGmailOauthControllersOutput {
   signInWithGoogle: () => void;
@@ -33,7 +36,9 @@ export const AuthSignInGmailOauthControllers =
     const [isSigningIn, setIsSigningIn] = useState(false);
 
     const [_request, response, promptAsync] = Google.useIdTokenAuthRequest({
-      clientId: GOOGLE_CLIENT_ID,
+      clientId: GOOGLE_WEB_CLIENT_ID,
+      iosClientId: GOOGLE_IOS_CLIENT_ID,
+      androidClientId: GOOGLE_ANDROID_CLIENT_ID,
     });
 
     useEffect(() => {
