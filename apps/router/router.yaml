@@ -20,15 +20,18 @@ headers:
           named: x-request-id
 
 cors:
-  policies:
-    - origins:
-        - ${env.ALLOWED_ORIGINS}
-      allow_headers:
-        - authorization
-        - content-type
-        - x-user-id
-        - x-user-role
-        - x-request-id
+  origins:
+    - http://localhost:8092
+    - http://localhost:8093
+    - http://localhost:8094
+    - http://localhost:4012
+    - ${env.ALLOWED_ORIGIN_PROD}
+  allow_headers:
+    - authorization
+    - content-type
+    - x-user-id
+    - x-user-role
+    - x-request-id
 
 supergraph:
   introspection: true
