@@ -8,7 +8,8 @@ const config: Config = {
     "^(\\.{1,2}/.*)\\.js$": "$1",
     "^@stock-tracker/prisma/client$":
       "<rootDir>/../../../packages/prisma/src/client.ts",
-    "^@stock-tracker/prisma$": "<rootDir>/../../../packages/prisma/src/index.ts",
+    "^@stock-tracker/prisma$":
+      "<rootDir>/../../../packages/prisma/src/index.ts",
     "^@stock-tracker/validation$":
       "<rootDir>/../../../packages/validation/src/index.ts",
     "^@stock-tracker/types$": "<rootDir>/../../../packages/types/src/index.ts",
