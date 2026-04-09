@@ -8,6 +8,7 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string(),
   APOLLO_KEY: z.string().optional(),
   TRIGGER_DEV_API_KEY: z.string().optional(),
+  REDIS_URL: z.string().optional(),
   NODE_ENV: z
     .enum(["development", "staging", "production", "test"])
     .default("development"),
