@@ -23,9 +23,13 @@ export function setLogger(l: MinimalLogger) {
   _logger = l;
 }
 
-let _verifyJwt: ((token: string) => Promise<{ sub: string; role?: string } | null>) | null = null;
+let _verifyJwt:
+  | ((token: string) => Promise<{ sub: string; role?: string } | null>)
+  | null = null;
 
-export function setJwtVerifier(fn: (token: string) => Promise<{ sub: string; role?: string } | null>) {
+export function setJwtVerifier(
+  fn: (token: string) => Promise<{ sub: string; role?: string } | null>,
+) {
   _verifyJwt = fn;
 }
 
@@ -111,5 +115,7 @@ const baseProcedure = t.procedure.use(logRequest);
 export const router = t.router;
 export const publicProcedure = baseProcedure;
 export const protectedProcedure = baseProcedure.use(enforceAuth);
-export const adminProcedure = protectedProcedure.use(enforceRole("service_role"));
+export const adminProcedure = protectedProcedure.use(
+  enforceRole("service_role"),
+);
 export const middleware = t.middleware;

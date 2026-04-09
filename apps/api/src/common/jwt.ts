@@ -4,10 +4,7 @@ let jwks: ReturnType<typeof createRemoteJWKSet> | null = null;
 
 function getJWKS(supabaseUrl: string): ReturnType<typeof createRemoteJWKSet> {
   if (!jwks) {
-    const jwksUrl = new URL(
-      "/auth/v1/.well-known/jwks.json",
-      supabaseUrl,
-    );
+    const jwksUrl = new URL("/auth/v1/.well-known/jwks.json", supabaseUrl);
     jwks = createRemoteJWKSet(jwksUrl);
   }
   return jwks;
