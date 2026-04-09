@@ -10,6 +10,7 @@ const meta: Meta<typeof TrackerErrorStateView> = {
 };
 
 export default meta;
+// chromatic test: verify app-level integration without visual Actions job
 type Story = StoryObj<typeof TrackerErrorStateView>;
 
 export const Default: Story = {
