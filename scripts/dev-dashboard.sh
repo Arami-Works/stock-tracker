@@ -24,7 +24,7 @@ log "Cleaning up previous session..."
 cleanup
 
 log "Building shared packages..."
-npx turbo run build --filter='./packages/*' --log-prefix=none 2>&1 | tail -3
+npx turbo run build --filter='./packages/*' --log-prefix=none
 
 log "Starting mprocs..."
 mprocs
