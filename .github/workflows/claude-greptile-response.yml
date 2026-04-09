@@ -1,4 +1,4 @@
-name: Claude Greptile Response
+name: Greptile Response
 
 on:
   pull_request:
