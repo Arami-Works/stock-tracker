@@ -4,20 +4,22 @@ const { version } = require("./package.json");
 const [major, minor] = version.split(".");
 
 const ENV_SUFFIX: Record<string, string> = {
+  local: ".local",
   develop: ".develop",
   stage: ".stage",
   master: "",
 };
 
 const ENV_NAME: Record<string, string> = {
+  local: " (Local)",
   develop: " (Dev)",
   stage: " (Stage)",
   master: "",
 };
 
-const appEnv = process.env.APP_ENV ?? "develop";
-const suffix = ENV_SUFFIX[appEnv] ?? ".develop";
-const nameSuffix = ENV_NAME[appEnv] ?? " (Dev)";
+const appEnv = process.env.APP_ENV ?? "local";
+const suffix = ENV_SUFFIX[appEnv] ?? ".local";
+const nameSuffix = ENV_NAME[appEnv] ?? " (Local)";
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -26,7 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: "stock-tracker",
   version: "0.0.1",
   orientation: "portrait",
-  scheme: `stock-tracker${suffix.replace(".", "-") || ""}`,
+  scheme: `so.arami.stocktracker.app${suffix}`,
   ios: {
     supportsTablet: false,
     bundleIdentifier: `so.arami.stocktracker.app${suffix}`,

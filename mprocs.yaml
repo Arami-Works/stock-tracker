@@ -83,6 +83,8 @@ procs:
         "8092",
       ]
     cwd: apps/mobile
+    env:
+      APP_ENV: "local"
     stop: "SIGTERM"
     autostart: true
 
@@ -103,6 +105,8 @@ procs:
         "8093",
       ]
     cwd: apps/mobile
+    env:
+      APP_ENV: "local"
     stop: "SIGTERM"
     autostart: true
 
@@ -124,6 +128,8 @@ procs:
         "--web",
       ]
     cwd: apps/mobile
+    env:
+      APP_ENV: "local"
     stop: "SIGTERM"
     autostart: true
 
