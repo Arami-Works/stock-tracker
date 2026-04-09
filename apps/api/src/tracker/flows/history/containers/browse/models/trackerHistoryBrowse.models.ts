@@ -12,7 +12,7 @@ export const trackerHistoryBrowseModels = (prisma: PrismaClient) => ({
     itemCategory?: string;
     search?: string;
   }) => {
-    const trackerAccountWhere: Record<string, unknown> = {
+    const trackerAccountWhere: Prisma.tracker_accountsWhereInput = {
       auth_user_id: params.userId,
     };
     if (params.search) {

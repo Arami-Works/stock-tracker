@@ -46,6 +46,10 @@ export const dateRangeSchema = z
     from: z.string().date().optional(),
     to: z.string().date().optional(),
   })
+  .refine(
+    (r) => !r.from || !r.to || r.from <= r.to,
+    { message: "dateRange.from must not be after dateRange.to" },
+  )
   .optional();
 
 export const amountRangeSchema = z
@@ -53,4 +57,8 @@ export const amountRangeSchema = z
     min: z.number().positive().optional(),
     max: z.number().positive().max(9_999_999_999.99).optional(),
   })
+  .refine(
+    (r) => r.min === undefined || r.max === undefined || r.min <= r.max,
+    { message: "amountRange.min must not exceed amountRange.max" },
+  )
   .optional();
