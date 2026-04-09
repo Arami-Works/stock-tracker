@@ -10,8 +10,5 @@ concurrency:
 
 jobs:
   respond:
-    if: >
-      github.event.review.user.login == 'greptile-apps[bot]' &&
-      github.event.review.state == 'commented'
     uses: aramiworks/.github/.github/workflows/claude-greptile-response.yml@main
     secrets: inherit
