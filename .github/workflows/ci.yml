@@ -23,6 +23,7 @@ jobs:
       migrations: ${{ steps.filter.outputs.migrations }}
       subgraphs: ${{ steps.filter.outputs.subgraphs }}
       dockerfiles: ${{ steps.filter.outputs.dockerfiles }}
+      stories: ${{ steps.filter.outputs.stories }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -47,6 +48,10 @@ jobs:
             dockerfiles:
               - 'apps/subgraphs/*/Dockerfile'
               - 'apps/service-*/Dockerfile'
+            stories:
+              - 'apps/mobile/src/**/*.story.tsx'
+              - 'apps/storybook/**'
+              - 'packages/ui/**'
 
   lint:
     needs: [path-filter]
@@ -155,6 +160,30 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - run: npm audit --audit-level=critical --omit=dev --omit=optional
+
+  visual:
+    needs: [path-filter]
+    if: needs.path-filter.outputs.stories == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build Storybook
+        run: npx turbo run build --filter=@stock-tracker/storybook
+      - name: Publish to Chromatic
+        uses: chromaui/action@latest
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          storybookBuildDir: apps/storybook/storybook-static
+          storybookBaseDir: apps/storybook
+          autoAcceptChanges: main
+          onlyChanged: true
 
   prisma:
     needs: [path-filter]
@@ -265,6 +294,7 @@ jobs:
       - format
       - build
       - audit
+      - visual
       - prisma
       - migration
       - schema-check
