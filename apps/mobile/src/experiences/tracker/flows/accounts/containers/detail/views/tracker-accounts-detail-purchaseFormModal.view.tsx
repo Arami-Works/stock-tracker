@@ -7,16 +7,9 @@ import { FormModal } from "@/shared/components/form-modal";
 import { TextInputField } from "@/shared/components/text-input-field";
 import type { z } from "zod";
 
-type PurchaseFormData = z.infer<typeof purchaseCreateInputSchema>;
+type PurchaseFormData = z.input<typeof purchaseCreateInputSchema>;
 
-type PurchaseFormDefaultValues = {
-  itemName?: string;
-  amount?: number;
-  purchaseDate?: string;
-  itemCategory?: string;
-  storeLocation?: string;
-  notes?: string;
-};
+type PurchaseFormDefaultValues = Partial<PurchaseFormData>;
 
 type TrackerAccountsDetailPurchaseFormModalViewProps = {
   visible: boolean;
@@ -46,7 +39,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
         itemName: "",
         amount: undefined as unknown as number,
         purchaseDate: "",
-        itemCategory: "",
+        itemCategory: undefined,
         storeLocation: "",
         notes: "",
       },
@@ -58,7 +51,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           itemName: defaultValues.itemName ?? "",
           amount: defaultValues.amount ?? (undefined as unknown as number),
           purchaseDate: defaultValues.purchaseDate ?? "",
-          itemCategory: defaultValues.itemCategory ?? "",
+          itemCategory: defaultValues.itemCategory ?? undefined,
           storeLocation: defaultValues.storeLocation ?? "",
           notes: defaultValues.notes ?? "",
         });
@@ -67,7 +60,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           itemName: "",
           amount: undefined as unknown as number,
           purchaseDate: "",
-          itemCategory: "",
+          itemCategory: undefined,
           storeLocation: "",
           notes: "",
         });

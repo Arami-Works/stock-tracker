@@ -1,17 +1,18 @@
 import { z } from "zod";
 import { purchaseOutputSchema } from "./purchase.js";
+import { sanitizedString } from "./common.js";
 
 export const accountCreateInputSchema = z.object({
-  storeName: z.string().min(1).max(255),
-  saName: z.string().max(255).optional(),
-  notes: z.string().max(1000).optional(),
+  storeName: sanitizedString(255).pipe(z.string().min(1)),
+  saName: sanitizedString(255).optional(),
+  notes: sanitizedString(1000).optional(),
 });
 
 export const accountUpdateInputSchema = z.object({
   id: z.string().uuid(),
-  storeName: z.string().min(1).max(255).optional(),
-  saName: z.string().max(255).nullish(),
-  notes: z.string().max(1000).nullish(),
+  storeName: sanitizedString(255).pipe(z.string().min(1)).optional(),
+  saName: sanitizedString(255).nullish(),
+  notes: sanitizedString(1000).nullish(),
 });
 
 export const accountOutputSchema = z.object({

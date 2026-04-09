@@ -120,7 +120,7 @@ describe("purchases E2E", () => {
       amount: 5000000,
       purchaseDate: "2025-01-15",
       currency: "KRW",
-      itemCategory: "Ring",
+      itemCategory: "반지",
     });
 
     expect(result.id).toBeDefined();

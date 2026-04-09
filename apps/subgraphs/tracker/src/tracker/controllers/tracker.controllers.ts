@@ -64,39 +64,25 @@ export const trackerResolvers = {
     },
     createPurchase: async (
       _: unknown,
-      args: {
-        input: {
-          accountId: string;
-          itemName: string;
-          itemCategory?: string;
-          amount: number;
-          currency?: string;
-          purchaseDate: string;
-          storeLocation?: string;
-          notes?: string;
-        };
-      },
+      args: { input: Record<string, unknown> },
       context: SubgraphContext,
     ) => {
-      return context.trpc.tracker.purchases.manage.create.mutate(args.input);
+      return context.trpc.tracker.purchases.manage.create.mutate(
+        args.input as Parameters<
+          typeof context.trpc.tracker.purchases.manage.create.mutate
+        >[0],
+      );
     },
     updatePurchase: async (
       _: unknown,
-      args: {
-        input: {
-          id: string;
-          itemName?: string;
-          itemCategory?: string | null;
-          amount?: number;
-          currency?: string;
-          purchaseDate?: string;
-          storeLocation?: string | null;
-          notes?: string | null;
-        };
-      },
+      args: { input: Record<string, unknown> },
       context: SubgraphContext,
     ) => {
-      return context.trpc.tracker.purchases.manage.update.mutate(args.input);
+      return context.trpc.tracker.purchases.manage.update.mutate(
+        args.input as Parameters<
+          typeof context.trpc.tracker.purchases.manage.update.mutate
+        >[0],
+      );
     },
     deletePurchase: async (
       _: unknown,
