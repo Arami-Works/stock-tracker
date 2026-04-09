@@ -193,17 +193,21 @@ describe("auth enforcement E2E", () => {
     );
   });
 
-  it("allows public upsertFromSupabase without userId", async () => {
-    const publicSupabaseId = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
-    const result = await unauthCaller.auth.upsertFromSupabase({
-      supabaseId: publicSupabaseId,
-      email: "public@test.local",
-    });
-    expect(result.email).toBe("public@test.local");
+  it("throws UNAUTHORIZED for upsertFromSupabase without userId", async () => {
+    await expect(
+      unauthCaller.auth.upsertFromSupabase({ email: "public@test.local" }),
+    ).rejects.toThrow(TRPCError);
+  });
 
-    await prisma.auth_users.deleteMany({
-      where: { supabase_id: publicSupabaseId },
+  it("allows upsertFromSupabase with authenticated userId", async () => {
+    const result = await caller.auth.upsertFromSupabase({
+      email: "updated@test.local",
     });
+    expect(result.email).toBe("updated@test.local");
+    expect(result.supabaseId).toBe(TEST_USER_ID);
+
+    // Restore original email
+    await caller.auth.upsertFromSupabase({ email: "e2e@test.local" });
   });
 });
 

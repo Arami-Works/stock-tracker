@@ -6,6 +6,7 @@ const envSchema = z.object({
   SUPABASE_URL: z.string().url(),
   SUPABASE_ANON_KEY: z.string(),
   SUPABASE_SERVICE_ROLE_KEY: z.string(),
+  SUPABASE_JWKS_URL: z.string().url().optional(),
   APOLLO_KEY: z.string().optional(),
   TRIGGER_DEV_API_KEY: z.string().optional(),
   NODE_ENV: z
