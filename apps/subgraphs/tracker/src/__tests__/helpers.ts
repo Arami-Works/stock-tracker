@@ -2,7 +2,9 @@ import { ApolloServer } from "@apollo/server";
 import { buildSubgraphSchema } from "@apollo/subgraph";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { appRouter } from "@stock-tracker/api/trpc";
-import { createContext } from "../../../api/src/trpc/trpc.js";
+import { prisma } from "@stock-tracker/prisma/client";
+import type { CreateHTTPContextOptions } from "@trpc/server/adapters/standalone";
+import { randomUUID } from "node:crypto";
 import { authTypeDefs } from "../auth/views/auth.views.js";
 import { authResolvers } from "../auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "../tracker/views/tracker.views.js";
@@ -14,15 +16,24 @@ interface TrpcServerHandle {
   close: () => Promise<void>;
 }
 
+// Inline createContext to avoid cross-package import that breaks tsc
+async function createContext({ req }: CreateHTTPContextOptions) {
+  const userId = req.headers["x-user-id"] as string | undefined;
+  const userRole = req.headers["x-user-role"] as string | undefined;
+  const requestId =
+    (req.headers["x-request-id"] as string | undefined) || randomUUID();
+  return { prisma, userId, userRole, requestId };
+}
+
 export async function startTrpcServer(): Promise<TrpcServerHandle> {
   return new Promise((resolve) => {
-    const server = createHTTPServer({
+    const httpServer = createHTTPServer({
       router: appRouter,
       createContext,
     });
 
-    server.listen(0, () => {
-      const address = server.server.address();
+    const listener = httpServer.listen(0, () => {
+      const address = listener.address();
       const port =
         typeof address === "object" && address !== null ? address.port : 0;
       const url = `http://localhost:${port}`;
@@ -30,7 +41,7 @@ export async function startTrpcServer(): Promise<TrpcServerHandle> {
         url,
         close: () =>
           new Promise<void>((res, rej) => {
-            server.server.close((err) => (err ? rej(err) : res()));
+            listener.close((err?: Error) => (err ? rej(err) : res()));
           }),
       });
     });
@@ -44,13 +55,17 @@ export function createTestApolloServer(): ApolloServer {
       { typeDefs: trackerTypeDefs, resolvers: trackerResolvers },
     ]),
     formatError: (formattedError, error) => {
-      const cause = (error as any)?.extensions?.cause;
-      const requestId = cause?.data?.requestId;
+      const cause = (error as Record<string, unknown>)?.extensions as
+        | Record<string, unknown>
+        | undefined;
+      const requestId = (cause?.cause as Record<string, unknown>)?.data as
+        | Record<string, unknown>
+        | undefined;
       return {
         ...formattedError,
         extensions: {
           ...formattedError.extensions,
-          ...(requestId ? { requestId } : {}),
+          ...(requestId?.requestId ? { requestId: requestId.requestId } : {}),
         },
       };
     },

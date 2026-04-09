@@ -1,6 +1,10 @@
 import { ApolloServer } from "@apollo/server";
 import { PrismaClient } from "@prisma/client";
-import { startTrpcServer, createTestApolloServer, executeAs } from "./helpers.js";
+import {
+  startTrpcServer,
+  createTestApolloServer,
+  executeAs,
+} from "./helpers.js";
 
 const prisma = new PrismaClient();
 const TEST_USER_ID = "00000000-0000-0000-0000-000000000001";
@@ -64,7 +68,17 @@ afterAll(async () => {
   await closeTrpc();
 });
 
-function exec(query: string, variables?: Record<string, unknown>, userId?: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getData(res: any): any {
+  if (res.body.kind !== "single") throw new Error("Expected single result");
+  return res.body.singleResult;
+}
+
+function exec(
+  query: string,
+  variables?: Record<string, unknown>,
+  userId?: string,
+) {
   return executeAs({
     server,
     query,
@@ -96,11 +110,8 @@ describe("auth queries", () => {
       }
     `);
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.me.id).toBe(TEST_USER_ID);
     expect(data?.me.email).toBe("subgraph-e2e@test.local");
   });
@@ -115,11 +126,9 @@ describe("auth queries", () => {
       }
     `);
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeDefined();
-    expect(res.body.singleResult.errors!.length).toBeGreaterThan(0);
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
   });
 });
 
@@ -135,11 +144,8 @@ describe("tracker queries", () => {
       }
     `);
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.dashboard.totalAccounts).toBeGreaterThanOrEqual(1);
     expect(data?.dashboard.totalPurchases).toBeGreaterThanOrEqual(1);
     expect(data?.dashboard.totalSpent).toBeDefined();
@@ -157,13 +163,12 @@ describe("tracker queries", () => {
       }
     `);
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.accounts.length).toBeGreaterThanOrEqual(1);
-    expect(data?.accounts.some((a: any) => a.id === seededAccountId)).toBe(true);
+    expect(
+      data?.accounts.some((a: { id: string }) => a.id === seededAccountId),
+    ).toBe(true);
   });
 
   it("returns a single account by id", async () => {
@@ -182,11 +187,8 @@ describe("tracker queries", () => {
       { id: seededAccountId },
     );
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.account.id).toBe(seededAccountId);
     expect(data?.account.storeName).toBe("Subgraph E2E Store");
     expect(data?.account.saName).toBe("Test SA");
@@ -210,15 +212,14 @@ describe("tracker queries", () => {
       { id: seededAccountId },
     );
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.account.purchases).toBeDefined();
     expect(data?.account.purchases.length).toBeGreaterThanOrEqual(1);
     expect(
-      data?.account.purchases.some((p: any) => p.id === seededPurchaseId),
+      data?.account.purchases.some(
+        (p: { id: string }) => p.id === seededPurchaseId,
+      ),
     ).toBe(true);
   });
 
@@ -238,11 +239,8 @@ describe("tracker queries", () => {
       { accountId: seededAccountId },
     );
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.purchases).toBeDefined();
     expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
   });
@@ -256,11 +254,9 @@ describe("tracker queries", () => {
       }
     `);
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeDefined();
-    expect(res.body.singleResult.errors!.length).toBeGreaterThan(0);
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    expect(errors!.length).toBeGreaterThan(0);
   });
 });
 
@@ -279,11 +275,8 @@ describe("mutations", () => {
       }
     `);
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.createAccount.id).toBeDefined();
     expect(data?.createAccount.storeName).toBe("Mutation Test Store");
     expect(data?.createAccount.saName).toBe("Mut SA");
@@ -310,11 +303,8 @@ describe("mutations", () => {
       },
     );
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.updateAccount.storeName).toBe("Updated Mutation Store");
     expect(data?.updateAccount.notes).toBe("updated via subgraph e2e");
   });
@@ -343,11 +333,8 @@ describe("mutations", () => {
       },
     );
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.createPurchase.id).toBeDefined();
     expect(data?.createPurchase.itemName).toBe("Mutation Test Ring");
     mutationPurchaseId = data?.createPurchase.id;
@@ -375,11 +362,8 @@ describe("mutations", () => {
       },
     );
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    const data = res.body.singleResult.data;
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
     expect(data?.updatePurchase.itemName).toBe("Updated Mutation Ring");
     expect(data?.updatePurchase.notes).toBe("updated via subgraph e2e");
   });
@@ -394,11 +378,9 @@ describe("mutations", () => {
       { id: mutationPurchaseId },
     );
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    expect(res.body.singleResult.data?.deletePurchase).toBe(true);
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.deletePurchase).toBe(true);
   });
 
   it("deletes an account", async () => {
@@ -411,16 +393,14 @@ describe("mutations", () => {
       { id: mutationAccountId },
     );
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeUndefined();
-    expect(res.body.singleResult.data?.deleteAccount).toBe(true);
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.deleteAccount).toBe(true);
   });
 });
 
 describe("error propagation", () => {
-  it("includes requestId in error extensions", async () => {
+  it("includes error info on unauthorized queries", async () => {
     const res = await execUnauth(`
       query {
         accounts {
@@ -429,13 +409,9 @@ describe("error propagation", () => {
       }
     `);
 
-    expect(res.body.kind).toBe("single");
-    if (res.body.kind !== "single") return;
-
-    expect(res.body.singleResult.errors).toBeDefined();
-    const error = res.body.singleResult.errors![0];
-    // The requestId should be propagated via formatError
-    // The exact presence depends on whether the tRPC error includes it
+    const { errors } = getData(res);
+    expect(errors).toBeDefined();
+    const error = errors![0];
     expect(error).toBeDefined();
     expect(error.message).toBeDefined();
   });
