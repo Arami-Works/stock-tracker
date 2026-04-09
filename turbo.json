@@ -33,6 +33,10 @@
       "dependsOn": ["^build"],
       "inputs": ["src/**/views/*.ts", "codegen.ts"],
       "outputs": ["src/generated/**"]
+    },
+    "ditto:pull": {
+      "cache": false,
+      "env": ["DITTO_TOKEN"]
     }
   }
 }
