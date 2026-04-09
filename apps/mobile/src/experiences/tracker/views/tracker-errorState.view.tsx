@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type TrackerErrorStateViewProps = {
   title?: string;
@@ -13,23 +14,27 @@ type TrackerErrorStateViewProps = {
 
 export const TrackerErrorStateView = memo(
   ({
-    title = "데이터를 불러올 수 없습니다",
-    subtitle = "네트워크 연결을 확인하고 다시 시도해주세요",
-    retryLabel = "다시 시도",
+    title,
+    subtitle,
+    retryLabel,
     onRetry,
     width = 340,
     height = 240,
     testID,
   }: TrackerErrorStateViewProps) => {
+    const { t } = useTranslation("tracker");
+    const resolvedTitle = title ?? t("dashboard.errorState.title");
+    const resolvedSubtitle = subtitle ?? t("dashboard.errorState.subtitle");
+    const resolvedRetryLabel = retryLabel ?? t("dashboard.errorState.retry");
     return (
       <View style={[styles.container, { width, height }]} testID={testID}>
         <View style={styles.errorIcon}>
           <Text style={styles.errorIconText}>!</Text>
         </View>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>{subtitle}</Text>
+        <Text style={styles.title}>{resolvedTitle}</Text>
+        <Text style={styles.subtitle}>{resolvedSubtitle}</Text>
         <Pressable style={styles.retryButton} onPress={onRetry}>
-          <Text style={styles.retryText}>{retryLabel}</Text>
+          <Text style={styles.retryText}>{resolvedRetryLabel}</Text>
         </Pressable>
       </View>
     );

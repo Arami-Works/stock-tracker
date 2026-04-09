@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type EligibilityBadgeStatus = "eligible" | "notEligible";
 
@@ -13,6 +14,7 @@ export const TrackerEligibilityBadgeView = memo(
     status = "eligible",
     testID = "eligibility-badge",
   }: TrackerEligibilityBadgeViewProps) => {
+    const { t } = useTranslation("tracker");
     const isEligible = status === "eligible";
 
     return (
@@ -26,7 +28,9 @@ export const TrackerEligibilityBadgeView = memo(
         <Text
           style={[styles.text, { color: isEligible ? "#219654" : "#FF2D55" }]}
         >
-          {isEligible ? "✓  탱크 구매 자격 충족" : "✕  탱크 구매 자격 미충족"}
+          {isEligible
+            ? t("eligibility.eligible")
+            : t("eligibility.notEligible")}
         </Text>
       </View>
     );

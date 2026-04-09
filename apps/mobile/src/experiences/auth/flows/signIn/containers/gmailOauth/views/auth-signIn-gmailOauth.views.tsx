@@ -1,11 +1,13 @@
 import { memo } from "react";
 import { View, StyleSheet } from "react-native";
 import { Button, Text, ProgressIndicator } from "@aramiworks/ui";
+import { useTranslation } from "react-i18next";
 import { useAuthSignInGmailOauthControllers } from "../controllers/auth-signIn-gmailOauth.controllers";
 
 export const AuthSignInGmailOauthViews = memo(() => {
   const { signInWithGoogle, isSigningIn } =
     useAuthSignInGmailOauthControllers();
+  const { t } = useTranslation("auth");
 
   return (
     <View style={styles.container} testID="auth-signIn-gmailOauth-screen">
@@ -15,7 +17,7 @@ export const AuthSignInGmailOauthViews = memo(() => {
         color="white"
         testID="auth-signIn-title"
       >
-        Stock Tracker
+        {t("signIn.title")}
       </Text>
       <Text
         role="body"
@@ -25,7 +27,7 @@ export const AuthSignInGmailOauthViews = memo(() => {
         marginTop={8}
         testID="auth-signIn-subtitle"
       >
-        Sign In
+        {t("signIn.subtitle")}
       </Text>
       <View style={styles.buttonWrapper}>
         {isSigningIn ? (
@@ -39,7 +41,7 @@ export const AuthSignInGmailOauthViews = memo(() => {
             color="$primary"
             testID="sign-in-google-button"
           >
-            Sign in with Google
+            {t("signIn.googleButton")}
           </Button>
         )}
       </View>

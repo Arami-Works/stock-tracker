@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type TrackerEmptyStateViewProps = {
   icon?: React.ReactNode;
@@ -15,21 +16,25 @@ type TrackerEmptyStateViewProps = {
 export const TrackerEmptyStateView = memo(
   ({
     icon,
-    title = "아직 구매 내역이 없습니다",
-    subtitle = "SA를 추가하고 구매를 기록해보세요",
-    ctaLabel = "SA 추가하기",
+    title,
+    subtitle,
+    ctaLabel,
     onCtaPress,
     width = 340,
     height = 240,
     testID,
   }: TrackerEmptyStateViewProps) => {
+    const { t } = useTranslation("tracker");
+    const resolvedTitle = title ?? t("dashboard.emptyState.title");
+    const resolvedSubtitle = subtitle ?? t("dashboard.emptyState.subtitle");
+    const resolvedCtaLabel = ctaLabel ?? t("dashboard.emptyState.cta");
     return (
       <View style={[styles.container, { width, height }]} testID={testID}>
         <View style={styles.iconContainer}>{icon ?? <BagIcon />}</View>
-        <Text style={styles.title}>{title}</Text>
-        <Text style={styles.subtitle}>{subtitle}</Text>
+        <Text style={styles.title}>{resolvedTitle}</Text>
+        <Text style={styles.subtitle}>{resolvedSubtitle}</Text>
         <Pressable style={styles.ctaButton} onPress={onCtaPress}>
-          <Text style={styles.ctaText}>{ctaLabel}</Text>
+          <Text style={styles.ctaText}>{resolvedCtaLabel}</Text>
         </Pressable>
       </View>
     );

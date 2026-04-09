@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type SpendSummaryCardState = "populated" | "zero" | "loading";
 
@@ -15,6 +16,7 @@ export const TrackerDashboardHomeSpendSummaryCardView = memo(
     totalSpend = 12450000,
     goalAmount = 30000000,
   }: TrackerDashboardHomeSpendSummaryCardViewProps) => {
+    const { t } = useTranslation("tracker");
     if (state === "loading") {
       return (
         <View style={styles.card}>
@@ -36,12 +38,14 @@ export const TrackerDashboardHomeSpendSummaryCardView = memo(
       goalAmount > 0 ? Math.min((totalSpend / goalAmount) * 198, 198) : 0;
 
     const formattedSpend = `₩${totalSpend.toLocaleString()}`;
-    const formattedGoal = `목표: ₩${goalAmount.toLocaleString()}`;
+    const formattedGoal = t("dashboard.spendSummary.goal", {
+      amount: goalAmount.toLocaleString(),
+    });
     const formattedPercent = `${percentage}%`;
 
     return (
       <View style={styles.card} testID="spend-summary-card">
-        <Text style={styles.label}>총 구매 금액</Text>
+        <Text style={styles.label}>{t("dashboard.spendSummary.label")}</Text>
         <Text style={styles.amount}>{formattedSpend}</Text>
         <Text style={styles.goal}>{formattedGoal}</Text>
         <Text

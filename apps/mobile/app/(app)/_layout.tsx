@@ -1,5 +1,6 @@
 import { Text } from "react-native";
 import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
   return (
@@ -8,6 +9,7 @@ function TabIcon({ label, focused }: { label: string; focused: boolean }) {
 }
 
 export default function AppLayout() {
+  const { t } = useTranslation("tracker");
   return (
     <Tabs
       screenOptions={{
@@ -32,21 +34,21 @@ export default function AppLayout() {
       <Tabs.Screen
         name="tracker/dashboard"
         options={{
-          title: "대시보드",
+          title: t("nav.dashboard"),
           tabBarIcon: ({ focused }) => <TabIcon label="📊" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="tracker/accounts"
         options={{
-          title: "계좌",
+          title: t("nav.accounts"),
           tabBarIcon: ({ focused }) => <TabIcon label="👤" focused={focused} />,
         }}
       />
       <Tabs.Screen
         name="tracker/history"
         options={{
-          title: "히스토리",
+          title: t("nav.history"),
           tabBarIcon: ({ focused }) => <TabIcon label="📋" focused={focused} />,
         }}
       />

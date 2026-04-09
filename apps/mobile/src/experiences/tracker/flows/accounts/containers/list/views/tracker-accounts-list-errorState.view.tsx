@@ -1,12 +1,14 @@
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
 import { TrackerErrorStateView } from "@/experiences/tracker/views";
 
 export const TrackerAccountsListErrorStateView = memo(() => {
+  const { t } = useTranslation("tracker");
   return (
     <TrackerErrorStateView
-      title="계좌 정보를 불러올 수 없습니다"
-      subtitle="네트워크 연결을 확인하고 다시 시도해주세요"
-      retryLabel="다시 시도"
+      title={t("accounts.list.errorState.title")}
+      subtitle={t("accounts.list.errorState.subtitle")}
+      retryLabel={t("accounts.list.errorState.retry")}
       width={310}
       height={230}
       testID="accounts-list-error-state"

@@ -1,5 +1,6 @@
 import { memo } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import { useTranslation } from "react-i18next";
 
 type SaCardState = "eligible" | "notEligible" | "noPurchases";
 
@@ -23,12 +24,14 @@ export const TrackerDashboardHomeSaCardView = memo(
     totalSpend = 8200000,
     onPress,
   }: TrackerDashboardHomeSaCardViewProps) => {
+    const { t } = useTranslation("tracker");
+
     const statusText =
       state === "eligible"
-        ? `${boutique} · 자격 충족`
+        ? t("dashboard.saCard.statusEligible", { boutique })
         : state === "notEligible"
-          ? `${boutique} · 자격 미충족`
-          : `${boutique} · 구매 없음`;
+          ? t("dashboard.saCard.statusNotEligible", { boutique })
+          : t("dashboard.saCard.statusNoPurchases", { boutique });
 
     const statusColor =
       state === "eligible"
@@ -39,8 +42,8 @@ export const TrackerDashboardHomeSaCardView = memo(
 
     const spendText =
       state === "noPurchases"
-        ? "구매 내역 없음"
-        : `₩${totalSpend.toLocaleString()} 구매`;
+        ? t("dashboard.saCard.noPurchases")
+        : t("dashboard.saCard.spend", { amount: totalSpend.toLocaleString() });
 
     return (
       <Pressable
