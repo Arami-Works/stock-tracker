@@ -10,7 +10,7 @@
     "dev:router": "turbo run dev --filter=@stock-tracker/router",
     "dev:backend": "turbo run dev --filter=@stock-tracker/router --filter=@stock-tracker/subgraph-tracker --filter=@stock-tracker/api",
     "dev:storybook": "turbo run storybook --filter=@stock-tracker/storybook",
-    "dev:dashboard": "mprocs",
+    "dev:dashboard": "bash scripts/dev-dashboard.sh",
     "db:generate": "turbo run db:generate --filter=@stock-tracker/prisma",
     "db:push": "npm run db:push --workspace=@stock-tracker/prisma",
     "db:migrate:dev": "npm run db:migrate:dev --workspace=@stock-tracker/prisma",
