@@ -94,7 +94,79 @@ async function main() {
     ],
   });
 
-  console.log(`Done. Created user ${user.id}, 2 accounts, 3 purchases.`);
+  // --- Edge-case account: max-length fields, null optionals ---
+  const edgeAccount = await prisma.tracker_accounts.create({
+    data: {
+      auth_user_id: user.id,
+      store_name: "A".repeat(255),
+      sa_name: null,
+      notes: null,
+    },
+  });
+
+  await prisma.tracker_purchases.createMany({
+    data: [
+      // Boundary: minimum amount
+      {
+        tracker_account_id: edgeAccount.id,
+        item_name: "최소 금액 테스트",
+        amount: 0.01,
+        currency: "USD",
+        purchase_date: new Date("2025-01-01"),
+        item_category: null,
+        store_location: null,
+        notes: null,
+      },
+      // Boundary: maximum amount
+      {
+        tracker_account_id: edgeAccount.id,
+        item_name: "최대 금액 테스트",
+        amount: 9999999999.99,
+        currency: "KRW",
+        purchase_date: new Date("2025-12-31"),
+        item_category: "기타",
+        store_location: null,
+        notes: "N".repeat(1000),
+      },
+      // Different currencies
+      {
+        tracker_account_id: edgeAccount.id,
+        item_name: "EUR purchase",
+        amount: 5000,
+        currency: "EUR",
+        purchase_date: new Date("2025-06-15"),
+        item_category: "가방",
+      },
+      {
+        tracker_account_id: edgeAccount.id,
+        item_name: "JPY purchase",
+        amount: 150000,
+        currency: "JPY",
+        purchase_date: new Date("2025-03-10"),
+        item_category: "시계",
+      },
+      {
+        tracker_account_id: edgeAccount.id,
+        item_name: "GBP purchase",
+        amount: 3200,
+        currency: "GBP",
+        purchase_date: new Date("2025-09-22"),
+        item_category: "반지",
+      },
+      {
+        tracker_account_id: edgeAccount.id,
+        item_name: "CNY purchase",
+        amount: 42000,
+        currency: "CNY",
+        purchase_date: new Date("2025-04-05"),
+        item_category: "목걸이",
+      },
+    ],
+  });
+
+  console.log(
+    `Done. Created user ${user.id}, 3 accounts, 9 purchases (including edge cases).`,
+  );
 }
 
 main()
