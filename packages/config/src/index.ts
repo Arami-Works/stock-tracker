@@ -1,2 +1,2 @@
-// Shared configuration for stock-tracker
-export {};
+export { createLogger } from "./logger.js";
+export type { Logger } from "./logger.js";

@@ -16,6 +16,7 @@
     "test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --config jest.e2e.config.ts"
   },
   "dependencies": {
+    "@stock-tracker/config": "*",
     "@stock-tracker/prisma": "*",
     "@stock-tracker/types": "*",
     "@stock-tracker/validation": "*",

@@ -3,6 +3,12 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateHTTPContextOptions } from "@trpc/server/adapters/standalone";
 import superjson from "superjson";
 import { prisma } from "@stock-tracker/prisma/client";
+import { createLogger } from "@stock-tracker/config";
+
+export const logger = createLogger({
+  service: "api",
+  env: process.env["NODE_ENV"],
+});
 
 export const createContext = async ({ req }: CreateHTTPContextOptions) => {
   const userId = req.headers["x-user-id"] as string | undefined;
@@ -27,6 +33,28 @@ const t = initTRPC.context<Context>().create({
   },
 });
 
+const logRequest = t.middleware(async ({ ctx, path, type, next }) => {
+  const start = performance.now();
+  const reqLogger = logger.child({ requestId: ctx.requestId, procedure: path });
+
+  reqLogger.info({ type }, "request started");
+
+  const result = await next();
+
+  const duration = Math.round(performance.now() - start);
+
+  if (result.ok) {
+    reqLogger.info({ type, duration, userId: ctx.userId }, "request completed");
+  } else {
+    reqLogger.error(
+      { type, duration, userId: ctx.userId, code: result.error.code },
+      "request failed",
+    );
+  }
+
+  return result;
+});
+
 const enforceAuth = t.middleware(async ({ ctx, next }) => {
   if (!ctx.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
@@ -34,7 +62,9 @@ const enforceAuth = t.middleware(async ({ ctx, next }) => {
   return next({ ctx: { ...ctx, userId: ctx.userId } });
 });
 
+const baseProcedure = t.procedure.use(logRequest);
+
 export const router = t.router;
-export const publicProcedure = t.procedure;
-export const protectedProcedure = t.procedure.use(enforceAuth);
+export const publicProcedure = baseProcedure;
+export const protectedProcedure = baseProcedure.use(enforceAuth);
 export const middleware = t.middleware;

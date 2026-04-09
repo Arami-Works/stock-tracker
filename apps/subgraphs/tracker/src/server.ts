@@ -6,7 +6,7 @@ import { authResolvers } from "./auth/controllers/auth.controllers.js";
 import { trackerTypeDefs } from "./tracker/views/tracker.views.js";
 import { trackerResolvers } from "./tracker/controllers/tracker.controllers.js";
 import { createTrpcClient } from "./clients/trpc.js";
-import { loggingPlugin } from "./middleware/logging.js";
+import { logger, loggingPlugin } from "./middleware/logging.js";
 
 const server = new ApolloServer({
   schema: buildSubgraphSchema([
@@ -44,4 +44,4 @@ const { url } = await startStandaloneServer(server, {
   },
 });
 
-console.info(`Subgraph tracker ready at ${url}`);
+logger.info({ url }, "subgraph tracker ready");
