@@ -1,10 +1,16 @@
 import { randomUUID } from "node:crypto";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { appRouter } from "./trpc/router.js";
-import { createContext, setLogger } from "./trpc/trpc.js";
+import { createContext, setLogger, setJwtVerifier } from "./trpc/trpc.js";
 import { logger } from "./common/logger.js";
+import { verifySupabaseJwt } from "./common/jwt.js";
 
 setLogger(logger);
+
+const supabaseUrl = process.env["SUPABASE_URL"];
+if (supabaseUrl) {
+  setJwtVerifier((token) => verifySupabaseJwt(token, supabaseUrl));
+}
 
 const PORT = Number(process.env["PORT"] ?? 4000);
 

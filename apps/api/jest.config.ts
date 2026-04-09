@@ -12,6 +12,7 @@ const config: Config = {
     "^@stock-tracker/validation$":
       "<rootDir>/../../packages/validation/src/index.ts",
     "^@stock-tracker/types$": "<rootDir>/../../packages/types/src/index.ts",
+    "^@stock-tracker/config$": "<rootDir>/../../packages/config/src/index.ts",
   },
   transform: {
     "^.+\\.tsx?$": [
@@ -22,7 +23,7 @@ const config: Config = {
       },
     ],
   },
-  transformIgnorePatterns: ["node_modules/(?!(@stock-tracker)/)"],
+  transformIgnorePatterns: ["node_modules/(?!(@stock-tracker|jose)/)"],
   testMatch: ["**/__tests__/**/*.test.ts", "!**/__tests__/**/*.e2e.test.ts"],
   testTimeout: 30000,
 };
