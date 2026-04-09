@@ -55,7 +55,9 @@ jobs:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
           EXPO_PUBLIC_GRAPHQL_URL: ${{ secrets.E2E_GRAPHQL_URL }}
-          EXPO_PUBLIC_GOOGLE_CLIENT_ID: placeholder.apps.googleusercontent.com
+          EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID: placeholder.apps.googleusercontent.com
+          EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID: placeholder.apps.googleusercontent.com
+          EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID: placeholder.apps.googleusercontent.com
         run: npx expo export --platform web
         working-directory: apps/mobile
 
