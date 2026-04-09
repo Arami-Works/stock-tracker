@@ -6,18 +6,26 @@ interface LoggerOptions {
 }
 
 export const createLogger = ({ service, env }: LoggerOptions) => {
-  const isDev = (env ?? process.env["NODE_ENV"]) === "development";
+  const resolvedEnv = env ?? process.env["NODE_ENV"];
+  const isDev = resolvedEnv === "development";
+  const isTest = resolvedEnv === "test";
 
-  return pino({
-    level: isDev ? "debug" : "info",
-    ...(isDev && {
-      transport: {
-        target: "pino-pretty",
-        options: { colorize: true },
-      },
-    }),
-    base: { service },
-  });
+  if (isTest) {
+    return pino({ level: "silent", base: { service } });
+  }
+
+  if (isDev) {
+    return pino({
+      level: "debug",
+      transport: { target: "pino-pretty", options: { colorize: true } },
+      base: { service },
+    });
+  }
+
+  return pino(
+    { level: "info", base: { service } },
+    pino.destination({ sync: true }),
+  );
 };
 
 export type Logger = ReturnType<typeof createLogger>;
