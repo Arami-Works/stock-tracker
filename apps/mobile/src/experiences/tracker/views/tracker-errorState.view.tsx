@@ -33,7 +33,7 @@ export const TrackerErrorStateView = memo(
         </View>
         <Text style={styles.title}>{resolvedTitle}</Text>
         <Text style={styles.subtitle}>{resolvedSubtitle}</Text>
-        <Pressable style={styles.retryButton} onPress={onRetry}>
+        <Pressable style={styles.retryButton} onPress={onRetry} testID={testID ? `${testID}-retry` : undefined}>
           <Text style={styles.retryText}>{resolvedRetryLabel}</Text>
         </Pressable>
       </View>

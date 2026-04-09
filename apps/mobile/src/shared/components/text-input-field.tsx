@@ -16,6 +16,7 @@ type TextInputFieldProps<T extends FieldValues> = {
   multiline?: boolean;
   keyboardType?: TextInputProps["keyboardType"];
   error?: string;
+  testID?: string;
 };
 
 function TextInputFieldInner<T extends FieldValues>({
@@ -26,6 +27,7 @@ function TextInputFieldInner<T extends FieldValues>({
   multiline,
   keyboardType,
   error,
+  testID,
 }: TextInputFieldProps<T>) {
   return (
     <View style={styles.container}>
@@ -49,6 +51,7 @@ function TextInputFieldInner<T extends FieldValues>({
             placeholderTextColor="#CCC"
             multiline={multiline}
             keyboardType={keyboardType}
+            testID={testID}
           />
         )}
       />

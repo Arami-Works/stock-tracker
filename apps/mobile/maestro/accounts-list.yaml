@@ -11,7 +11,6 @@ tags:
 - assertVisible:
     id: "accounts-list-title"
 - assertVisible: "SA 계좌"
-- assertVisible:
-    id: "sa-list-item-1"
+- assertVisible: "까르띠에 청담"
 - assertVisible:
     id: "add-account-fab"
