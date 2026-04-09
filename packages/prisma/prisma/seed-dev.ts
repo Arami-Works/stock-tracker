@@ -56,54 +56,60 @@ async function main() {
   });
 
   // --- User 1: 6 accounts ---
-  const [cartierCheongdam, cartierLotte, hermesDoSan, lvCheongdam, chanelSinse, tiffanyHyundai] =
-    await Promise.all([
-      prisma.tracker_accounts.create({
-        data: {
-          auth_user_id: user1.id,
-          store_name: "까르띠에 청담",
-          sa_name: "김SA",
-          notes: "담당 SA 10년차, 연락처 010-1234-5678",
-        },
-      }),
-      prisma.tracker_accounts.create({
-        data: {
-          auth_user_id: user1.id,
-          store_name: "까르띠에 롯데 본점",
-          sa_name: "이SA",
-          notes: "롯데 본점 1층",
-        },
-      }),
-      prisma.tracker_accounts.create({
-        data: {
-          auth_user_id: user1.id,
-          store_name: "에르메스 도산",
-          sa_name: "박SA",
-        },
-      }),
-      prisma.tracker_accounts.create({
-        data: {
-          auth_user_id: user1.id,
-          store_name: "루이비통 청담",
-          sa_name: "정SA",
-          notes: "VIP 라운지 이용 가능",
-        },
-      }),
-      prisma.tracker_accounts.create({
-        data: {
-          auth_user_id: user1.id,
-          store_name: "샤넬 신세계",
-          sa_name: "최SA",
-        },
-      }),
-      prisma.tracker_accounts.create({
-        data: {
-          auth_user_id: user1.id,
-          store_name: "티파니 현대",
-          notes: "SA 미배정",
-        },
-      }),
-    ]);
+  const [
+    cartierCheongdam,
+    cartierLotte,
+    hermesDoSan,
+    lvCheongdam,
+    chanelSinse,
+    tiffanyHyundai,
+  ] = await Promise.all([
+    prisma.tracker_accounts.create({
+      data: {
+        auth_user_id: user1.id,
+        store_name: "까르띠에 청담",
+        sa_name: "김SA",
+        notes: "담당 SA 10년차, 연락처 010-1234-5678",
+      },
+    }),
+    prisma.tracker_accounts.create({
+      data: {
+        auth_user_id: user1.id,
+        store_name: "까르띠에 롯데 본점",
+        sa_name: "이SA",
+        notes: "롯데 본점 1층",
+      },
+    }),
+    prisma.tracker_accounts.create({
+      data: {
+        auth_user_id: user1.id,
+        store_name: "에르메스 도산",
+        sa_name: "박SA",
+      },
+    }),
+    prisma.tracker_accounts.create({
+      data: {
+        auth_user_id: user1.id,
+        store_name: "루이비통 청담",
+        sa_name: "정SA",
+        notes: "VIP 라운지 이용 가능",
+      },
+    }),
+    prisma.tracker_accounts.create({
+      data: {
+        auth_user_id: user1.id,
+        store_name: "샤넬 신세계",
+        sa_name: "최SA",
+      },
+    }),
+    prisma.tracker_accounts.create({
+      data: {
+        auth_user_id: user1.id,
+        store_name: "티파니 현대",
+        notes: "SA 미배정",
+      },
+    }),
+  ]);
 
   // --- User 2: 2 accounts ---
   const [vanCleef, bulgari] = await Promise.all([
