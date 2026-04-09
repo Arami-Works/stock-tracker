@@ -7,7 +7,7 @@ on:
     types: [submitted]
 
 concurrency:
-  group: greptile-response-${{ github.event.pull_request.number }}
+  group: greptile-response-${{ github.event.pull_request.number }}-${{ github.event.review.id || 'pr' }}
   cancel-in-progress: true
 
 jobs:
