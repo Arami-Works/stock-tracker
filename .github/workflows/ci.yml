@@ -283,3 +283,30 @@ jobs:
             echo "Building $app_name..."
             docker buildx build --file "$df" --load -t "$app_name:ci" .
           done
+
+  ci-status:
+    name: CI
+    runs-on: ubuntu-latest
+    needs:
+      - changes
+      - lint
+      - type-check
+      - test
+      - format
+      - build
+      - audit
+      - visual
+      - prisma
+      - migration
+      - schema-check
+      - docker
+    if: always()
+    steps:
+      - name: Check all CI jobs
+        run: |
+          results='${{ toJSON(needs.*.result) }}'
+          if echo "$results" | grep -qE '"failure"|"cancelled"'; then
+            echo "One or more CI jobs failed or were cancelled"
+            exit 1
+          fi
+          echo "All CI jobs passed or were skipped"
