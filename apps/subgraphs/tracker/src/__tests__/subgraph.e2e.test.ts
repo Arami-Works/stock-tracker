@@ -14,6 +14,7 @@ let trpcUrl: string;
 let closeTrpc: () => Promise<void>;
 
 let seededAccountId: string;
+let seededAccountId2: string;
 let seededPurchaseId: string;
 
 beforeAll(async () => {
@@ -45,18 +46,40 @@ beforeAll(async () => {
   });
   seededAccountId = account.id;
 
-  // Seed purchase
+  // Seed second account for sort/search tests
+  const account2 = await prisma.tracker_accounts.create({
+    data: {
+      auth_user_id: TEST_USER_ID,
+      store_name: "Alpha Filter Store",
+      sa_name: "Filter SA",
+    },
+  });
+  seededAccountId2 = account2.id;
+
+  // Seed purchase on first account (January 2025)
   const purchase = await prisma.tracker_purchases.create({
     data: {
       tracker_account_id: seededAccountId,
       item_name: "Subgraph E2E Ring",
-      item_category: "Ring",
+      item_category: "반지",
       amount: 5000000,
       currency: "KRW",
       purchase_date: new Date("2025-01-15"),
     },
   });
   seededPurchaseId = purchase.id;
+
+  // Seed purchase on second account (June 2025, different category)
+  await prisma.tracker_purchases.create({
+    data: {
+      tracker_account_id: seededAccountId2,
+      item_name: "Filter Test Necklace",
+      item_category: "목걸이",
+      amount: 8000000,
+      currency: "KRW",
+      purchase_date: new Date("2025-06-20"),
+    },
+  });
 });
 
 afterAll(async () => {
@@ -396,6 +419,146 @@ describe("mutations", () => {
     const { data, errors } = getData(res);
     expect(errors).toBeUndefined();
     expect(data?.deleteAccount).toBe(true);
+  });
+});
+
+describe("filtering and sorting", () => {
+  it("filters purchases by dateRange", async () => {
+    const res = await exec(
+      `
+      query Purchases($dateRange: DateRangeInput) {
+        purchases(dateRange: $dateRange) {
+          id
+          itemName
+          purchaseDate
+        }
+      }
+    `,
+      { dateRange: { from: "2025-01-01", to: "2025-01-31" } },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data?.purchases.every((p: { itemName: string }) =>
+        p.itemName.includes("Ring"),
+      ),
+    ).toBe(true);
+  });
+
+  it("filters purchases by search (store name)", async () => {
+    const res = await exec(
+      `
+      query Purchases($search: String) {
+        purchases(search: $search) {
+          id
+          itemName
+        }
+      }
+    `,
+      { search: "Alpha" },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data?.purchases.every((p: { itemName: string }) =>
+        p.itemName.includes("Necklace"),
+      ),
+    ).toBe(true);
+  });
+
+  it("filters purchases by itemCategory", async () => {
+    const res = await exec(
+      `
+      query Purchases($itemCategory: String) {
+        purchases(itemCategory: $itemCategory) {
+          id
+          itemName
+        }
+      }
+    `,
+      { itemCategory: "반지" },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.purchases.length).toBeGreaterThanOrEqual(1);
+    expect(
+      data?.purchases.every((p: { itemName: string }) =>
+        p.itemName.includes("Ring"),
+      ),
+    ).toBe(true);
+  });
+
+  it("returns empty when filters match nothing", async () => {
+    const res = await exec(
+      `
+      query Purchases($search: String) {
+        purchases(search: $search) {
+          id
+        }
+      }
+    `,
+      { search: "NonExistentStore12345" },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.purchases).toEqual([]);
+  });
+
+  it("sorts accounts by store_name ascending", async () => {
+    const res = await exec(`
+      query {
+        accounts(sortBy: store_name, sortOrder: asc) {
+          id
+          storeName
+        }
+      }
+    `);
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.accounts.length).toBeGreaterThanOrEqual(2);
+    const names = data?.accounts.map((a: { storeName: string }) => a.storeName);
+    expect(names).toEqual([...names].sort());
+  });
+
+  it("searches accounts by store name", async () => {
+    const res = await exec(
+      `
+      query Accounts($search: String) {
+        accounts(search: $search) {
+          id
+          storeName
+        }
+      }
+    `,
+      { search: "Alpha" },
+    );
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.accounts.length).toBe(1);
+    expect(data?.accounts[0].storeName).toBe("Alpha Filter Store");
+  });
+
+  it("returns all purchases without filter params (backward compat)", async () => {
+    const res = await exec(`
+      query {
+        purchases {
+          id
+          itemName
+        }
+      }
+    `);
+
+    const { data, errors } = getData(res);
+    expect(errors).toBeUndefined();
+    expect(data?.purchases.length).toBeGreaterThanOrEqual(2);
   });
 });
 

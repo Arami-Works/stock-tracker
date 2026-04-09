@@ -63,6 +63,26 @@ export const trackerTypeDefs = gql`
     notes: String
   }
 
+  input DateRangeInput {
+    from: String
+    to: String
+  }
+
+  input AmountRangeInput {
+    min: Float
+    max: Float
+  }
+
+  enum AccountSortBy {
+    store_name
+    created_at
+  }
+
+  enum SortOrder {
+    asc
+    desc
+  }
+
   extend type Query {
     """
     Dashboard overview for the current user
@@ -72,7 +92,11 @@ export const trackerTypeDefs = gql`
     """
     List all accounts for the current user
     """
-    accounts: [Account!]!
+    accounts(
+      sortBy: AccountSortBy
+      sortOrder: SortOrder
+      search: String
+    ): [Account!]!
 
     """
     Get a single account by ID
@@ -82,7 +106,14 @@ export const trackerTypeDefs = gql`
     """
     Purchase history with optional filtering
     """
-    purchases(accountId: ID): [Purchase!]!
+    purchases(
+      accountId: ID
+      sortOrder: SortOrder
+      dateRange: DateRangeInput
+      amountRange: AmountRangeInput
+      itemCategory: String
+      search: String
+    ): [Purchase!]!
   }
 
   extend type Mutation {
