@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { appRouter } from "./trpc/router.js";
-import { createContext } from "./trpc/trpc.js";
+import { createContext, setLogger } from "./trpc/trpc.js";
+import { logger } from "./common/logger.js";
+
+setLogger(logger);
 
 const PORT = Number(process.env["PORT"] ?? 4000);
 
@@ -20,9 +23,25 @@ const server = createHTTPServer({
     }
     res.setHeader("x-request-id", req.headers["x-request-id"]);
 
+    const start = performance.now();
+
+    res.on("finish", () => {
+      const duration = Math.round(performance.now() - start);
+      logger.info(
+        {
+          requestId: req.headers["x-request-id"],
+          method: req.method,
+          url: req.url,
+          status: res.statusCode,
+          duration,
+        },
+        "http request",
+      );
+    });
+
     next();
   },
 });
 
 server.listen(PORT);
-console.info(`tRPC server listening on port ${PORT}`);
+logger.info({ port: PORT }, "tRPC server listening");

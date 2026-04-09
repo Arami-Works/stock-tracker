@@ -17,7 +17,7 @@
     "db:studio": "npm run db:studio --workspace=@stock-tracker/prisma",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "check-types": "turbo run check-types",
+    "type-check": "turbo run check-types",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md}\""
   },
