@@ -48,18 +48,6 @@ jobs:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
           APP_ENV: master
 
-      - name: Write Vercel config
-        run: printf '{"github":{"enabled":false},"buildCommand":"","outputDirectory":".","rewrites":[{"source":"/(.*)","destination":"/index.html"}]}\n' > apps/mobile/dist/vercel.json
-
-      - name: Configure Vercel project
-        working-directory: apps/mobile/dist
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_WEB_PROJECT_ID }}
-        run: |
-          mkdir -p .vercel
-          jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" '{"orgId":$org,"projectId":$proj}' > .vercel/project.json
-
       - name: Resolve Vercel flags
         id: flags
         run: |
@@ -74,11 +62,16 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_WEB_PROJECT_ID }}
+        working-directory: apps/mobile/dist
         run: |
-          DEPLOY_URL=$(npx vercel deploy --yes ${{ steps.flags.outputs.prod }} \
+          mkdir -p .vercel/output/static
+          cp -r * .vercel/output/static/
+          printf '{"version":3,"routes":[{"handle":"filesystem"},{"src":"/(.*)","dest":"/index.html"}]}\n' > .vercel/output/config.json
+          jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" '{"orgId":$org,"projectId":$proj}' > .vercel/project.json
+          ls -la .vercel/output/
+          DEPLOY_URL=$(npx vercel deploy --prebuilt --yes ${{ steps.flags.outputs.prod }} \
             --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
-        working-directory: apps/mobile/dist
 
       - name: Set branch alias
         if: github.ref != 'refs/heads/main'
