@@ -1,7 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { createHTTPServer } from "@trpc/server/adapters/standalone";
 import { appRouter } from "./trpc/router.js";
-import { createContext, logger } from "./trpc/trpc.js";
+import { createContext, setLogger } from "./trpc/trpc.js";
+import { logger } from "./common/logger.js";
+
+setLogger(logger);
 
 const PORT = Number(process.env["PORT"] ?? 4000);
 

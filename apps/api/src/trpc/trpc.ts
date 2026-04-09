@@ -3,12 +3,25 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import type { CreateHTTPContextOptions } from "@trpc/server/adapters/standalone";
 import superjson from "superjson";
 import { prisma } from "@stock-tracker/prisma/client";
-import { createLogger } from "@stock-tracker/config";
 
-export const logger = createLogger({
-  service: "api",
-  env: process.env["NODE_ENV"],
-});
+interface MinimalLogger {
+  child(bindings: Record<string, unknown>): MinimalLogger;
+  info(obj: Record<string, unknown>, msg: string): void;
+  error(obj: Record<string, unknown>, msg: string): void;
+}
+
+const noop = () => {};
+const noopLogger: MinimalLogger = {
+  child: () => noopLogger,
+  info: noop,
+  error: noop,
+};
+
+let _logger: MinimalLogger = noopLogger;
+
+export function setLogger(l: MinimalLogger) {
+  _logger = l;
+}
 
 export const createContext = async ({ req }: CreateHTTPContextOptions) => {
   const userId = req.headers["x-user-id"] as string | undefined;
@@ -35,7 +48,10 @@ const t = initTRPC.context<Context>().create({
 
 const logRequest = t.middleware(async ({ ctx, path, type, next }) => {
   const start = performance.now();
-  const reqLogger = logger.child({ requestId: ctx.requestId, procedure: path });
+  const reqLogger = _logger.child({
+    requestId: ctx.requestId,
+    procedure: path,
+  });
 
   reqLogger.info({ type }, "request started");
 
