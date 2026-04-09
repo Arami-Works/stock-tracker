@@ -11,8 +11,16 @@ export const trackerResolvers = {
     dashboard: async (_: unknown, __: unknown, context: SubgraphContext) => {
       return context.trpc.tracker.dashboard.home.summary.query();
     },
-    accounts: async (_: unknown, __: unknown, context: SubgraphContext) => {
-      return context.trpc.tracker.accounts.list.all.query({});
+    accounts: async (
+      _: unknown,
+      args: { sortBy?: string; sortOrder?: string; search?: string },
+      context: SubgraphContext,
+    ) => {
+      return context.trpc.tracker.accounts.list.all.query({
+        sortBy: args.sortBy as "store_name" | "created_at" | undefined,
+        sortOrder: args.sortOrder as "asc" | "desc" | undefined,
+        search: args.search ?? undefined,
+      });
     },
     account: async (
       _: unknown,
@@ -23,10 +31,34 @@ export const trackerResolvers = {
     },
     purchases: async (
       _: unknown,
-      args: { accountId?: string },
+      args: {
+        accountId?: string;
+        sortOrder?: string;
+        dateRange?: { from?: string; to?: string };
+        amountRange?: { min?: number; max?: number };
+        itemCategory?: string;
+        search?: string;
+      },
       context: SubgraphContext,
     ) => {
-      const result = await context.trpc.tracker.history.browse.list.query(args);
+      const result = await context.trpc.tracker.history.browse.list.query({
+        accountId: args.accountId ?? undefined,
+        sortOrder: (args.sortOrder as "asc" | "desc") ?? undefined,
+        dateRange: args.dateRange ?? undefined,
+        amountRange: args.amountRange ?? undefined,
+        itemCategory:
+          (args.itemCategory as
+            | "브레이슬릿"
+            | "목걸이"
+            | "시계"
+            | "반지"
+            | "귀걸이"
+            | "가방"
+            | "지갑"
+            | "벨트"
+            | "기타") ?? undefined,
+        search: args.search ?? undefined,
+      });
       return result.items;
     },
   },
