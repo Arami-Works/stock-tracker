@@ -3,9 +3,10 @@ set -euo pipefail
 
 # stock-tracker — mprocs wrapper
 # 1. Cleans up leftover processes/sockets from previous sessions
-# 2. Builds shared packages so backend services can start
-# 3. Launches mprocs
-# 4. Cleans up on exit (quit, Ctrl+C, pane close)
+# 2. Installs dependencies (fast no-op when up to date)
+# 3. Builds shared packages so backend services can start
+# 4. Launches mprocs
+# 5. Cleans up on exit (quit, Ctrl+C, pane close)
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -22,6 +23,9 @@ cd "$REPO_ROOT"
 
 log "Cleaning up previous session..."
 cleanup
+
+log "Installing dependencies..."
+npm install --quiet
 
 log "Building shared packages..."
 npx turbo run build --filter='./packages/*' --log-prefix=none
