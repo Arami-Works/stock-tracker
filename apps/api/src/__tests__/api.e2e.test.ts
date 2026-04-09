@@ -372,9 +372,9 @@ describe("filtering E2E", () => {
       search: "Filter Test",
     });
     expect(items.length).toBeGreaterThanOrEqual(3);
-    expect(items.every((i) => i.trackerAccount.storeName === "Filter Test Store")).toBe(
-      true,
-    );
+    expect(
+      items.every((i) => i.trackerAccount.storeName === "Filter Test Store"),
+    ).toBe(true);
   });
 
   it("combines multiple filters", async () => {

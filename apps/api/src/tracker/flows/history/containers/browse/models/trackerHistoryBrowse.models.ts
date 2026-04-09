@@ -31,14 +31,23 @@ export const trackerHistoryBrowseModels = (prisma: PrismaClient) => ({
     }
     if (params.dateRange?.from || params.dateRange?.to) {
       where.purchase_date = {
-        ...(params.dateRange.from && { gte: params.dateRange.from }),
-        ...(params.dateRange.to && { lte: params.dateRange.to }),
+        ...(params.dateRange.from && { gte: new Date(params.dateRange.from) }),
+        ...(params.dateRange.to && {
+          lte: new Date(params.dateRange.to + "T23:59:59.999Z"),
+        }),
       };
     }
-    if (params.amountRange?.min !== undefined || params.amountRange?.max !== undefined) {
+    if (
+      params.amountRange?.min !== undefined ||
+      params.amountRange?.max !== undefined
+    ) {
       where.amount = {
-        ...(params.amountRange?.min !== undefined && { gte: params.amountRange.min }),
-        ...(params.amountRange?.max !== undefined && { lte: params.amountRange.max }),
+        ...(params.amountRange?.min !== undefined && {
+          gte: params.amountRange.min,
+        }),
+        ...(params.amountRange?.max !== undefined && {
+          lte: params.amountRange.max,
+        }),
       };
     }
     if (params.itemCategory) {
