@@ -41,8 +41,13 @@ jobs:
       - name: Build Storybook
         run: npx turbo run build --filter=@stock-tracker/storybook
 
-      - name: Write Vercel config
-        run: printf '{"cleanUrls":true,"github":{"enabled":false}}\n' > apps/storybook/storybook-static/vercel.json
+      - name: Prepare Vercel output
+        run: |
+          mkdir -p apps/storybook/storybook-static/.vercel/output/static
+          for item in apps/storybook/storybook-static/*; do
+            cp -r "$item" apps/storybook/storybook-static/.vercel/output/static/
+          done
+          printf '{"version":3,"routes":[{"handle":"filesystem"},{"src":"/(.*)","dest":"/index.html"}]}\n' > apps/storybook/storybook-static/.vercel/output/config.json
 
       - name: Configure Vercel project
         working-directory: apps/storybook/storybook-static
@@ -50,7 +55,6 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STORYBOOK_PROJECT_ID }}
         run: |
-          mkdir -p .vercel
           jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" '{"orgId":$org,"projectId":$proj}' > .vercel/project.json
 
       - name: Resolve Vercel flags
@@ -68,7 +72,7 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STORYBOOK_PROJECT_ID }}
         run: |
-          DEPLOY_URL=$(npx vercel deploy --yes ${{ steps.flags.outputs.prod }} \
+          DEPLOY_URL=$(npx vercel deploy --prebuilt --yes ${{ steps.flags.outputs.prod }} \
             --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
         working-directory: apps/storybook/storybook-static
