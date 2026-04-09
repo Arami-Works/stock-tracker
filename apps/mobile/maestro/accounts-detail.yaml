@@ -8,8 +8,7 @@ tags:
 - tapOn: "계좌"
 - assertVisible:
     id: "accounts-list-screen"
-- tapOn:
-    id: "sa-list-item-1"
+- tapOn: "까르띠에 청담"
 - assertVisible:
     id: "accounts-detail-screen"
 - assertVisible: "SA 상세"
@@ -17,8 +16,7 @@ tags:
     id: "accounts-detail-sa-header"
 - assertVisible:
     id: "accounts-detail-tank-status"
-- assertVisible:
-    id: "purchase-row-1"
+- assertVisible: "러브 브레이슬릿"
 - assertVisible:
     id: "accounts-detail-add-purchase"
 - tapOn:

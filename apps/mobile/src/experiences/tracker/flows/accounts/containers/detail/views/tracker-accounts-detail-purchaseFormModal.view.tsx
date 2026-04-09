@@ -110,6 +110,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
         }
         onSubmit={handleSubmit(handleFormSubmit)}
         onClose={handleClose}
+        testIDPrefix="purchase-form"
       >
         <TextInputField
           control={control}
@@ -117,6 +118,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           label={t("purchases.form.fields.itemName.label")}
           placeholder={t("purchases.form.fields.itemName.placeholder")}
           error={errors.itemName?.message}
+          testID="purchase-form-itemName"
         />
         <TextInputField
           control={control}
@@ -125,6 +127,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           placeholder={t("purchases.form.fields.amount.placeholder")}
           keyboardType="numeric"
           error={errors.amount?.message}
+          testID="purchase-form-amount"
         />
         <TextInputField
           control={control}
@@ -132,6 +135,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           label={t("purchases.form.fields.purchaseDate.label")}
           placeholder={t("purchases.form.fields.purchaseDate.placeholder")}
           error={errors.purchaseDate?.message}
+          testID="purchase-form-purchaseDate"
         />
         <TextInputField
           control={control}
@@ -139,6 +143,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           label={t("purchases.form.fields.itemCategory.label")}
           placeholder={t("purchases.form.fields.itemCategory.placeholder")}
           error={errors.itemCategory?.message}
+          testID="purchase-form-itemCategory"
         />
         <TextInputField
           control={control}
@@ -146,6 +151,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           label={t("purchases.form.fields.storeLocation.label")}
           placeholder={t("purchases.form.fields.storeLocation.placeholder")}
           error={errors.storeLocation?.message}
+          testID="purchase-form-storeLocation"
         />
         <TextInputField
           control={control}
@@ -154,6 +160,7 @@ export const TrackerAccountsDetailPurchaseFormModalView = memo(
           placeholder={t("purchases.form.fields.notes.placeholder")}
           multiline
           error={errors.notes?.message}
+          testID="purchase-form-notes"
         />
       </FormModal>
     );

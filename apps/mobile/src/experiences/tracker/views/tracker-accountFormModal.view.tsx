@@ -59,6 +59,7 @@ export const TrackerAccountFormModalView = memo(
         submitLabel="추가"
         onSubmit={handleSubmit(handleFormSubmit)}
         onClose={handleClose}
+        testIDPrefix="account-form"
       >
         <TextInputField
           control={control}
@@ -66,6 +67,7 @@ export const TrackerAccountFormModalView = memo(
           label="부티크 이름"
           placeholder="청담 부티크"
           error={errors.storeName?.message}
+          testID="account-form-storeName"
         />
         <TextInputField
           control={control}
@@ -73,6 +75,7 @@ export const TrackerAccountFormModalView = memo(
           label="SA 이름 (선택)"
           placeholder="김서연 SA"
           error={errors.saName?.message}
+          testID="account-form-saName"
         />
         <TextInputField
           control={control}
@@ -81,6 +84,7 @@ export const TrackerAccountFormModalView = memo(
           placeholder="메모를 입력하세요"
           multiline
           error={errors.notes?.message}
+          testID="account-form-notes"
         />
       </FormModal>
     );

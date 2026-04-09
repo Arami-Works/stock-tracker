@@ -33,7 +33,11 @@ export const TrackerEmptyStateView = memo(
         <View style={styles.iconContainer}>{icon ?? <BagIcon />}</View>
         <Text style={styles.title}>{resolvedTitle}</Text>
         <Text style={styles.subtitle}>{resolvedSubtitle}</Text>
-        <Pressable style={styles.ctaButton} onPress={onCtaPress}>
+        <Pressable
+          style={styles.ctaButton}
+          onPress={onCtaPress}
+          testID={testID ? `${testID}-cta` : undefined}
+        >
           <Text style={styles.ctaText}>{resolvedCtaLabel}</Text>
         </Pressable>
       </View>

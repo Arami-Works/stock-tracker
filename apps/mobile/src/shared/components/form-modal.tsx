@@ -17,6 +17,7 @@ type FormModalProps = {
   onSubmit: () => void;
   onClose: () => void;
   children: ReactNode;
+  testIDPrefix?: string;
 };
 
 export const FormModal = memo(
@@ -27,6 +28,7 @@ export const FormModal = memo(
     onSubmit,
     onClose,
     children,
+    testIDPrefix,
   }: FormModalProps) => {
     return (
       <Modal
@@ -40,11 +42,19 @@ export const FormModal = memo(
           behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
           <View style={styles.header}>
-            <Pressable onPress={onClose} style={styles.closeButton}>
+            <Pressable
+              onPress={onClose}
+              style={styles.closeButton}
+              testID={testIDPrefix ? `${testIDPrefix}-cancel` : undefined}
+            >
               <Text style={styles.closeText}>취소</Text>
             </Pressable>
             <Text style={styles.title}>{title}</Text>
-            <Pressable onPress={onSubmit} style={styles.submitButton}>
+            <Pressable
+              onPress={onSubmit}
+              style={styles.submitButton}
+              testID={testIDPrefix ? `${testIDPrefix}-submit` : undefined}
+            >
               <Text style={styles.submitText}>{submitLabel}</Text>
             </Pressable>
           </View>
