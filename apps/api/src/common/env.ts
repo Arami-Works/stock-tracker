@@ -7,6 +7,7 @@ const envSchema = z.object({
   SUPABASE_ANON_KEY: z.string(),
   SUPABASE_SERVICE_ROLE_KEY: z.string(),
   APOLLO_KEY: z.string().optional(),
+  TRIGGER_DEV_API_KEY: z.string().optional(),
   NODE_ENV: z
     .enum(["development", "staging", "production", "test"])
     .default("development"),
