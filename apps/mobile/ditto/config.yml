@@ -1,0 +1,9 @@
+projects:
+  - id: stock-tracker
+
+variants: []
+
+outputs:
+  - format: json
+    framework: i18next
+    path: ./ditto
