@@ -77,6 +77,22 @@ packages/
 - Every folder has `index.ts` for re-exports
 - Suffixed barrel files mandatory (`.models.tsx`, `.controllers.tsx`, `.views.tsx`, `.lifecycles.ts`)
 
+## Translations (Ditto)
+
+Translations are managed in [Ditto](https://dittowords.com). Project: `stock-tracker`.
+
+- Ditto Developer IDs follow Figma frame naming (e.g., `tracker-dashboard-home-saCard.statusEligible`)
+- `scripts/ditto-id-map.json` maps Developer IDs → i18next namespace + key
+- `scripts/ditto-split.js` splits the flat Ditto export into namespace files
+
+```bash
+npm run ditto:pull -w apps/mobile   # Pull + split translations from Ditto
+```
+
+JSON files in `apps/mobile/src/lib/i18n/ko/` are git-tracked. After pulling, review the diff and commit.
+
+When adding a new text item: add it in Ditto with a Figma-named Developer ID, then add the mapping in `scripts/ditto-id-map.json`.
+
 ## Development
 
 ```bash
