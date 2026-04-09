@@ -11,7 +11,7 @@ const purchaseDateSchema = z
   .refine((d) => new Date(d) >= new Date("2000-01-01"), {
     message: "Date must be on or after 2000-01-01",
   })
-  .refine((d) => new Date(d) <= new Date(), {
+  .refine((d) => d <= new Date().toISOString().slice(0, 10), {
     message: "Date must not be in the future",
   });
 

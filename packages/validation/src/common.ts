@@ -30,7 +30,7 @@ export const itemCategorySchema = z.enum([
   "기타",
 ]);
 
-const controlCharRegex = /[\x00-\x1f\x7f]/;
+const controlCharRegex = /[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/;
 
 export const sanitizedString = (maxLength: number) =>
   z
