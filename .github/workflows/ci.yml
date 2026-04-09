@@ -19,6 +19,7 @@ jobs:
     timeout-minutes: 5
     outputs:
       code: ${{ steps.filter.outputs.code }}
+      deps: ${{ steps.filter.outputs.deps }}
       prisma: ${{ steps.filter.outputs.prisma }}
       migrations: ${{ steps.filter.outputs.migrations }}
       subgraphs: ${{ steps.filter.outputs.subgraphs }}
@@ -35,10 +36,13 @@ jobs:
               - 'packages/**'
               - 'package.json'
               - 'package-lock.json'
-              - 'tsconfig.json'
               - 'turbo.json'
-              - 'eslint.config.mjs'
-              - 'jest.config.ts'
+            deps:
+              - 'package.json'
+              - 'package-lock.json'
+              - 'packages/*/package.json'
+              - 'apps/*/package.json'
+              - 'apps/subgraphs/*/package.json'
             prisma:
               - 'packages/prisma/**'
             migrations:
@@ -47,11 +51,11 @@ jobs:
               - 'apps/subgraphs/**'
             dockerfiles:
               - 'apps/subgraphs/*/Dockerfile'
-              - 'apps/service-*/Dockerfile'
+              - 'apps/api/Dockerfile'
+              - 'apps/router/Dockerfile'
             stories:
               - 'apps/mobile/src/**/*.story.tsx'
               - 'apps/storybook/**'
-              - 'packages/ui/**'
 
   lint:
     needs: [path-filter]
@@ -150,7 +154,7 @@ jobs:
 
   audit:
     needs: [path-filter]
-    if: needs.path-filter.outputs.code == 'true'
+    if: needs.path-filter.outputs.deps == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
