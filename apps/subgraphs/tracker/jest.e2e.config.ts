@@ -12,8 +12,7 @@ const config: Config = {
     "^@stock-tracker/validation$":
       "<rootDir>/../../packages/validation/src/index.ts",
     "^@stock-tracker/types$": "<rootDir>/../../packages/types/src/index.ts",
-    "^@stock-tracker/api/trpc$":
-      "<rootDir>/../api/src/trpc/router.ts",
+    "^@stock-tracker/api/trpc$": "<rootDir>/../api/src/trpc/router.ts",
   },
   transform: {
     "^.+\\.tsx?$": [
