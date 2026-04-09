@@ -8,9 +8,19 @@ on:
       - "apps/storybook/**"
       - "packages/**"
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - master
+          - stage
+          - develop
+        default: master
 
 concurrency:
-  group: storybook-${{ github.ref }}
+  group: storybook-${{ github.ref }}-${{ inputs.environment || 'master' }}
   cancel-in-progress: true
 
 permissions:
@@ -53,13 +63,17 @@ jobs:
           mkdir -p .vercel
           jq -n --arg org "$VERCEL_ORG_ID" --arg proj "$VERCEL_PROJECT_ID" '{"orgId":$org,"projectId":$proj}' > .vercel/project.json
 
-      - name: Resolve Vercel flags
-        id: flags
+      - name: Resolve environment
+        id: env
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          ENV="${{ inputs.environment || 'master' }}"
+          echo "name=$ENV" >> "$GITHUB_OUTPUT"
+          if [[ "$ENV" == "master" ]]; then
             echo "prod=--prod" >> "$GITHUB_OUTPUT"
+            echo "alias=" >> "$GITHUB_OUTPUT"
           else
             echo "prod=" >> "$GITHUB_OUTPUT"
+            echo "alias=${ENV}.storybook.stocktracker.arami.so" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Deploy
@@ -68,17 +82,16 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STORYBOOK_PROJECT_ID }}
         run: |
-          DEPLOY_URL=$(npx vercel deploy --yes ${{ steps.flags.outputs.prod }} \
+          DEPLOY_URL=$(npx vercel deploy --yes ${{ steps.env.outputs.prod }} \
             --token=${{ secrets.VERCEL_TOKEN }})
           echo "url=$DEPLOY_URL" >> "$GITHUB_OUTPUT"
         working-directory: apps/storybook/storybook-static
 
-      - name: Set branch alias
-        if: github.ref != 'refs/heads/main'
+      - name: Set environment alias
+        if: steps.env.outputs.alias != ''
         run: |
-          BRANCH="${{ github.ref_name }}"
           npx vercel alias set "${{ steps.deploy.outputs.url }}" \
-            "${BRANCH}.storybook.stocktracker.arami.so" \
+            "${{ steps.env.outputs.alias }}" \
             --token="${{ secrets.VERCEL_TOKEN }}"
         working-directory: apps/storybook/storybook-static
 
@@ -86,8 +99,29 @@ jobs:
         run: |
           echo "### Storybook deployed" >> "$GITHUB_STEP_SUMMARY"
           echo "URL: ${{ steps.deploy.outputs.url }}" >> "$GITHUB_STEP_SUMMARY"
-          if [[ "${{ github.ref }}" != "refs/heads/main" ]]; then
-            echo "Alias: https://${{ github.ref_name }}.storybook.stocktracker.arami.so" >> "$GITHUB_STEP_SUMMARY"
+          if [[ -n "${{ steps.env.outputs.alias }}" ]]; then
+            echo "Alias: https://${{ steps.env.outputs.alias }}" >> "$GITHUB_STEP_SUMMARY"
           else
             echo "Alias: https://storybook.stocktracker.arami.so" >> "$GITHUB_STEP_SUMMARY"
           fi
+
+      - name: Notify Slack
+        if: always()
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: |
+          STATUS="${{ job.status == 'success' && '✅' || '❌' }}"
+          ENV="${{ steps.env.outputs.name }}"
+          DEPLOY_URL="${{ steps.deploy.outputs.url }}"
+          ALIAS="${{ steps.env.outputs.alias }}"
+          RUN_URL="https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          URL="${ALIAS:+https://${ALIAS}}"
+          URL="${URL:-$DEPLOY_URL}"
+
+          curl -s -X POST https://slack.com/api/chat.postMessage \
+            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"channel\": \"${{ vars.SLACK_CHANNEL_ENGINEERING_UPDATES }}\",
+              \"text\": \"${STATUS} *Storybook Deploy* — ${ENV}\n📖 ${URL}\n🔗 <${RUN_URL}|View run>\"
+            }"

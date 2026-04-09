@@ -125,7 +125,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
+              \"channel\": \"${{ vars.SLACK_CHANNEL_ENGINEERING_UPDATES }}\",
               \"text\": \"${STATUS} *@stock-tracker/mobile Build*\n📱 Platform: ${PLATFORM^}\n🎯 Profile: ${PROFILE}\n🔗 <${LINK}|View on Expo>\"
             }")
           echo "Slack response: $RESPONSE"
@@ -195,7 +195,7 @@ jobs:
             -H "Authorization: Bearer ${{ secrets.SLACK_BOT_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d "{
-              \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
+              \"channel\": \"${{ vars.SLACK_CHANNEL_ENGINEERING_UPDATES }}\",
               \"text\": \"${STATUS} *@stock-tracker/mobile Build* (Storybook)\n📱 Platform: ${PLATFORM^}\n🔗 <${LINK}|View on Expo>\"
             }")
           echo "Slack response: $RESPONSE"
