@@ -1,11 +1,13 @@
 name: Claude Greptile Response
 
 on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review]
   pull_request_review:
     types: [submitted]
 
 concurrency:
-  group: greptile-response-${{ github.event.pull_request.number }}
+  group: greptile-response-${{ github.event.pull_request.number }}-${{ github.event.review.id || 'pr' }}
   cancel-in-progress: true
 
 jobs:
