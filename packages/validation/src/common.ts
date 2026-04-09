@@ -40,3 +40,17 @@ export const sanitizedString = (maxLength: number) =>
     .refine((s) => !controlCharRegex.test(s), {
       message: "Must not contain control characters",
     });
+
+export const dateRangeSchema = z
+  .object({
+    from: z.string().date().optional(),
+    to: z.string().date().optional(),
+  })
+  .optional();
+
+export const amountRangeSchema = z
+  .object({
+    min: z.number().positive().optional(),
+    max: z.number().positive().max(9_999_999_999.99).optional(),
+  })
+  .optional();

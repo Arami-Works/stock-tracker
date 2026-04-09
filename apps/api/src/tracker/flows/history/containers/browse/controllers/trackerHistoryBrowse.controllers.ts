@@ -33,6 +33,10 @@ export const trackerHistoryBrowseControllers = (prisma: PrismaClient) => {
         cursor?: string;
         limit: number;
         sortOrder: "asc" | "desc";
+        dateRange?: { from?: string; to?: string };
+        amountRange?: { min?: number; max?: number };
+        itemCategory?: string;
+        search?: string;
       },
       userId: string,
     ) => {
