@@ -61,8 +61,20 @@ export const ACCOUNT_QUERY = graphql(`
 `);
 
 export const PURCHASES_QUERY = graphql(`
-  query Purchases($accountId: ID) {
-    purchases(accountId: $accountId) {
+  query Purchases(
+    $accountId: ID
+    $sortOrder: SortOrder
+    $dateRange: DateRangeInput
+    $itemCategory: String
+    $search: String
+  ) {
+    purchases(
+      accountId: $accountId
+      sortOrder: $sortOrder
+      dateRange: $dateRange
+      itemCategory: $itemCategory
+      search: $search
+    ) {
       id
       itemName
       itemCategory

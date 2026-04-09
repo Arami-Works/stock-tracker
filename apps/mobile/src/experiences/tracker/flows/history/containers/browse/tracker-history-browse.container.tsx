@@ -16,6 +16,10 @@ const ConnectedViews = memo(() => {
       selectedFilter={controllers.selectedFilter}
       onFilterSelect={controllers.onFilterSelect}
       onDeletePurchase={controllers.onDeletePurchase}
+      searchQuery={controllers.searchQuery}
+      onSearchChange={controllers.onSearchChange}
+      selectedCategory={controllers.selectedCategory}
+      onCategorySelect={controllers.onCategorySelect}
     />
   );
 });
