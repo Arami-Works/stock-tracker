@@ -33,7 +33,6 @@ jobs:
             code:
               - 'apps/**'
               - 'packages/**'
-              - '.github/**'
               - 'package.json'
               - 'package-lock.json'
               - 'tsconfig.json'
