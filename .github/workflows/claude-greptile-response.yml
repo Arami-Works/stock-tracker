@@ -82,6 +82,7 @@ jobs:
                - Reply: "Not applicable — [reason with code reference]."
 
             4. After processing all comments, if you made any code fixes:
+               - Check if `.changeset/config.json` exists in the repo. If it does, create `.changeset/greptile-fix.md` with a `patch` bump for affected package(s) and one-line description of the fix.
                - Create a single commit: `fix: address greptile review feedback`
                - Push to this branch.
 
