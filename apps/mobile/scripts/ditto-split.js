@@ -86,7 +86,7 @@ for (const file of dittoFiles) {
   for (const [ns, data] of Object.entries(namespaces)) {
     const outPath = path.join(localeDir, `${ns}.json`);
     fs.writeFileSync(outPath, JSON.stringify(data, null, 2) + "\n", "utf-8");
-    console.log(`  ${locale}/${ns}.json (${Object.keys(flatJson).length} keys)`);
+    console.log(`  ${locale}/${ns}.json (${Object.keys(data).length} keys)`);
   }
 }
 
