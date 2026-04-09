@@ -24,6 +24,7 @@ jobs:
       migrations: ${{ steps.filter.outputs.migrations }}
       subgraphs: ${{ steps.filter.outputs.subgraphs }}
       dockerfiles: ${{ steps.filter.outputs.dockerfiles }}
+      stories: ${{ steps.filter.outputs.stories }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
@@ -52,6 +53,9 @@ jobs:
               - 'apps/subgraphs/*/Dockerfile'
               - 'apps/api/Dockerfile'
               - 'apps/router/Dockerfile'
+            stories:
+              - 'apps/mobile/src/**/*.story.tsx'
+              - 'apps/storybook/**'
 
   lint:
     needs: [paths-filter]
