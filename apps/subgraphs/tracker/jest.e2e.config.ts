@@ -7,12 +7,13 @@ const config: Config = {
   moduleNameMapper: {
     "^(\\.{1,2}/.*)\\.js$": "$1",
     "^@stock-tracker/prisma/client$":
-      "<rootDir>/../../packages/prisma/src/client.ts",
-    "^@stock-tracker/prisma$": "<rootDir>/../../packages/prisma/src/index.ts",
+      "<rootDir>/../../../packages/prisma/src/client.ts",
+    "^@stock-tracker/prisma$":
+      "<rootDir>/../../../packages/prisma/src/index.ts",
     "^@stock-tracker/validation$":
-      "<rootDir>/../../packages/validation/src/index.ts",
-    "^@stock-tracker/types$": "<rootDir>/../../packages/types/src/index.ts",
-    "^@stock-tracker/api/trpc$": "<rootDir>/../api/src/trpc/router.ts",
+      "<rootDir>/../../../packages/validation/src/index.ts",
+    "^@stock-tracker/types$": "<rootDir>/../../../packages/types/src/index.ts",
+    "^@stock-tracker/api/trpc$": "<rootDir>/../../api/src/trpc/router.ts",
   },
   transform: {
     "^.+\\.tsx?$": [
