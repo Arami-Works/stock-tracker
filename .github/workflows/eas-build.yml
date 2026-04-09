@@ -126,7 +126,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{
               \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
-              \"text\": \"${STATUS} *stock-tracker EAS Build*\n• Platform: ${PLATFORM}\n• Profile: ${PROFILE}\n• <${LINK}|View build>\"
+              \"text\": \"${STATUS} *@stock-tracker/mobile Build*\n📱 Platform: ${PLATFORM^}\n🎯 Profile: ${PROFILE}\n🔗 <${LINK}|View on Expo>\"
             }")
           echo "Slack response: $RESPONSE"
 
@@ -196,7 +196,7 @@ jobs:
             -H "Content-Type: application/json" \
             -d "{
               \"channel\": \"${{ vars.SLACK_CHANNEL_HQ }}\",
-              \"text\": \"${STATUS} *EAS Build* — ${PLATFORM} (storybook)\n• <${LINK}|빌드 보기>\"
+              \"text\": \"${STATUS} *@stock-tracker/mobile Build* (Storybook)\n📱 Platform: ${PLATFORM^}\n🔗 <${LINK}|View on Expo>\"
             }")
           echo "Slack response: $RESPONSE"
 
