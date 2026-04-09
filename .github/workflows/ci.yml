@@ -14,7 +14,7 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
-  path-filter:
+  paths-filter:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -58,8 +58,8 @@ jobs:
               - 'apps/storybook/**'
 
   lint:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.code == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -71,8 +71,8 @@ jobs:
       - run: npm run lint
 
   type-check:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.code == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -84,8 +84,8 @@ jobs:
       - run: npm run type-check
 
   test:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.code == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     permissions:
@@ -127,8 +127,8 @@ jobs:
           fail_ci_if_error: false
 
   format:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.code == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -140,8 +140,8 @@ jobs:
       - run: npm run format:check
 
   build:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.code == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -153,8 +153,8 @@ jobs:
       - run: npm run build
 
   audit:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.deps == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.deps == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -166,8 +166,8 @@ jobs:
       - run: npm audit --audit-level=critical --omit=dev --omit=optional
 
   visual:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.stories == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.stories == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -190,8 +190,8 @@ jobs:
           onlyChanged: true
 
   prisma:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.prisma == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.prisma == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -206,8 +206,8 @@ jobs:
       - run: npx prisma format --check --schema packages/prisma/prisma/schema
 
   migration:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.migrations == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.migrations == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     services:
@@ -239,8 +239,8 @@ jobs:
           DATABASE_URL: postgresql://postgres:test@localhost:5432/test
 
   schema-check:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.subgraphs == 'true' && vars.APOLLO_GRAPH_REF != ''
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.subgraphs == 'true' && vars.APOLLO_GRAPH_REF != ''
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -267,8 +267,8 @@ jobs:
           APOLLO_GRAPH_REF: ${{ vars.APOLLO_GRAPH_REF }}
 
   docker:
-    needs: [path-filter]
-    if: needs.path-filter.outputs.dockerfiles == 'true'
+    needs: [paths-filter]
+    if: needs.paths-filter.outputs.dockerfiles == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -291,7 +291,7 @@ jobs:
     name: CI
     runs-on: ubuntu-latest
     needs:
-      - path-filter
+      - paths-filter
       - lint
       - type-check
       - test
