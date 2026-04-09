@@ -25,7 +25,7 @@ log "Cleaning up previous session..."
 cleanup
 
 log "Installing dependencies..."
-npm install --silent
+npm install --quiet
 
 log "Building shared packages..."
 npx turbo run build --filter='./packages/*' --log-prefix=none
