@@ -24,10 +24,11 @@ const dashboardRouter = router({
 const accountsRouter = router({
   list: router({
     all: protectedProcedure
+      .input(trackerAccountsListViews.all.input)
       .output(trackerAccountsListViews.all.output)
-      .query(async ({ ctx }) => {
+      .query(async ({ ctx, input }) => {
         const ctrl = trackerAccountsListControllers(ctx.prisma);
-        return ctrl.all(ctx.userId);
+        return ctrl.all(input, ctx.userId);
       }),
     create: protectedProcedure
       .input(trackerAccountsListViews.create.input)

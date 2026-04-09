@@ -4,6 +4,10 @@ import {
   paginationInputSchema,
   sortOrderSchema,
   purchaseWithAccountOutputSchema,
+  dateRangeSchema,
+  amountRangeSchema,
+  itemCategorySchema,
+  sanitizedString,
 } from "@stock-tracker/validation";
 
 export const trackerHistoryBrowseViews = {
@@ -12,6 +16,10 @@ export const trackerHistoryBrowseViews = {
       .object({
         accountId: uuidSchema.optional(),
         sortOrder: sortOrderSchema,
+        dateRange: dateRangeSchema,
+        amountRange: amountRangeSchema,
+        itemCategory: itemCategorySchema.optional(),
+        search: sanitizedString(100).optional(),
       })
       .merge(paginationInputSchema),
     output: z.object({

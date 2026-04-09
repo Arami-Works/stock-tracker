@@ -55,7 +55,7 @@ describe("tRPC API E2E", () => {
   });
 
   it("lists accounts", async () => {
-    const accounts = await caller.tracker.accounts.list.all();
+    const accounts = await caller.tracker.accounts.list.all({});
     expect(accounts.length).toBeGreaterThanOrEqual(1);
     expect(accounts.some((a) => a.id === accountId)).toBe(true);
   });
@@ -90,7 +90,7 @@ describe("tRPC API E2E", () => {
     });
     expect(deleted.success).toBe(true);
 
-    const accounts = await caller.tracker.accounts.list.all();
+    const accounts = await caller.tracker.accounts.list.all({});
     expect(accounts.some((a) => a.id === accountId)).toBe(false);
   });
 });
@@ -182,7 +182,7 @@ describe("auth enforcement E2E", () => {
   });
 
   it("throws UNAUTHORIZED for tracker.accounts.list.all without userId", async () => {
-    await expect(unauthCaller.tracker.accounts.list.all()).rejects.toThrow(
+    await expect(unauthCaller.tracker.accounts.list.all({})).rejects.toThrow(
       TRPCError,
     );
   });
@@ -293,5 +293,152 @@ describe("pagination E2E", () => {
     const allIds = allItems.map((i) => i.id);
     expect(allIds.length).toBeGreaterThanOrEqual(4);
     expect(new Set(allIds).size).toBe(allIds.length);
+  });
+});
+
+describe("filtering E2E", () => {
+  let filterAccountId: string;
+
+  beforeAll(async () => {
+    const account = await caller.tracker.accounts.list.create({
+      storeName: "Filter Test Store",
+    });
+    filterAccountId = account.id;
+
+    await caller.tracker.purchases.manage.create({
+      accountId: filterAccountId,
+      itemName: "Expensive Ring",
+      amount: 8000000,
+      purchaseDate: "2025-03-15",
+      currency: "KRW",
+      itemCategory: "반지",
+    });
+    await caller.tracker.purchases.manage.create({
+      accountId: filterAccountId,
+      itemName: "Cheap Bracelet",
+      amount: 500000,
+      purchaseDate: "2025-01-10",
+      currency: "KRW",
+      itemCategory: "브레이슬릿",
+    });
+    await caller.tracker.purchases.manage.create({
+      accountId: filterAccountId,
+      itemName: "Mid Necklace",
+      amount: 3000000,
+      purchaseDate: "2025-06-20",
+      currency: "USD",
+      itemCategory: "목걸이",
+    });
+  });
+
+  afterAll(async () => {
+    await prisma.tracker_purchases.deleteMany({
+      where: { tracker_account_id: filterAccountId },
+    });
+    await prisma.tracker_accounts.deleteMany({
+      where: { id: filterAccountId },
+    });
+  });
+
+  it("filters by date range", async () => {
+    const { items } = await caller.tracker.history.browse.list({
+      accountId: filterAccountId,
+      dateRange: { from: "2025-02-01", to: "2025-04-30" },
+    });
+    expect(items).toHaveLength(1);
+    expect(items[0].itemName).toBe("Expensive Ring");
+  });
+
+  it("filters by amount range", async () => {
+    const { items } = await caller.tracker.history.browse.list({
+      accountId: filterAccountId,
+      amountRange: { min: 1000000, max: 5000000 },
+    });
+    expect(items).toHaveLength(1);
+    expect(items[0].itemName).toBe("Mid Necklace");
+  });
+
+  it("filters by item category", async () => {
+    const { items } = await caller.tracker.history.browse.list({
+      accountId: filterAccountId,
+      itemCategory: "브레이슬릿",
+    });
+    expect(items).toHaveLength(1);
+    expect(items[0].itemName).toBe("Cheap Bracelet");
+  });
+
+  it("filters by search (store name)", async () => {
+    const { items } = await caller.tracker.history.browse.list({
+      search: "Filter Test",
+    });
+    expect(items.length).toBeGreaterThanOrEqual(3);
+    expect(
+      items.every((i) => i.trackerAccount.storeName === "Filter Test Store"),
+    ).toBe(true);
+  });
+
+  it("combines multiple filters", async () => {
+    const { items } = await caller.tracker.history.browse.list({
+      accountId: filterAccountId,
+      dateRange: { from: "2025-01-01" },
+      amountRange: { max: 1000000 },
+    });
+    expect(items).toHaveLength(1);
+    expect(items[0].itemName).toBe("Cheap Bracelet");
+  });
+
+  it("returns empty when no match", async () => {
+    const { items } = await caller.tracker.history.browse.list({
+      accountId: filterAccountId,
+      itemCategory: "시계",
+    });
+    expect(items).toHaveLength(0);
+  });
+});
+
+describe("accounts sorting E2E", () => {
+  const sortAccountIds: string[] = [];
+
+  beforeAll(async () => {
+    const a1 = await caller.tracker.accounts.list.create({
+      storeName: "Alpha Store",
+    });
+    const a2 = await caller.tracker.accounts.list.create({
+      storeName: "Zeta Store",
+    });
+    const a3 = await caller.tracker.accounts.list.create({
+      storeName: "Beta Store",
+    });
+    sortAccountIds.push(a1.id, a2.id, a3.id);
+  });
+
+  afterAll(async () => {
+    await prisma.tracker_accounts.deleteMany({
+      where: { id: { in: sortAccountIds } },
+    });
+  });
+
+  it("sorts by store_name ascending", async () => {
+    const accounts = await caller.tracker.accounts.list.all({
+      sortBy: "store_name",
+      sortOrder: "asc",
+    });
+    const sortedNames = accounts
+      .filter((a) => sortAccountIds.includes(a.id))
+      .map((a) => a.storeName);
+    expect(sortedNames).toEqual([...sortedNames].sort());
+  });
+
+  it("sorts by created_at desc by default", async () => {
+    const accounts = await caller.tracker.accounts.list.all({});
+    expect(accounts.length).toBeGreaterThanOrEqual(3);
+  });
+
+  it("searches accounts by store name", async () => {
+    const accounts = await caller.tracker.accounts.list.all({
+      search: "Zeta",
+    });
+    expect(accounts.some((a) => a.storeName === "Zeta Store")).toBe(true);
+    expect(accounts.some((a) => a.storeName === "Alpha Store")).toBe(false);
   });
 });

@@ -41,7 +41,10 @@ describe("trackerAccountsListControllers", () => {
       const prisma = makePrisma();
       const ctrl = trackerAccountsListControllers(prisma);
 
-      const result = await ctrl.all(TEST_USER_ID);
+      const result = await ctrl.all(
+        { sortBy: "created_at", sortOrder: "desc" },
+        TEST_USER_ID,
+      );
 
       expect(prisma.tracker_accounts.findMany).toHaveBeenCalledWith({
         where: { auth_user_id: TEST_USER_ID },
@@ -65,7 +68,10 @@ describe("trackerAccountsListControllers", () => {
       (prisma.tracker_accounts.findMany as any).mockResolvedValue([]);
       const ctrl = trackerAccountsListControllers(prisma);
 
-      const result = await ctrl.all(TEST_USER_ID);
+      const result = await ctrl.all(
+        { sortBy: "created_at", sortOrder: "desc" },
+        TEST_USER_ID,
+      );
 
       expect(result).toEqual([]);
     });
@@ -74,7 +80,10 @@ describe("trackerAccountsListControllers", () => {
       const prisma = makePrisma();
       const ctrl = trackerAccountsListControllers(prisma);
 
-      await ctrl.all(OTHER_USER_ID);
+      await ctrl.all(
+        { sortBy: "created_at", sortOrder: "desc" },
+        OTHER_USER_ID,
+      );
 
       expect(prisma.tracker_accounts.findMany).toHaveBeenCalledWith({
         where: { auth_user_id: OTHER_USER_ID },

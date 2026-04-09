@@ -1,10 +1,22 @@
 import type { PrismaClient } from "@stock-tracker/prisma";
 
 export const trackerAccountsListModels = (prisma: PrismaClient) => ({
-  findAll: async (userId: string) => {
+  findAll: async (params: {
+    userId: string;
+    sortBy: "store_name" | "created_at";
+    sortOrder: "asc" | "desc";
+    search?: string;
+  }) => {
+    const where: Record<string, unknown> = {
+      auth_user_id: params.userId,
+    };
+    if (params.search) {
+      where.store_name = { contains: params.search, mode: "insensitive" };
+    }
+
     return prisma.tracker_accounts.findMany({
-      where: { auth_user_id: userId },
-      orderBy: { created_at: "desc" },
+      where,
+      orderBy: { [params.sortBy]: params.sortOrder },
     });
   },
 

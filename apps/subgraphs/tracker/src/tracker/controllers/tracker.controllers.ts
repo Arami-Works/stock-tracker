@@ -12,7 +12,7 @@ export const trackerResolvers = {
       return context.trpc.tracker.dashboard.home.summary.query();
     },
     accounts: async (_: unknown, __: unknown, context: SubgraphContext) => {
-      return context.trpc.tracker.accounts.list.all.query();
+      return context.trpc.tracker.accounts.list.all.query({});
     },
     account: async (
       _: unknown,
