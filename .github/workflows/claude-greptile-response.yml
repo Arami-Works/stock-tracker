@@ -51,7 +51,7 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           github_token: ${{ steps.app-token.outputs.token }}
           allowed_bots: "greptile-apps"
-          claude_args: '--allowedTools "mcp__github,Bash(gh api:*),Bash(gh pr:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*)"'
+          claude_args: '--allowedTools "mcp__github,Edit,Bash(gh api:*),Bash(gh pr:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git add:*),Bash(git commit:*),Bash(git push:*)"'
           prompt: |
             Greptile (an automated code review bot) just submitted a review on this PR.
             Your job is to evaluate each of Greptile's inline comments and respond.
