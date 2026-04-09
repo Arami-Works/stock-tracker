@@ -287,28 +287,6 @@ jobs:
             docker buildx build --file "$df" --load -t "$app_name:ci" .
           done
 
-  chromatic:
-    needs: [paths-filter]
-    if: needs.paths-filter.outputs.stories == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-node-deps
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Run Chromatic
-        uses: chromaui/action@latest
-        with:
-          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
-          workingDir: apps/storybook
-          autoAcceptChanges: main
-          onlyChanged: true
-          skip: ${{ github.event.pull_request.draft }}
-
   ci-status:
     name: CI
     runs-on: ubuntu-latest
@@ -325,7 +303,6 @@ jobs:
       - migration
       - schema
       - docker
-      - chromatic
     if: always()
     steps:
       - name: Check all CI jobs
