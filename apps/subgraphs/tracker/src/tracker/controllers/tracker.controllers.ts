@@ -26,7 +26,8 @@ export const trackerResolvers = {
       args: { accountId?: string },
       context: SubgraphContext,
     ) => {
-      return context.trpc.tracker.history.browse.list.query(args);
+      const result = await context.trpc.tracker.history.browse.list.query(args);
+      return result.items;
     },
   },
   Mutation: {
@@ -120,9 +121,10 @@ export const trackerResolvers = {
       _: unknown,
       context: SubgraphContext,
     ) => {
-      return context.trpc.tracker.history.browse.list.query({
+      const result = await context.trpc.tracker.history.browse.list.query({
         accountId: parent.id,
       });
+      return result.items;
     },
   },
   Purchase: {
