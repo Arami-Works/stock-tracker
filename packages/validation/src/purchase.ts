@@ -1,23 +1,38 @@
 import { z } from "zod";
+import {
+  currencySchema,
+  itemCategorySchema,
+  sanitizedString,
+} from "./common.js";
+
+const purchaseDateSchema = z
+  .string()
+  .date()
+  .refine((d) => new Date(d) >= new Date("2000-01-01"), {
+    message: "Date must be on or after 2000-01-01",
+  })
+  .refine((d) => new Date(d) <= new Date(), {
+    message: "Date must not be in the future",
+  });
 
 export const purchaseCreateInputSchema = z.object({
-  itemName: z.string().min(1).max(255),
-  itemCategory: z.string().max(255).optional(),
-  amount: z.number().positive(),
-  currency: z.string().max(10).optional(),
-  purchaseDate: z.string().min(1),
-  storeLocation: z.string().max(255).optional(),
-  notes: z.string().max(1000).optional(),
+  itemName: sanitizedString(255).pipe(z.string().min(1)),
+  itemCategory: itemCategorySchema.optional(),
+  amount: z.number().positive().max(9_999_999_999.99),
+  currency: currencySchema.default("KRW"),
+  purchaseDate: purchaseDateSchema,
+  storeLocation: sanitizedString(255).optional(),
+  notes: sanitizedString(1000).optional(),
 });
 
 export const purchaseUpdateInputSchema = z.object({
-  itemName: z.string().min(1).max(255).optional(),
-  itemCategory: z.string().max(255).nullish(),
-  amount: z.number().positive().optional(),
-  currency: z.string().max(10).optional(),
-  purchaseDate: z.string().optional(),
-  storeLocation: z.string().max(255).nullish(),
-  notes: z.string().max(1000).nullish(),
+  itemName: sanitizedString(255).pipe(z.string().min(1)).optional(),
+  itemCategory: itemCategorySchema.nullish(),
+  amount: z.number().positive().max(9_999_999_999.99).optional(),
+  currency: currencySchema.optional(),
+  purchaseDate: purchaseDateSchema.optional(),
+  storeLocation: sanitizedString(255).nullish(),
+  notes: sanitizedString(1000).nullish(),
 });
 
 export const purchaseOutputSchema = z.object({
