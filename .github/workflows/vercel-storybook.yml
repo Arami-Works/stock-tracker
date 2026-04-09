@@ -89,6 +89,9 @@ jobs:
 
       - name: Set environment alias
         if: steps.env.outputs.alias != ''
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_STORYBOOK_PROJECT_ID }}
         run: |
           npx vercel alias set "${{ steps.deploy.outputs.url }}" \
             "${{ steps.env.outputs.alias }}" \
