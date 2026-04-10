@@ -1,24 +1,66 @@
 name: E2E
 
 on:
-  pull_request:
-    types: [opened, synchronize, ready_for_review]
-    paths:
-      - "apps/mobile/**"
-      - "packages/**"
+  push:
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
   packages: read
 
 env:
-  MAESTRO_VERSION: 2.4.0
-  MAESTRO_APP_URL: http://localhost:8080
+  NODE_VERSION: 20
 
 jobs:
-  maestro-web:
+  e2e-backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node-deps
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply migrations
+        run: npx prisma migrate deploy --schema packages/prisma/prisma/schema
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+      - name: Run API e2e tests
+        run: npm run test:e2e -w apps/api
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+      - name: Run subgraph e2e tests
+        run: npm run test:e2e -w apps/subgraphs/tracker
+        env:
+          DATABASE_URL: postgresql://postgres:test@localhost:5432/test
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-backend-results
+          path: "**/test-results/"
+          if-no-files-found: ignore
+          retention-days: 7
+
+  e2e-frontend:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      MAESTRO_APP_URL: http://localhost:8080
     steps:
       - uses: actions/checkout@v4
 
@@ -31,19 +73,11 @@ jobs:
             echo "has_flows=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/setup-node@v4
+      - uses: ./.github/actions/setup-node-deps
         if: steps.check-flows.outputs.has_flows == 'true'
         with:
-          node-version: 20
-          cache: npm
-          registry-url: https://npm.pkg.github.com
-          scope: "@aramiworks"
-
-      - name: Install dependencies
-        if: steps.check-flows.outputs.has_flows == 'true'
-        run: npm ci
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          node-version: ${{ env.NODE_VERSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build packages
         if: steps.check-flows.outputs.has_flows == 'true'
@@ -89,7 +123,7 @@ jobs:
           export PATH="$PATH:$HOME/.maestro/bin"
           maestro test --exclude-tags=authenticated apps/mobile/maestro/
 
-      - name: Inject E2E session into index.html
+      - name: Inject E2E session
         if: steps.check-flows.outputs.has_flows == 'true'
         env:
           E2E_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
@@ -116,7 +150,7 @@ jobs:
             echo "reachable=true" >> "$GITHUB_OUTPUT"
           else
             echo "reachable=false" >> "$GITHUB_OUTPUT"
-            echo "GraphQL backend unreachable — skipping authenticated flows (will run after INF-551 deploys backend)"
+            echo "GraphQL backend unreachable — skipping authenticated flows"
           fi
 
       - name: Run authenticated flows
@@ -135,4 +169,4 @@ jobs:
 
       - name: Skip — no Maestro flows found
         if: steps.check-flows.outputs.has_flows == 'false'
-        run: echo "No Maestro flow files found in apps/mobile/maestro/ — skipping E2E tests"
+        run: echo "No Maestro flow files found in apps/mobile/maestro/ — skipping"
