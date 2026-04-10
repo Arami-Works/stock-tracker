@@ -1,4 +1,4 @@
-name: claude
+name: respond
 
 on:
   pull_request:
