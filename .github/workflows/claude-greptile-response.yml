@@ -19,7 +19,6 @@ jobs:
       issues: write
       id-token: write
       actions: read
-      statuses: write
     steps:
       - name: Check if Greptile review
         id: is-greptile
@@ -32,33 +31,12 @@ jobs:
           fi
 
       - name: Generate GitHub App token
+        if: steps.is-greptile.outputs.is_greptile == 'true'
         id: app-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.CLAUDE_ARAMI_APP_ID }}
           private-key: ${{ secrets.CLAUDE_ARAMI_PRIVATE_KEY }}
-
-      - name: Set status — no review pending
-        if: steps.is-greptile.outputs.is_greptile != 'true'
-        run: |
-          gh api repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
-            -f state=success \
-            -f context="Greptile Response" \
-            -f description="No Greptile review to process" \
-            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-
-      - name: Set status — pending response
-        if: steps.is-greptile.outputs.is_greptile == 'true'
-        run: |
-          gh api repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
-            -f state=failure \
-            -f context="Greptile Response" \
-            -f description="Pending Claude response to Greptile review" \
-            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Checkout repository
         if: steps.is-greptile.outputs.is_greptile == 'true'
@@ -76,17 +54,6 @@ jobs:
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Set status — skipped
-        if: steps.is-greptile.outputs.is_greptile == 'true' && steps.skip-check.outputs.skip == 'true'
-        run: |
-          gh api repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
-            -f state=success \
-            -f context="Greptile Response" \
-            -f description="Skipped — last commit from Claude" \
-            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
 
       - name: Run Claude Code
         if: steps.is-greptile.outputs.is_greptile == 'true' && steps.skip-check.outputs.skip != 'true'
@@ -139,25 +106,3 @@ jobs:
             - If there are no actionable comments (all praise or LGTM), post a one-line summary: "Greptile review: no actionable items."
             - Keep replies concise. No preamble, no emoji.
             - If you are unsure whether a fix is correct, reply asking the PR author to verify instead of making the change.
-
-      - name: Set status — responded
-        if: steps.is-greptile.outputs.is_greptile == 'true' && steps.skip-check.outputs.skip != 'true'
-        run: |
-          gh api repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
-            -f state=success \
-            -f context="Greptile Response" \
-            -f description="Claude responded to Greptile review" \
-            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-
-      - name: Set status — failed
-        if: failure() && steps.is-greptile.outputs.is_greptile == 'true'
-        run: |
-          gh api repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }} \
-            -f state=failure \
-            -f context="Greptile Response" \
-            -f description="Claude failed to respond — check workflow logs" \
-            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-        env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
