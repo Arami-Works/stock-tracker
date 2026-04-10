@@ -4,6 +4,7 @@ import {
   useContext,
   useCallback,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
@@ -18,6 +19,11 @@ const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
 const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
 const GOOGLE_ANDROID_CLIENT_ID =
   process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
+
+/** Google iOS/Android OAuth requires {reversed_client_id}:/oauthredirect */
+function reversedClientId(clientId: string): string {
+  return clientId.split(".").reverse().join(".");
+}
 
 interface AuthSignInGmailOauthControllersOutput {
   signInWithGoogle: () => void;
@@ -35,11 +41,32 @@ export const AuthSignInGmailOauthControllers =
   memo<AuthSignInGmailOauthControllersProps>(({ children }) => {
     const [isSigningIn, setIsSigningIn] = useState(false);
 
-    const [_request, response, promptAsync] = Google.useIdTokenAuthRequest({
-      clientId: GOOGLE_WEB_CLIENT_ID,
-      iosClientId: GOOGLE_IOS_CLIENT_ID,
-      androidClientId: GOOGLE_ANDROID_CLIENT_ID,
-    });
+    const redirectUriOptions = useMemo(
+      () =>
+        Platform.select({
+          ios: GOOGLE_IOS_CLIENT_ID
+            ? {
+                native: `${reversedClientId(GOOGLE_IOS_CLIENT_ID)}:/oauthredirect`,
+              }
+            : {},
+          android: GOOGLE_ANDROID_CLIENT_ID
+            ? {
+                native: `${reversedClientId(GOOGLE_ANDROID_CLIENT_ID)}:/oauthredirect`,
+              }
+            : {},
+          default: {},
+        }) ?? {},
+      [],
+    );
+
+    const [_request, response, promptAsync] = Google.useIdTokenAuthRequest(
+      {
+        clientId: GOOGLE_WEB_CLIENT_ID,
+        iosClientId: GOOGLE_IOS_CLIENT_ID,
+        androidClientId: GOOGLE_ANDROID_CLIENT_ID,
+      },
+      redirectUriOptions,
+    );
 
     useEffect(() => {
       if (response?.type === "success") {
