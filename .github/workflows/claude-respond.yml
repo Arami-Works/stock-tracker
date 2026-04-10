@@ -1,4 +1,4 @@
-name: greptile-response
+name: claude
 
 on:
   pull_request:
