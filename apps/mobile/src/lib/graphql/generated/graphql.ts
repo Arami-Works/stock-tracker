@@ -39,6 +39,16 @@ export type Account = {
   storeName: Scalars["String"]["output"];
 };
 
+export enum AccountSortBy {
+  CreatedAt = "created_at",
+  StoreName = "store_name",
+}
+
+export type AmountRangeInput = {
+  max?: InputMaybe<Scalars["Float"]["input"]>;
+  min?: InputMaybe<Scalars["Float"]["input"]>;
+};
+
 export type CreateAccountInput = {
   notes?: InputMaybe<Scalars["String"]["input"]>;
   saName?: InputMaybe<Scalars["String"]["input"]>;
@@ -61,6 +71,11 @@ export type DashboardSummary = {
   totalAccounts: Scalars["Int"]["output"];
   totalPurchases: Scalars["Int"]["output"];
   totalSpent: Scalars["Float"]["output"];
+};
+
+export type DateRangeInput = {
+  from?: InputMaybe<Scalars["String"]["input"]>;
+  to?: InputMaybe<Scalars["String"]["input"]>;
 };
 
 export type Mutation = {
@@ -128,9 +143,25 @@ export type QueryAccountArgs = {
   id: Scalars["ID"]["input"];
 };
 
+export type QueryAccountsArgs = {
+  search?: InputMaybe<Scalars["String"]["input"]>;
+  sortBy?: InputMaybe<AccountSortBy>;
+  sortOrder?: InputMaybe<SortOrder>;
+};
+
 export type QueryPurchasesArgs = {
   accountId?: InputMaybe<Scalars["ID"]["input"]>;
+  amountRange?: InputMaybe<AmountRangeInput>;
+  dateRange?: InputMaybe<DateRangeInput>;
+  itemCategory?: InputMaybe<Scalars["String"]["input"]>;
+  search?: InputMaybe<Scalars["String"]["input"]>;
+  sortOrder?: InputMaybe<SortOrder>;
 };
+
+export enum SortOrder {
+  Asc = "asc",
+  Desc = "desc",
+}
 
 export type UpdateAccountInput = {
   id: Scalars["ID"]["input"];
@@ -318,6 +349,10 @@ export type AccountQuery = {
 
 export type PurchasesQueryVariables = Exact<{
   accountId?: InputMaybe<Scalars["ID"]["input"]>;
+  sortOrder?: InputMaybe<SortOrder>;
+  dateRange?: InputMaybe<DateRangeInput>;
+  itemCategory?: InputMaybe<Scalars["String"]["input"]>;
+  search?: InputMaybe<Scalars["String"]["input"]>;
 }>;
 
 export type PurchasesQuery = {
@@ -892,6 +927,44 @@ export const PurchasesDocument = {
           },
           type: { kind: "NamedType", name: { kind: "Name", value: "ID" } },
         },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortOrder" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "SortOrder" },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "dateRange" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "DateRangeInput" },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "itemCategory" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "search" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
       ],
       selectionSet: {
         kind: "SelectionSet",
@@ -906,6 +979,38 @@ export const PurchasesDocument = {
                 value: {
                   kind: "Variable",
                   name: { kind: "Name", value: "accountId" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortOrder" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortOrder" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "dateRange" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "dateRange" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "itemCategory" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "itemCategory" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "search" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "search" },
                 },
               },
             ],

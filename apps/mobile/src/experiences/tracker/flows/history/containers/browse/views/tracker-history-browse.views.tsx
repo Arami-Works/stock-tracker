@@ -4,13 +4,16 @@ import { useTranslation } from "react-i18next";
 import type {
   TrackerHistoryBrowseScreenState,
   DateFilter,
+  ItemCategory,
   PurchaseHistoryItem,
 } from "../models/tracker-history-browse.type";
 import { TrackerHistoryBrowseDateFilterChipsView } from "./tracker-history-browse-dateFilterChips.view";
+import { TrackerHistoryBrowseCategoryFilterChipsView } from "./tracker-history-browse-categoryFilterChips.view";
 import { TrackerHistoryBrowsePurchaseRowView } from "./tracker-history-browse-purchaseRow.view";
 import { TrackerHistoryBrowseEmptyStateView } from "./tracker-history-browse-emptyState.view";
 import { TrackerHistoryBrowseErrorStateView } from "./tracker-history-browse-errorState.view";
 import { TrackerHistoryBrowseSkeletonCardView } from "./tracker-history-browse-skeletonCard.view";
+import { SearchBar } from "@/shared/components/search-bar";
 import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_PURCHASES: PurchaseHistoryItem[] = [
@@ -51,6 +54,10 @@ type TrackerHistoryBrowseViewsProps = {
   onFilterSelect?: (filter: DateFilter) => void;
   onRetry?: () => void;
   onDeletePurchase?: (id: string) => Promise<void>;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  selectedCategory?: ItemCategory | null;
+  onCategorySelect?: (category: ItemCategory | null) => void;
 };
 
 export const TrackerHistoryBrowseViews = memo(
@@ -59,6 +66,10 @@ export const TrackerHistoryBrowseViews = memo(
     purchases = STORYBOOK_PURCHASES,
     onFilterSelect,
     onDeletePurchase,
+    searchQuery = "",
+    onSearchChange,
+    selectedCategory = null,
+    onCategorySelect,
   }: TrackerHistoryBrowseViewsProps) => {
     const { t } = useTranslation("tracker");
     const scrollContent: Record<TrackerHistoryBrowseScreenState, ReactNode> = {
@@ -114,11 +125,30 @@ export const TrackerHistoryBrowseViews = memo(
           </Text>
         </View>
         {screenState !== "error" && (
-          <View style={styles.filterBar} testID="date-filter-bar">
-            <TrackerHistoryBrowseDateFilterChipsView
-              onSelect={onFilterSelect}
-            />
-          </View>
+          <>
+            {onSearchChange && (
+              <SearchBar
+                value={searchQuery}
+                onChangeText={onSearchChange}
+                placeholder={t(
+                  "history.browse.searchPlaceholder",
+                  "부티크 검색...",
+                )}
+                testID="history-browse-search"
+              />
+            )}
+            <View style={styles.filterBar} testID="date-filter-bar">
+              <TrackerHistoryBrowseDateFilterChipsView
+                onSelect={onFilterSelect}
+              />
+            </View>
+            <View style={styles.categoryBar} testID="category-filter-bar">
+              <TrackerHistoryBrowseCategoryFilterChipsView
+                selected={selectedCategory}
+                onSelect={onCategorySelect}
+              />
+            </View>
+          </>
         )}
         <ScrollView
           style={styles.scrollView}
@@ -155,6 +185,9 @@ const styles = StyleSheet.create({
   },
   filterBar: {
     paddingHorizontal: 20,
+    paddingBottom: 8,
+  },
+  categoryBar: {
     paddingBottom: 12,
   },
   scrollView: {

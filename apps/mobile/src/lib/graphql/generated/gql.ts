@@ -21,7 +21,7 @@ type Documents = {
   "\n  query Dashboard {\n    dashboard {\n      totalAccounts\n      totalPurchases\n      totalSpent\n    }\n    accounts {\n      id\n      storeName\n      saName\n      purchases {\n        id\n        amount\n      }\n    }\n  }\n": typeof types.DashboardDocument;
   "\n  query Accounts {\n    accounts {\n      id\n      storeName\n      saName\n      notes\n      createdAt\n      purchases {\n        id\n        itemName\n        amount\n        purchaseDate\n      }\n    }\n  }\n": typeof types.AccountsDocument;
   "\n  query Account($id: ID!) {\n    account(id: $id) {\n      id\n      storeName\n      saName\n      notes\n      createdAt\n      purchases {\n        id\n        itemName\n        itemCategory\n        amount\n        currency\n        purchaseDate\n        storeLocation\n        notes\n        createdAt\n      }\n    }\n  }\n": typeof types.AccountDocument;
-  "\n  query Purchases($accountId: ID) {\n    purchases(accountId: $accountId) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n": typeof types.PurchasesDocument;
+  "\n  query Purchases(\n    $accountId: ID\n    $sortOrder: SortOrder\n    $dateRange: DateRangeInput\n    $itemCategory: String\n    $search: String\n  ) {\n    purchases(\n      accountId: $accountId\n      sortOrder: $sortOrder\n      dateRange: $dateRange\n      itemCategory: $itemCategory\n      search: $search\n    ) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n": typeof types.PurchasesDocument;
 };
 const documents: Documents = {
   "mutation UpdateAccount($input: UpdateAccountInput!) {\n  updateAccount(input: $input) {\n    id\n    storeName\n    saName\n    notes\n    createdAt\n  }\n}\n\nmutation DeleteAccount($id: ID!) {\n  deleteAccount(id: $id)\n}\n\nmutation CreatePurchase($input: CreatePurchaseInput!) {\n  createPurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation UpdatePurchase($input: UpdatePurchaseInput!) {\n  updatePurchase(input: $input) {\n    id\n    itemName\n    itemCategory\n    amount\n    currency\n    purchaseDate\n    storeLocation\n    notes\n    createdAt\n  }\n}\n\nmutation DeletePurchase($id: ID!) {\n  deletePurchase(id: $id)\n}":
@@ -38,7 +38,7 @@ const documents: Documents = {
     types.AccountsDocument,
   "\n  query Account($id: ID!) {\n    account(id: $id) {\n      id\n      storeName\n      saName\n      notes\n      createdAt\n      purchases {\n        id\n        itemName\n        itemCategory\n        amount\n        currency\n        purchaseDate\n        storeLocation\n        notes\n        createdAt\n      }\n    }\n  }\n":
     types.AccountDocument,
-  "\n  query Purchases($accountId: ID) {\n    purchases(accountId: $accountId) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n":
+  "\n  query Purchases(\n    $accountId: ID\n    $sortOrder: SortOrder\n    $dateRange: DateRangeInput\n    $itemCategory: String\n    $search: String\n  ) {\n    purchases(\n      accountId: $accountId\n      sortOrder: $sortOrder\n      dateRange: $dateRange\n      itemCategory: $itemCategory\n      search: $search\n    ) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n":
     types.PurchasesDocument,
 };
 
@@ -102,8 +102,8 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
-  source: "\n  query Purchases($accountId: ID) {\n    purchases(accountId: $accountId) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n",
-): (typeof documents)["\n  query Purchases($accountId: ID) {\n    purchases(accountId: $accountId) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n"];
+  source: "\n  query Purchases(\n    $accountId: ID\n    $sortOrder: SortOrder\n    $dateRange: DateRangeInput\n    $itemCategory: String\n    $search: String\n  ) {\n    purchases(\n      accountId: $accountId\n      sortOrder: $sortOrder\n      dateRange: $dateRange\n      itemCategory: $itemCategory\n      search: $search\n    ) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n",
+): (typeof documents)["\n  query Purchases(\n    $accountId: ID\n    $sortOrder: SortOrder\n    $dateRange: DateRangeInput\n    $itemCategory: String\n    $search: String\n  ) {\n    purchases(\n      accountId: $accountId\n      sortOrder: $sortOrder\n      dateRange: $dateRange\n      itemCategory: $itemCategory\n      search: $search\n    ) {\n      id\n      itemName\n      itemCategory\n      amount\n      currency\n      purchaseDate\n      storeLocation\n      notes\n      createdAt\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
