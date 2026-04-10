@@ -1,6 +1,14 @@
 name: Schema Publish
 
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "develop"
+        type: choice
+        options: [develop, staging, production]
   push:
     branches: [main]
     paths:
@@ -43,7 +51,15 @@ jobs:
         run: |
           BASE_REF="${{ vars.APOLLO_GRAPH_REF }}"
           GRAPH_ID="${BASE_REF%%@*}"
-          echo "ref=${GRAPH_ID}@current" >> "$GITHUB_OUTPUT"
+          DISPATCH_ENV="${{ inputs.environment }}"
+          BRANCH="${{ github.ref_name }}"
+          if [ -n "$DISPATCH_ENV" ] && [ "$DISPATCH_ENV" != "production" ]; then
+            echo "ref=${GRAPH_ID}@${DISPATCH_ENV}" >> "$GITHUB_OUTPUT"
+          elif [ "$BRANCH" = "main" ]; then
+            echo "ref=${GRAPH_ID}@current" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=${GRAPH_ID}@${BRANCH}" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Publish schema
         run: |
