@@ -8,12 +8,7 @@ import {
 } from "react";
 import { useRouter } from "expo-router";
 import { useSuspenseQuery, useMutation } from "@apollo/client/react";
-import {
-  ACCOUNT_QUERY,
-  DASHBOARD_QUERY,
-  ACCOUNTS_QUERY,
-  PURCHASES_QUERY,
-} from "@/lib/graphql/queries";
+import { ACCOUNT_QUERY } from "@/lib/graphql/queries";
 import {
   UpdateAccountDocument,
   DeleteAccountDocument,
@@ -44,19 +39,19 @@ export const TrackerAccountsDetailControllers =
 
     const accountRefetchQueries = [
       { query: ACCOUNT_QUERY, variables: { id: accountId } },
-      { query: DASHBOARD_QUERY },
-      { query: ACCOUNTS_QUERY },
+      "Dashboard" as const,
+      "Accounts" as const,
     ];
     const purchaseRefetchQueries = [
       ...accountRefetchQueries,
-      { query: PURCHASES_QUERY },
+      "Purchases" as const,
     ];
 
     const [updateAccountMutation] = useMutation(UpdateAccountDocument, {
       refetchQueries: accountRefetchQueries,
     });
     const [deleteAccountMutation] = useMutation(DeleteAccountDocument, {
-      refetchQueries: [{ query: DASHBOARD_QUERY }, { query: ACCOUNTS_QUERY }],
+      refetchQueries: ["Dashboard", "Accounts"],
     });
     const [createPurchaseMutation] = useMutation(CreatePurchaseDocument, {
       refetchQueries: purchaseRefetchQueries,

@@ -298,7 +298,11 @@ export type DashboardQuery = {
   }>;
 };
 
-export type AccountsQueryVariables = Exact<{ [key: string]: never }>;
+export type AccountsQueryVariables = Exact<{
+  sortBy?: InputMaybe<AccountSortBy>;
+  sortOrder?: InputMaybe<SortOrder>;
+  search?: InputMaybe<Scalars["String"]["input"]>;
+}>;
 
 export type AccountsQuery = {
   __typename?: "Query";
@@ -779,12 +783,70 @@ export const AccountsDocument = {
       kind: "OperationDefinition",
       operation: "query",
       name: { kind: "Name", value: "Accounts" },
+      variableDefinitions: [
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortBy" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "AccountSortBy" },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "sortOrder" },
+          },
+          type: {
+            kind: "NamedType",
+            name: { kind: "Name", value: "SortOrder" },
+          },
+        },
+        {
+          kind: "VariableDefinition",
+          variable: {
+            kind: "Variable",
+            name: { kind: "Name", value: "search" },
+          },
+          type: { kind: "NamedType", name: { kind: "Name", value: "String" } },
+        },
+      ],
       selectionSet: {
         kind: "SelectionSet",
         selections: [
           {
             kind: "Field",
             name: { kind: "Name", value: "accounts" },
+            arguments: [
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortBy" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortBy" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "sortOrder" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "sortOrder" },
+                },
+              },
+              {
+                kind: "Argument",
+                name: { kind: "Name", value: "search" },
+                value: {
+                  kind: "Variable",
+                  name: { kind: "Name", value: "search" },
+                },
+              },
+            ],
             selectionSet: {
               kind: "SelectionSet",
               selections: [

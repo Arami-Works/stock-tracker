@@ -8,7 +8,7 @@ import {
 } from "react";
 import { useRouter } from "expo-router";
 import { useSuspenseQuery, useMutation } from "@apollo/client/react";
-import { DASHBOARD_QUERY, ACCOUNTS_QUERY } from "@/lib/graphql/queries";
+import { DASHBOARD_QUERY } from "@/lib/graphql/queries";
 import { CreateAccountDocument } from "@/lib/graphql/generated/graphql";
 import { useTrackerDashboardHomeLifecycle } from "../lifecycles";
 import type {
@@ -32,7 +32,7 @@ export const TrackerDashboardHomeControllers =
     useTrackerDashboardHomeLifecycle(refetch);
 
     const [createAccountMutation] = useMutation(CreateAccountDocument, {
-      refetchQueries: [{ query: DASHBOARD_QUERY }, { query: ACCOUNTS_QUERY }],
+      refetchQueries: ["Dashboard", "Accounts"],
     });
 
     const onCreateAccount = useCallback(

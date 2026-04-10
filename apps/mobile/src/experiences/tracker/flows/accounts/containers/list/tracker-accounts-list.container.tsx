@@ -16,6 +16,10 @@ const ConnectedViews = memo(() => {
       onSaPress={controllers.onSaPress}
       onCreateAccount={controllers.onCreateAccount}
       onDeleteAccount={controllers.onDeleteAccount}
+      searchQuery={controllers.searchQuery}
+      onSearchChange={controllers.onSearchChange}
+      sortBy={controllers.sortBy}
+      onSortByToggle={controllers.onSortByToggle}
     />
   );
 });

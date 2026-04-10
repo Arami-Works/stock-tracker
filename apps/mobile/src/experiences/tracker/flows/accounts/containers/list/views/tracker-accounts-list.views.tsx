@@ -4,12 +4,15 @@ import { useTranslation } from "react-i18next";
 import type {
   TrackerAccountsListScreenState,
   SaAccountListItem,
+  AccountSortBy,
 } from "../models/tracker-accounts-list.type";
 import { TrackerAccountsListSaListItemView } from "./tracker-accounts-list-saListItem.view";
 import { TrackerAccountsListEmptyStateView } from "./tracker-accounts-list-emptyState.view";
 import { TrackerAccountsListErrorStateView } from "./tracker-accounts-list-errorState.view";
 import { TrackerAccountsListSkeletonCardView } from "./tracker-accounts-list-skeletonCard.view";
+import { TrackerAccountsListSortToggleView } from "./tracker-accounts-list-sortToggle.view";
 import { TrackerAccountFormModalView } from "@/experiences/tracker/views/tracker-accountFormModal.view";
+import { SearchBar } from "@/shared/components/search-bar";
 import { showConfirmDialog } from "@/shared/components/confirm-dialog";
 
 const STORYBOOK_ACCOUNTS: SaAccountListItem[] = [
@@ -66,6 +69,10 @@ type TrackerAccountsListViewsProps = {
     notes?: string;
   }) => Promise<void>;
   onDeleteAccount?: (id: string) => Promise<void>;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
+  sortBy?: AccountSortBy;
+  onSortByToggle?: () => void;
 };
 
 export const TrackerAccountsListViews = memo(
@@ -75,6 +82,10 @@ export const TrackerAccountsListViews = memo(
     onSaPress,
     onCreateAccount,
     onDeleteAccount,
+    searchQuery = "",
+    onSearchChange,
+    sortBy = "created_at",
+    onSortByToggle,
   }: TrackerAccountsListViewsProps) => {
     const { t } = useTranslation("tracker");
     const [showAccountModal, setShowAccountModal] = useState(false);
@@ -131,6 +142,29 @@ export const TrackerAccountsListViews = memo(
             {t("accounts.list.title")}
           </Text>
         </View>
+        {screenState !== "error" && (
+          <>
+            {onSearchChange && (
+              <SearchBar
+                value={searchQuery}
+                onChangeText={onSearchChange}
+                placeholder={t(
+                  "accounts.list.searchPlaceholder",
+                  "부티크 검색...",
+                )}
+                testID="accounts-list-search"
+              />
+            )}
+            {onSortByToggle && (
+              <View style={styles.sortBar} testID="sort-toggle-bar">
+                <TrackerAccountsListSortToggleView
+                  sortBy={sortBy}
+                  onToggle={onSortByToggle}
+                />
+              </View>
+            )}
+          </>
+        )}
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
@@ -181,6 +215,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 20,
     color: "#1A1A1A",
+  },
+  sortBar: {
+    paddingBottom: 12,
   },
   scrollView: {
     flex: 1,

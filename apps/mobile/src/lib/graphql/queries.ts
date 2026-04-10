@@ -20,8 +20,12 @@ export const DASHBOARD_QUERY = graphql(`
 `);
 
 export const ACCOUNTS_QUERY = graphql(`
-  query Accounts {
-    accounts {
+  query Accounts(
+    $sortBy: AccountSortBy
+    $sortOrder: SortOrder
+    $search: String
+  ) {
+    accounts(sortBy: $sortBy, sortOrder: $sortOrder, search: $search) {
       id
       storeName
       saName
