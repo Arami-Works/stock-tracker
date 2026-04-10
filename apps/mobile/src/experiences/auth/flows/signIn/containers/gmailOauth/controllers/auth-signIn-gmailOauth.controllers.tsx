@@ -15,6 +15,14 @@ import { supabase } from "../../../../../../../lib/supabase";
 WebBrowser.maybeCompleteAuthSession();
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
+const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
+const GOOGLE_ANDROID_CLIENT_ID =
+  process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
+
+/** Derives {reversed_client_id}:/oauthredirect for native OAuth clients */
+function nativeRedirectUri(clientId: string): string {
+  return `${clientId.split(".").reverse().join(".")}:/oauthredirect`;
+}
 
 interface AuthSignInGmailOauthControllersOutput {
   signInWithGoogle: () => void;
@@ -32,12 +40,26 @@ export const AuthSignInGmailOauthControllers =
   memo<AuthSignInGmailOauthControllersProps>(({ children }) => {
     const [isSigningIn, setIsSigningIn] = useState(false);
 
-    // Use only the web client ID across all platforms.
-    // expo-auth-session opens Google OAuth in a browser — platform-specific
-    // client IDs are for the native Google Sign-In SDK, not expo-auth-session.
-    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-      clientId: GOOGLE_WEB_CLIENT_ID,
-    });
+    // iOS: iOS OAuth client + reversed client ID redirect URI.
+    // Android: Android OAuth client + reversed client ID redirect URI.
+    // Both native clients must have "Custom URI scheme" enabled in Google Console.
+    // Web: web client ID with http://localhost:8094.
+    const platform = Platform.OS;
+    const nativeClientId =
+      platform === "ios"
+        ? GOOGLE_IOS_CLIENT_ID
+        : platform === "android"
+          ? GOOGLE_ANDROID_CLIENT_ID
+          : undefined;
+    const [request, response, promptAsync] = Google.useIdTokenAuthRequest(
+      {
+        clientId: GOOGLE_WEB_CLIENT_ID,
+        iosClientId: platform === "ios" ? GOOGLE_IOS_CLIENT_ID : undefined,
+        androidClientId:
+          platform === "android" ? GOOGLE_ANDROID_CLIENT_ID : undefined,
+      },
+      nativeClientId ? { native: nativeRedirectUri(nativeClientId) } : {},
+    );
 
     useEffect(() => {
       if (response?.type !== "success") return;
@@ -52,9 +74,10 @@ export const AuthSignInGmailOauthControllers =
         if (!token && code) {
           // Native uses authorization code flow — exchange code for id_token.
           // PKCE verifier proves identity without requiring a client secret.
+          const clientId = nativeClientId ?? GOOGLE_WEB_CLIENT_ID;
           const params = new URLSearchParams({
             code,
-            client_id: GOOGLE_WEB_CLIENT_ID,
+            client_id: clientId,
             redirect_uri: request?.redirectUri ?? "",
             grant_type: "authorization_code",
             code_verifier: request?.codeVerifier ?? "",

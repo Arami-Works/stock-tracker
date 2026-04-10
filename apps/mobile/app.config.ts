@@ -21,6 +21,17 @@ const appEnv = process.env.APP_ENV ?? "local";
 const suffix = ENV_SUFFIX[appEnv] ?? ".local";
 const nameSuffix = ENV_NAME[appEnv] ?? " (Local)";
 
+function reverseClientId(clientId?: string): string | undefined {
+  return clientId ? clientId.split(".").reverse().join(".") : undefined;
+}
+
+const iosOAuthScheme = reverseClientId(
+  process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
+);
+const androidOAuthScheme = reverseClientId(
+  process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
+);
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   owner: "aramiworks",
@@ -32,12 +43,26 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: `so.arami.stocktracker.app${suffix}`,
+    infoPlist: {
+      CFBundleURLTypes: iosOAuthScheme
+        ? [{ CFBundleURLSchemes: [iosOAuthScheme] }]
+        : [],
+    },
   },
   android: {
     adaptiveIcon: {
       backgroundColor: "#FF2D55",
     },
     package: `so.arami.stocktracker.app${suffix}`,
+    intentFilters: androidOAuthScheme
+      ? [
+          {
+            action: "VIEW",
+            data: [{ scheme: androidOAuthScheme }],
+            category: ["BROWSABLE", "DEFAULT"],
+          },
+        ]
+      : [],
   },
   web: {
     bundler: "metro",
