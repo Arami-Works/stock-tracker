@@ -122,7 +122,14 @@ export const trackerMocks: MockedResponse[] = [
     },
   },
   {
-    request: { query: ACCOUNTS_QUERY as unknown as DocumentNode },
+    request: {
+      query: ACCOUNTS_QUERY as unknown as DocumentNode,
+      variables: {
+        sortBy: "created_at",
+        sortOrder: "desc",
+        search: undefined,
+      },
+    },
     result: {
       data: {
         accounts: MOCK_ACCOUNTS,
