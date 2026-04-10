@@ -2,6 +2,13 @@ name: Backend Docker
 
 on:
   workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        default: "develop"
+        type: choice
+        options: [develop, staging, production]
   push:
     branches: [main]
     paths:
@@ -56,7 +63,10 @@ jobs:
           SHA="${{ github.sha }}"
           BRANCH="${{ github.ref_name }}"
           IMAGE="ghcr.io/${{ github.repository_owner }}/stock-tracker-${{ matrix.service }}"
-          if [ "$BRANCH" = "main" ]; then
+          DISPATCH_ENV="${{ inputs.environment }}"
+          if [ -n "$DISPATCH_ENV" ]; then
+            ENV_TAG="$DISPATCH_ENV"
+          elif [ "$BRANCH" = "main" ]; then
             ENV_TAG="latest"
           else
             ENV_TAG="$BRANCH"
@@ -99,8 +109,11 @@ jobs:
       - name: Resolve Railway environment
         id: env
         run: |
+          DISPATCH_ENV="${{ inputs.environment }}"
           BRANCH="${{ github.ref_name }}"
-          if [ "$BRANCH" = "main" ]; then
+          if [ -n "$DISPATCH_ENV" ]; then
+            echo "name=$DISPATCH_ENV" >> "$GITHUB_OUTPUT"
+          elif [ "$BRANCH" = "main" ]; then
             echo "name=production" >> "$GITHUB_OUTPUT"
           else
             echo "name=$BRANCH" >> "$GITHUB_OUTPUT"
