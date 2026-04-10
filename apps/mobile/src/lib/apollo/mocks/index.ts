@@ -1,4 +1,5 @@
 import type { MockedResponse } from "@apollo/client/testing";
+import type { DocumentNode } from "graphql";
 import {
   DASHBOARD_QUERY,
   ACCOUNTS_QUERY,
@@ -100,7 +101,7 @@ const ALL_PURCHASES = MOCK_ACCOUNTS.flatMap((acc) =>
 
 export const trackerMocks: MockedResponse[] = [
   {
-    request: { query: DASHBOARD_QUERY },
+    request: { query: DASHBOARD_QUERY as unknown as DocumentNode },
     result: {
       data: {
         dashboard: {
@@ -121,7 +122,14 @@ export const trackerMocks: MockedResponse[] = [
     },
   },
   {
-    request: { query: ACCOUNTS_QUERY },
+    request: {
+      query: ACCOUNTS_QUERY as unknown as DocumentNode,
+      variables: {
+        sortBy: "created_at",
+        sortOrder: "desc",
+        search: undefined,
+      },
+    },
     result: {
       data: {
         accounts: MOCK_ACCOUNTS,
@@ -129,7 +137,10 @@ export const trackerMocks: MockedResponse[] = [
     },
   },
   {
-    request: { query: ACCOUNT_QUERY, variables: { id: "acc-1" } },
+    request: {
+      query: ACCOUNT_QUERY as unknown as DocumentNode,
+      variables: { id: "acc-1" },
+    },
     result: {
       data: {
         account: MOCK_ACCOUNTS[0],
@@ -137,7 +148,7 @@ export const trackerMocks: MockedResponse[] = [
     },
   },
   {
-    request: { query: PURCHASES_QUERY },
+    request: { query: PURCHASES_QUERY as unknown as DocumentNode },
     result: {
       data: {
         purchases: ALL_PURCHASES,

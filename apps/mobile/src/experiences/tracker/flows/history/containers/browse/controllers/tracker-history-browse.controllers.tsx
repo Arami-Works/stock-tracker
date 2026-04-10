@@ -8,11 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { useSuspenseQuery, useMutation } from "@apollo/client/react";
-import {
-  PURCHASES_QUERY,
-  DASHBOARD_QUERY,
-  ACCOUNTS_QUERY,
-} from "@/lib/graphql/queries";
+import { PURCHASES_QUERY } from "@/lib/graphql/queries";
 import { DeletePurchaseDocument } from "@/lib/graphql/generated/graphql";
 import { useTrackerHistoryBrowseLifecycle } from "../lifecycles";
 import { useDebounce } from "@/shared/hooks/use-debounce";
@@ -71,11 +67,7 @@ export const TrackerHistoryBrowseControllers =
     useTrackerHistoryBrowseLifecycle(refetch);
 
     const [deletePurchaseMutation] = useMutation(DeletePurchaseDocument, {
-      refetchQueries: [
-        { query: PURCHASES_QUERY },
-        { query: DASHBOARD_QUERY },
-        { query: ACCOUNTS_QUERY },
-      ],
+      refetchQueries: ["Purchases", "Dashboard", "Accounts"],
     });
 
     const onDeletePurchase = useCallback(
