@@ -1,4 +1,4 @@
-name: Greptile Response
+name: greptile-response
 
 on:
   pull_request:
