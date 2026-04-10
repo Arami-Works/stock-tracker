@@ -21,14 +21,6 @@ const appEnv = process.env.APP_ENV ?? "local";
 const suffix = ENV_SUFFIX[appEnv] ?? ".local";
 const nameSuffix = ENV_NAME[appEnv] ?? " (Local)";
 
-/** Google OAuth redirects use {reversed_client_id}:/ as the URL scheme */
-function reversedClientId(clientId: string): string {
-  return clientId.split(".").reverse().join(".");
-}
-
-const googleIosClientId = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
-const googleAndroidClientId = process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
-
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   owner: "aramiworks",
@@ -36,11 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: "stock-tracker",
   version: "0.0.1",
   orientation: "portrait",
-  scheme: [
-    `so.arami.stocktracker.app${suffix}`,
-    ...(googleIosClientId ? [reversedClientId(googleIosClientId)] : []),
-    ...(googleAndroidClientId ? [reversedClientId(googleAndroidClientId)] : []),
-  ],
+  scheme: `so.arami.stocktracker.app${suffix}`,
   ios: {
     supportsTablet: false,
     bundleIdentifier: `so.arami.stocktracker.app${suffix}`,

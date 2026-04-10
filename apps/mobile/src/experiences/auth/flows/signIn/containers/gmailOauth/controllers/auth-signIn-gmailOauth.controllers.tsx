@@ -4,7 +4,6 @@ import {
   useContext,
   useCallback,
   useEffect,
-  useMemo,
   useState,
   type ReactNode,
 } from "react";
@@ -16,14 +15,6 @@ import { supabase } from "../../../../../../../lib/supabase";
 WebBrowser.maybeCompleteAuthSession();
 
 const GOOGLE_WEB_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!;
-const GOOGLE_IOS_CLIENT_ID = process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID;
-const GOOGLE_ANDROID_CLIENT_ID =
-  process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID;
-
-/** Google iOS/Android OAuth requires {reversed_client_id}:/oauthredirect */
-function reversedClientId(clientId: string): string {
-  return clientId.split(".").reverse().join(".");
-}
 
 interface AuthSignInGmailOauthControllersOutput {
   signInWithGoogle: () => void;
@@ -41,42 +32,52 @@ export const AuthSignInGmailOauthControllers =
   memo<AuthSignInGmailOauthControllersProps>(({ children }) => {
     const [isSigningIn, setIsSigningIn] = useState(false);
 
-    const redirectUriOptions = useMemo(
-      () =>
-        Platform.select({
-          ios: GOOGLE_IOS_CLIENT_ID
-            ? {
-                native: `${reversedClientId(GOOGLE_IOS_CLIENT_ID)}:/oauthredirect`,
-              }
-            : {},
-          android: GOOGLE_ANDROID_CLIENT_ID
-            ? {
-                native: `${reversedClientId(GOOGLE_ANDROID_CLIENT_ID)}:/oauthredirect`,
-              }
-            : {},
-          default: {},
-        }) ?? {},
-      [],
-    );
-
-    const [_request, response, promptAsync] = Google.useIdTokenAuthRequest(
-      {
-        clientId: GOOGLE_WEB_CLIENT_ID,
-        iosClientId: GOOGLE_IOS_CLIENT_ID,
-        androidClientId: GOOGLE_ANDROID_CLIENT_ID,
-      },
-      redirectUriOptions,
-    );
+    // Use only the web client ID across all platforms.
+    // expo-auth-session opens Google OAuth in a browser — platform-specific
+    // client IDs are for the native Google Sign-In SDK, not expo-auth-session.
+    const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+      clientId: GOOGLE_WEB_CLIENT_ID,
+    });
 
     useEffect(() => {
-      if (response?.type === "success") {
-        const { id_token } = response.params;
-        setIsSigningIn(true);
-        supabase.auth
-          .signInWithIdToken({ provider: "google", token: id_token })
-          .finally(() => setIsSigningIn(false));
-      }
-    }, [response]);
+      if (response?.type !== "success") return;
+
+      const { id_token, code } = response.params;
+
+      setIsSigningIn(true);
+
+      const signIn = async () => {
+        let token = id_token;
+
+        if (!token && code) {
+          // Native uses authorization code flow — exchange code for id_token.
+          // PKCE verifier proves identity without requiring a client secret.
+          const params = new URLSearchParams({
+            code,
+            client_id: GOOGLE_WEB_CLIENT_ID,
+            redirect_uri: request?.redirectUri ?? "",
+            grant_type: "authorization_code",
+            code_verifier: request?.codeVerifier ?? "",
+          });
+          const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString(),
+          });
+          const tokens = await tokenRes.json();
+          token = tokens.id_token;
+        }
+
+        if (token) {
+          await supabase.auth.signInWithIdToken({
+            provider: "google",
+            token,
+          });
+        }
+      };
+
+      signIn().finally(() => setIsSigningIn(false));
+    }, [response, request]);
 
     useEffect(() => {
       if (Platform.OS === "android") {
