@@ -18,6 +18,12 @@
       "inputs": ["$TURBO_DEFAULT$", "**/*.test.ts", "**/*.test.tsx"],
       "outputs": ["test-results/**"]
     },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.e2e.test.ts"],
+      "outputs": ["test-results/**"],
+      "env": ["DATABASE_URL"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
