@@ -75,6 +75,8 @@ export const AuthSignInGmailOauthControllers =
             nonce: webRequest?.nonce,
           });
           if (error) throw error;
+        } catch {
+          // sign-in failed; auth state unchanged, user stays on sign-in screen
         } finally {
           setIsSigningIn(false);
         }
@@ -126,7 +128,7 @@ export const useAuthSignInGmailOauthControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useAuthSignInGmailOauthControllers must be used within AuthSignInGmailOauthControllers",
+      "useAuthSignInGmailOauthControllers must be used within AuthSignInGmailOauthControllers"
     );
   }
   return context;
