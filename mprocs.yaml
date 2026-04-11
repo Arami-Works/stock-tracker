@@ -76,11 +76,9 @@ procs:
         "--config",
         "local",
         "--",
-        "npx",
-        "expo",
-        "run:ios",
-        "--port",
-        "8092",
+        "sh",
+        "-c",
+        "npx expo prebuild --clean --platform ios && npx expo run:ios --port 8092",
       ]
     cwd: apps/mobile
     env:
@@ -98,11 +96,9 @@ procs:
         "--config",
         "local",
         "--",
-        "npx",
-        "expo",
-        "run:android",
-        "--port",
-        "8093",
+        "sh",
+        "-c",
+        "npx expo prebuild --clean --platform android && npx expo run:android --port 8093",
       ]
     cwd: apps/mobile
     env:
