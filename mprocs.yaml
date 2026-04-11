@@ -2,17 +2,9 @@ procs:
   api:
     cmd:
       [
-        "doppler",
-        "run",
-        "--project",
-        "stock-tracker",
-        "--config",
-        "local",
-        "--",
-        "npx",
-        "tsx",
-        "watch",
-        "src/server.ts",
+        "sh",
+        "-c",
+        "lsof -ti :4010 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
       ]
     cwd: apps/api
     env:
@@ -23,17 +15,9 @@ procs:
   subgraph:
     cmd:
       [
-        "doppler",
-        "run",
-        "--project",
-        "stock-tracker",
-        "--config",
-        "local",
-        "--",
-        "npx",
-        "tsx",
-        "watch",
-        "src/server.ts",
+        "sh",
+        "-c",
+        "lsof -ti :4011 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx tsx watch src/server.ts",
       ]
     cwd: apps/subgraphs/tracker
     env:
@@ -44,23 +28,9 @@ procs:
   router:
     cmd:
       [
-        "doppler",
-        "run",
-        "--project",
-        "stock-tracker",
-        "--config",
-        "local",
-        "--",
-        "rover",
-        "dev",
-        "--name",
-        "tracker",
-        "--url",
-        "http://localhost:4011",
-        "--router-config",
-        "router.yaml",
-        "--supergraph-port",
-        "4012",
+        "sh",
+        "-c",
+        "lsof -ti :4012 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- rover dev --name tracker --url http://localhost:4011 --router-config router.yaml --supergraph-port 4012",
       ]
     cwd: apps/router
     stop: "SIGTERM"
@@ -78,7 +48,7 @@ procs:
         "--",
         "sh",
         "-c",
-        "npx expo prebuild --clean --platform ios && npx expo run:ios --port 8092",
+        "lsof -ti :8092 | xargs kill 2>/dev/null; npx expo prebuild --clean --platform ios && npx expo run:ios --port 8092",
       ]
     cwd: apps/mobile
     env:
@@ -98,7 +68,7 @@ procs:
         "--",
         "sh",
         "-c",
-        "npx expo prebuild --clean --platform android && npx expo run:android --port 8093",
+        "lsof -ti :8093 | xargs kill 2>/dev/null; npx expo prebuild --clean --platform android && npx expo run:android --port 8093",
       ]
     cwd: apps/mobile
     env:
@@ -109,20 +79,9 @@ procs:
   web:
     cmd:
       [
-        "doppler",
-        "run",
-        "--project",
-        "stock-tracker",
-        "--config",
-        "local",
-        "--",
-        "npx",
-        "expo",
-        "start",
-        "--port",
-        "8094",
-        "--web",
-        "--clear",
+        "sh",
+        "-c",
+        "lsof -ti :8094 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx expo start --port 8094 --web --clear",
       ]
     cwd: apps/mobile
     env:
@@ -133,18 +92,9 @@ procs:
   storybook:
     cmd:
       [
-        "doppler",
-        "run",
-        "--project",
-        "stock-tracker",
-        "--config",
-        "local",
-        "--",
-        "npx",
-        "storybook",
-        "dev",
-        "-p",
-        "6006",
+        "sh",
+        "-c",
+        "lsof -ti :6006 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx storybook dev -p 6006",
       ]
     cwd: apps/storybook
     stop: "SIGTERM"
