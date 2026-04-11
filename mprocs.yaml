@@ -126,6 +126,7 @@ procs:
         "--port",
         "8094",
         "--web",
+        "--clear",
       ]
     cwd: apps/mobile
     env:
