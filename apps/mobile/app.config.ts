@@ -28,9 +28,6 @@ function reverseClientId(clientId?: string): string | undefined {
 const iosOAuthScheme = reverseClientId(
   process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
 );
-const androidOAuthScheme = reverseClientId(
-  process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-);
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -43,26 +40,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: false,
     bundleIdentifier: `so.arami.stocktracker.app${suffix}`,
-    infoPlist: {
-      CFBundleURLTypes: iosOAuthScheme
-        ? [{ CFBundleURLSchemes: [iosOAuthScheme] }]
-        : [],
-    },
   },
   android: {
     adaptiveIcon: {
       backgroundColor: "#FF2D55",
     },
     package: `so.arami.stocktracker.app${suffix}`,
-    intentFilters: androidOAuthScheme
-      ? [
-          {
-            action: "VIEW",
-            data: [{ scheme: androidOAuthScheme }],
-            category: ["BROWSABLE", "DEFAULT"],
-          },
-        ]
-      : [],
   },
   web: {
     bundler: "metro",
@@ -73,6 +56,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     "expo-updates",
     "expo-secure-store",
     "expo-web-browser",
+    // Only apply the Google Sign-In plugin when the iOS URL scheme is available
+    // (requires EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID — always set in EAS + Doppler builds).
+    ...(iosOAuthScheme
+      ? [
+          [
+            "@react-native-google-signin/google-signin",
+            { iosUrlScheme: iosOAuthScheme },
+          ] as [string, unknown],
+        ]
+      : []),
   ],
   experiments: {
     typedRoutes: true,

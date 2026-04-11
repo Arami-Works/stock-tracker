@@ -19,6 +19,7 @@
     "@aramiworks/ui": "^0.4.0",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@hookform/resolvers": "^5.2.2",
+    "@react-native-google-signin/google-signin": "^16.1.2",
     "@stock-tracker/config": "*",
     "@stock-tracker/types": "*",
     "@stock-tracker/validation": "*",
