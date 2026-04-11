@@ -97,5 +97,7 @@ procs:
         "lsof -ti :6006 | xargs kill 2>/dev/null; doppler run --project stock-tracker --config local -- npx storybook dev -p 6006",
       ]
     cwd: apps/storybook
+    env:
+      BROWSER: "none"
     stop: "SIGTERM"
     autostart: true
