@@ -52,9 +52,12 @@ export const AuthSignInGmailOauthControllers =
     // Web only: expo-auth-session with web client ID.
     // Native (iOS/Android): GoogleSignin SDK below — hooks must not be called conditionally,
     // so we always call useIdTokenAuthRequest but only use the result on web.
-    const [, webResponse, webPromptAsync] = Google.useIdTokenAuthRequest({
-      clientId: GOOGLE_WEB_CLIENT_ID,
-    });
+    // request.nonce is the raw (pre-hash) nonce — required by Supabase when the id_token
+    // contains a nonce claim (which Google includes when nonce is sent in the auth request).
+    const [webRequest, webResponse, webPromptAsync] =
+      Google.useIdTokenAuthRequest({
+        clientId: GOOGLE_WEB_CLIENT_ID,
+      });
 
     useEffect(() => {
       if (Platform.OS !== "web") return;
@@ -64,10 +67,21 @@ export const AuthSignInGmailOauthControllers =
       if (!id_token) return;
 
       setIsSigningIn(true);
-      supabase.auth
-        .signInWithIdToken({ provider: "google", token: id_token })
-        .finally(() => setIsSigningIn(false));
-    }, [webResponse]);
+      (async () => {
+        try {
+          const { error } = await supabase.auth.signInWithIdToken({
+            provider: "google",
+            token: id_token,
+            nonce: webRequest?.nonce,
+          });
+          if (error) throw error;
+        } catch {
+          // sign-in failed; auth state unchanged, user stays on sign-in screen
+        } finally {
+          setIsSigningIn(false);
+        }
+      })();
+    }, [webResponse, webRequest]);
 
     const signInWithGoogle = useCallback(async () => {
       setIsSigningIn(true);
@@ -84,10 +98,11 @@ export const AuthSignInGmailOauthControllers =
         if (isSuccessResponse(userInfo)) {
           const idToken = userInfo.data?.idToken;
           if (idToken) {
-            await supabase.auth.signInWithIdToken({
+            const { error } = await supabase.auth.signInWithIdToken({
               provider: "google",
               token: idToken,
             });
+            if (error) throw error;
           }
         }
       } finally {
