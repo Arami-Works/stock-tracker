@@ -66,13 +66,18 @@ export const AuthSignInGmailOauthControllers =
       if (!id_token) return;
 
       setIsSigningIn(true);
-      supabase.auth
-        .signInWithIdToken({
-          provider: "google",
-          token: id_token,
-          nonce: webRequest?.nonce ?? undefined,
-        })
-        .finally(() => setIsSigningIn(false));
+      (async () => {
+        try {
+          const { error } = await supabase.auth.signInWithIdToken({
+            provider: "google",
+            token: id_token,
+            nonce: webRequest?.nonce,
+          });
+          if (error) throw error;
+        } finally {
+          setIsSigningIn(false);
+        }
+      })();
     }, [webResponse, webRequest]);
 
     const signInWithGoogle = useCallback(async () => {
