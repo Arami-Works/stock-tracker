@@ -98,6 +98,6 @@ procs:
       ]
     cwd: apps/storybook
     env:
-      BROWSER: "none"
+      BROWSER: "open"
     stop: "SIGTERM"
     autostart: true
