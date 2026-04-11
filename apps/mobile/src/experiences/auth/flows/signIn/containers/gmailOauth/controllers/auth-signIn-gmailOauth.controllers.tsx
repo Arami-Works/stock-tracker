@@ -54,9 +54,10 @@ export const AuthSignInGmailOauthControllers =
     // so we always call useIdTokenAuthRequest but only use the result on web.
     // request.nonce is the raw (pre-hash) nonce — required by Supabase when the id_token
     // contains a nonce claim (which Google includes when nonce is sent in the auth request).
-    const [webRequest, webResponse, webPromptAsync] = Google.useIdTokenAuthRequest({
-      clientId: GOOGLE_WEB_CLIENT_ID,
-    });
+    const [webRequest, webResponse, webPromptAsync] =
+      Google.useIdTokenAuthRequest({
+        clientId: GOOGLE_WEB_CLIENT_ID,
+      });
 
     useEffect(() => {
       if (Platform.OS !== "web") return;
@@ -125,7 +126,7 @@ export const useAuthSignInGmailOauthControllers = () => {
   const context = useContext(ControllersContext);
   if (!context) {
     throw new Error(
-      "useAuthSignInGmailOauthControllers must be used within AuthSignInGmailOauthControllers",
+      "useAuthSignInGmailOauthControllers must be used within AuthSignInGmailOauthControllers"
     );
   }
   return context;
